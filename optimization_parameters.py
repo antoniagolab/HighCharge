@@ -6,10 +6,10 @@ Definition of parameters for charging station allocation
 import pandas as pd
 
 dir_0 = pd.read_csv(
-    "ordered_raststaetten.csv"
+    "data/ordered_raststaetten.csv"
 )  # file containing service stations for both directions + for "normal" direction
 dir_1 = pd.read_csv(
-    "ordered_raststaetten_2.csv"
+    "data/ordered_raststaetten_2.csv"
 )  # file containing service stations for both directions + for "inverse" direction
 n0 = len(dir_0)
 n1 = len(dir_1)
