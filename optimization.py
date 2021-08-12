@@ -72,34 +72,34 @@ def optimization():
         model.c1.add(model.pE_Ab_1[ind] == 0)
 
     # constraints defining the passing on of the fictitious energy
-    model.loading = ConstraintList()
+    model.c2 = ConstraintList()
     for ij in range(1, n0):
-        model.loading.add(model.pE_Zu_0[ij] == model.pE_Ab_0[ij - 1])
+        model.c2.add(model.pE_Zu_0[ij] == model.pE_Ab_0[ij - 1])
 
     for ij in range(1, n1):
-        model.loading.add(model.pE_Zu_1[ij] == model.pE_Ab_1[ij - 1])
+        model.c2.add(model.pE_Zu_1[ij] == model.pE_Ab_1[ij - 1])
 
     # constraining the fictitiously passed on energy to ensure evenly distributed charging network
+    model.c3 = ConstraintList()
+    for ij in model.IDX_0:
+        model.c3.add(model.pE_Zu_0[ij] <= e_average)
+
+    model.c4 = ConstraintList()
+    for ij in model.IDX_1:
+        model.c4.add(model.pE_Zu_1[ij] <= e_average)
+
     model.c5 = ConstraintList()
     for ij in model.IDX_0:
-        model.c5.add(model.pE_Zu_0[ij] <= e_average)
+        model.c5.add(model.pE_Ab_0[ij] <= e_average)
 
     model.c6 = ConstraintList()
     for ij in model.IDX_1:
-        model.c6.add(model.pE_Zu_1[ij] <= e_average)
-
-    model.c7 = ConstraintList()
-    for ij in model.IDX_0:
-        model.c7.add(model.pE_Ab_0[ij] <= e_average)
-
-    model.c8 = ConstraintList()
-    for ij in model.IDX_1:
-        model.c8.add(model.pE_Ab_1[ij] <= e_average)
+        model.c6.add(model.pE_Ab_1[ij] <= e_average)
 
     # defining the relationship between energy demand, demand coverage and net energy demand
-    model.c9 = ConstraintList()
+    model.c7 = ConstraintList()
     for ij in model.IDX_0:
-        model.c9.add(
+        model.c7.add(
             model.pE_Laden_0[ij]
             - dir_0.Energiebedarf.to_list()[ij] * eta
             - model.pE_Zu_0[ij]
@@ -107,9 +107,9 @@ def optimization():
             == 0
         )
 
-    model.c10 = ConstraintList()
+    model.c8 = ConstraintList()
     for ij in model.IDX_1:
-        model.c10.add(
+        model.c8.add(
             model.pE_Laden_1[ij]
             - dir_1.Energiebedarf.to_list()[ij] * eta
             - model.pE_Zu_1[ij]
@@ -118,16 +118,16 @@ def optimization():
         )
 
     # defining how much energy demand a charging station is able to cover
-    model.c11 = ConstraintList()
+    model.c9 = ConstraintList()
     for ij in model.IDX_0:
-        model.c11.add(model.pYi_dir_0[ij] * energy >= model.pE_Laden_0[ij])
+        model.c9.add(model.pYi_dir_0[ij] * energy >= model.pE_Laden_0[ij])
 
-    model.c12 = ConstraintList()
+    model.c10 = ConstraintList()
     for ij in model.IDX_1:
-        model.c12.add(model.pYi_dir_1[ij] * energy >= model.pE_Laden_1[ij])
+        model.c10.add(model.pYi_dir_1[ij] * energy >= model.pE_Laden_1[ij])
 
     # installing a constraint preferring charging station at ras for both directions
-    model.c21 = ConstraintList()
+    model.c11 = ConstraintList()
     count = len(dir_0[(dir_0.Richtung == 2) & (dir_0.Energiebedarf > energy / eta)])
     inds_pref = dir_0[
         (dir_0.Richtung == 2) & (dir_0.Energiebedarf > energy / eta)
@@ -135,20 +135,20 @@ def optimization():
     for ind in inds_pref:
         name = dir_0.Name.to_list()[ind]
         dir_1_inds = dir_1[dir_1.Name == name].index
-        model.c21.add(model.pXi_dir_0[ind] == 1)
-        model.c21.add(model.pYi_dir_0[ind] >= 1)
-        model.c21.add(model.pXi_dir_1[dir_1_inds[0]] == 1)
-        model.c21.add(model.pYi_dir_1[dir_1_inds[0]] >= 1)
+        model.c11.add(model.pXi_dir_0[ind] == 1)
+        model.c11.add(model.pYi_dir_0[ind] >= 1)
+        model.c11.add(model.pXi_dir_1[dir_1_inds[0]] == 1)
+        model.c11.add(model.pYi_dir_1[dir_1_inds[0]] >= 1)
 
     # setting a maximum number at each station + defining relation between the binary variable defining whether a
     # resting area has a charging station and the number of charging poles at one
-    model.c19 = ConstraintList()
+    model.c12 = ConstraintList()
     for ij in model.IDX_0:
-        model.c19.add(model.pYi_dir_0[ij] <= g * model.pXi_dir_0[ij])
+        model.c12.add(model.pYi_dir_0[ij] <= g * model.pXi_dir_0[ij])
 
-    model.c20 = ConstraintList()
+    model.c13 = ConstraintList()
     for ij in model.IDX_1:
-        model.c19.add(model.pYi_dir_1[ij] <= g * model.pXi_dir_1[ij])
+        model.c12.add(model.pYi_dir_1[ij] <= g * model.pXi_dir_1[ij])
 
     # ------------------------------------------------- objective -------------------------------------------------
     # maximization of revenue during the observed observation period
