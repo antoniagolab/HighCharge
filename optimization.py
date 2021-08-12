@@ -246,6 +246,9 @@ def optimization():
             output_dir_1[col_name + "_1"] = output_dir_1[col_name]
             output_dir_1.drop(columns=[col_name])
 
+    # TODO: best would be to create a new df with ra names as index and to this procedure for all columns; then merge
+    #  with output
+
     singular_info.extend(["pXi_dir"])
     output_df = output_dir_0.append(output_dir_1)
     output_df.index = range(0, len(output_df))
