@@ -11,6 +11,10 @@ dir_0 = pd.read_csv(
 dir_1 = pd.read_csv(
     "data/resting_areas_dir_1.csv"
 )  # file containing service stations for both directions + for "inverse" direction
+col_energy_demand = (
+    "Energiebedarf"  # specification of column name for energy demand per day
+)
+col_directions = "Richtung"  # specification of column name for directions: 0 = 'normal'; 1 = 'inverse'; 2 = both directions
 n0 = len(dir_0)
 n1 = len(dir_1)
 
@@ -22,10 +26,16 @@ cfix = 50000  # (€) total installation costs of charging station installation
 cvar1 = 10000  # (€) total installation costs of charging pole installation
 eta = 0.003  # share of electric vehicles of car fleet
 cars = 20  # number of charged cars per day at one charging pole
+energy_demand_0 = dir_0[
+    col_energy_demand
+].to_list()  # (kWh/d) energy demand at each rest area per day
+energy_demand_1 = dir_1[col_energy_demand].to_list()
+directions_0 = dir_0[col_directions].to_list()
+directions_1 = dir_1[col_directions].to_list()
 energy = acc * cars  # (kWh) charging energy per day by one charging pole
 e_average = (
-    (dir_0["Energiebedarf"].sum() + dir_1["Energiebedarf"].sum()) * eta / (n0 + n1)
-)  # (kWh) average energy demand at a charging station
+    (sum(energy_demand_0) + sum(energy_demand_1)) * eta / (n0 + n1)
+)  # (kWh/d) average energy demand at a charging station per day
 i = 0.05  # interest rate
 T = 10  # (a) calculation period für RBF (=annuity value)
 RBF = 1 / i - 1 / (i * (1 + i) ** T)  # (€/a) annuity value for period T
