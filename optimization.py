@@ -12,6 +12,11 @@ import pandas as pd
 import numpy as np
 from pyomo.environ import *
 from optimization_parameters import *
+import time
+import warnings
+from pandas.core.common import SettingWithCopyWarning
+
+warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
 
 
 def optimization():
@@ -134,8 +139,8 @@ def optimization():
         if directions_0[ij] == 2 and energy_demand_0[ij] > energy / eta
     ]
     for ind in inds_pref:
-        name = dir_0.Name.to_list()[ind]
-        dir_1_inds = dir_1[dir_1.Name == name].index
+        name = dir_0[col_rest_area_name].to_list()[ind]
+        dir_1_inds = dir_1[dir_1[col_rest_area_name] == name].index
         model.c11.add(model.pXi_dir_0[ind] == 1)
         model.c11.add(model.pYi_dir_0[ind] >= 1)
         model.c11.add(model.pXi_dir_1[dir_1_inds[0]] == 1)
@@ -190,13 +195,98 @@ def optimization():
 
     pYi_dir_0 = np.array([model.pYi_dir_0[n].value for n in model.IDX_0])
     pYi_dir_1 = np.array([model.pYi_dir_1[n].value for n in model.IDX_1])
+    pXi_dir_0 = np.array([model.pXi_dir_0[n].value for n in model.IDX_0])
+    pXi_dir_1 = np.array([model.pXi_dir_1[n].value for n in model.IDX_1])
+    pE_input_0 = np.array([model.pE_input_0[n].value for n in model.IDX_0])
+    pE_input_1 = np.array([model.pE_input_1[n].value for n in model.IDX_1])
+    pE_output_0 = np.array([model.pE_output_0[n].value for n in model.IDX_0])
+    pE_output_1 = np.array([model.pE_output_1[n].value for n in model.IDX_1])
     pE_charged_0 = np.array([model.pE_charged_0[n].value for n in model.IDX_0])
     pE_charged_1 = np.array([model.pE_charged_1[n].value for n in model.IDX_1])
-
     umsatz = sum(pE_charged_0 * ec) + sum(pE_charged_1 * ec)
 
     print(f"Total revenue per year: € {umsatz*365}")
     print(f"Total amount of charging poles: {sum(pYi_dir_0)+sum(pYi_dir_1)}")
+
+    # creating output file
+    # merging both dataframes to singular table with all resting areas and calculated data
+    output_cols = [
+        col_highway,
+        col_rest_area_name,
+        col_position,
+        col_directions,
+        col_type,
+        col_traffic_flow,
+        col_energy_demand,
+    ]
+    singular_info = [
+        col_highway,
+        col_rest_area_name,
+        col_position,
+        col_directions,
+        col_type,
+    ]
+    output_dir_0 = dir_0[output_cols]
+    output_dir_1 = dir_1[output_cols]
+    output_dir_0["pXi_dir"] = pXi_dir_0
+    output_dir_1["pXi_dir"] = pXi_dir_1
+    output_dir_0["pYi_dir_0"] = pYi_dir_0
+    output_dir_1["pYi_dir_1"] = pYi_dir_1
+    output_dir_0["pE_charged_0"] = pE_charged_0
+    output_dir_1["pE_charged_1"] = pE_charged_1
+    output_dir_0["pE_input_0"] = pE_input_0
+    output_dir_1["pE_input_1"] = pE_input_1
+    output_dir_0["pE_output_0"] = pE_output_0
+    output_dir_1["pE_output_1"] = pE_output_1
+
+    for col_name in output_cols:
+        if col_name not in singular_info:
+            output_dir_0[col_name + "_0"] = output_dir_0[col_name]
+            output_dir_0.drop(columns=[col_name])
+            output_dir_1[col_name + "_1"] = output_dir_1[col_name]
+            output_dir_1.drop(columns=[col_name])
+
+    singular_info.extend(["pXi_dir"])
+    output_df = output_dir_0.append(output_dir_1)
+    output_df.index = range(0, len(output_df))
+    total_number_charging_poles_dic = {}
+    inds_both_dirs = output_df[output_df[col_directions] == 2].index
+    for ij in range(0, len(inds_both_dirs)):
+        ra_name = output_df.iloc[inds_both_dirs[ij]][col_rest_area_name]
+        total_number_charging_poles_dic[ra_name] = (
+            output_df[output_df[col_rest_area_name] == ra_name]["pYi_dir_0"].sum()
+            + output_df[output_df[col_rest_area_name] == ra_name]["pYi_dir_1"].sum()
+        )
+    inds_both_dirs = output_df[output_df[col_directions] == 0].index
+    for ij in range(0, len(inds_both_dirs)):
+        ra_name = output_df.iloc[inds_both_dirs[ij]][col_rest_area_name]
+        total_number_charging_poles_dic[ra_name] = output_df[
+            output_df[col_rest_area_name] == ra_name
+        ]["pYi_dir_0"].sum()
+
+    inds_both_dirs = output_df[output_df[col_directions] == 1].index
+    for ij in range(0, len(inds_both_dirs)):
+        ra_name = output_df.iloc[inds_both_dirs[ij]][col_rest_area_name]
+        total_number_charging_poles_dic[ra_name] = output_df[
+            output_df[col_rest_area_name] == ra_name
+        ]["pYi_dir_1"].sum()
+
+    output_df = output_df.drop_duplicates(subset=["Name"], keep="last")
+    output_df = output_df.fillna(0.0)
+    output_df = output_df.drop(columns=["pYi_dir_0", "pYi_dir_1"])
+    output_df = output_df.set_index(col_rest_area_name)
+    total_number_cp_pd_ser = pd.Series(
+        total_number_charging_poles_dic, name="total_number_charging_poles"
+    )
+    output_df = pd.concat([output_df, total_number_cp_pd_ser], axis=1)
+    output_filename = (
+        "results/"
+        + time.strftime("%Y%m%d-%H%M%S")
+        + "_optimization_result_charging_stations.csv"
+    )
+    output_df.to_csv(output_filename)
+
+    return model.obj.values()
 
 
 if __name__ == "__main__":

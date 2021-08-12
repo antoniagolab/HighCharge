@@ -15,6 +15,11 @@ col_energy_demand = (
     "Energiebedarf"  # specification of column name for energy demand per day
 )
 col_directions = "Richtung"  # specification of column name for directions: 0 = 'normal'; 1 = 'inverse'; 2 = both directions
+col_rest_area_name = "Name"  # specification of column nameholding names of rest areas
+col_traffic_flow = "Fluss"
+col_type = "Art"
+col_position = "Standort"
+col_highway = "Autobahn"
 n0 = len(dir_0)
 n1 = len(dir_1)
 
@@ -47,17 +52,17 @@ dir_0["first"] = [False] * n0
 dir_0["last"] = dir_0["first"]
 dir_1["first"] = [False] * n1
 dir_1["last"] = dir_1["first"]
-l1 = dir_1.Autobahn.to_list()
-l0 = dir_0.Autobahn.to_list()
+l1 = dir_1[col_highway].to_list()
+l0 = dir_0[col_highway].to_list()
 l_ext = l0
 l_ext.extend(l1)
 highway_names = list(set(l_ext))
 for name in highway_names:
     if name in l0:
-        dir0_extract_indices = dir_0[dir_0.Autobahn == name].index
+        dir0_extract_indices = dir_0[dir_0[col_highway] == name].index
         dir_0.loc[dir0_extract_indices[0], "first"] = True
         dir_0.loc[dir0_extract_indices[-1], "last"] = True
     if name in l1:
-        dir1_extract_indices = dir_1[dir_1.Autobahn == name].index
+        dir1_extract_indices = dir_1[dir_1[col_highway] == name].index
         dir_1.loc[dir1_extract_indices[0], "first"] = True
         dir_1.loc[dir1_extract_indices[-1], "last"] = True
