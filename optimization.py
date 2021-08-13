@@ -190,6 +190,7 @@ def optimization():
 
     opt = SolverFactory("gurobi")
     opt_success = opt.solve(model)
+    time_of_optimization = time.strftime("%Y%m%d-%H%M%S")
 
     # -------------------------------------------------- results --------------------------------------------------
 
@@ -225,6 +226,7 @@ def optimization():
         col_position,
         col_directions,
         col_type,
+        "pXi_dir",
     ]
     output_dir_0 = dir_0[output_cols]
     output_dir_1 = dir_1[output_cols]
@@ -294,11 +296,46 @@ def optimization():
     output_dataframe = output_dataframe.fillna(0.0)
 
     output_filename = (
-        "results/"
-        + time.strftime("%Y%m%d-%H%M%S")
-        + "_optimization_result_charging_stations.csv"
+        "results/" + time_of_optimization + "_optimization_result_charging_stations.csv"
     )
-    output_dataframe.to_csv(output_filename)
+    output_dataframe = output_dataframe.sort_values(by=[col_highway, col_position])
+    output_dataframe.to_csv(output_filename, index=False)
+
+    # adding information on optimization
+    additional_info = (
+        "Time of calculation: "
+        + time_of_optimization
+        + "; "
+        + "value of objective: "
+        + str(model.obj.value())
+        + ";  acc="
+        + str(acc)
+        + ";  ec="
+        + str(ec)
+        + ";  e_tax="
+        + str(e_tax)
+        + ";  cfix="
+        + str(cfix)
+        + ";  cvar="
+        + str(cvar1)
+        + ";  eta="
+        + str(eta)
+        + ";  cars="
+        + str(cars)
+        + ";  i="
+        + str(i)
+        + ";  T="
+        + str(T)
+        + "\n"
+    )
+
+    file_opt_data = open(output_filename, "r")
+    data = file_opt_data.read()
+    file_opt_data.close()
+    with open(output_filename[:-4] + "_all_info.txt", "w") as f:
+        f.write(additional_info)
+        f.write(data)
+        f.close()
 
     return model.obj.values()
 
