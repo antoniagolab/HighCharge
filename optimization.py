@@ -238,56 +238,67 @@ def optimization():
     output_dir_1["pE_input_1"] = pE_input_1
     output_dir_0["pE_output_0"] = pE_output_0
     output_dir_1["pE_output_1"] = pE_output_1
+    model_variable_names = ["pYi_dir", "pE_charged", "pE_input", "pE_output"]
 
-    for col_name in output_cols:
-        if col_name not in singular_info:
-            output_dir_0[col_name + "_0"] = output_dir_0[col_name]
-            output_dir_0.drop(columns=[col_name])
-            output_dir_1[col_name + "_1"] = output_dir_1[col_name]
-            output_dir_1.drop(columns=[col_name])
+    all_info_df = output_dir_0.append(output_dir_1)
+    all_info_df.index = range(0, len(all_info_df))
+    all_info_df = all_info_df.fillna(0.0)
+    output_dataframe = pd.DataFrame()
+    dir_0_names = dir_0[col_rest_area_name].to_list()
+    dir_1_names = dir_1[col_rest_area_name].to_list()
+    all_ra_names = list(set(dir_0_names + dir_1_names))
+    output_dataframe.index = all_ra_names
+    key_list = all_info_df.keys().to_list()
+    for name in all_ra_names:
+        extract_name_df = all_info_df[all_info_df[col_rest_area_name] == name]
+        for k in key_list:
+            if k in singular_info:
+                output_dataframe.loc[name, k] = extract_name_df[k].to_list()[0]
+            elif k in output_cols:
+                output_dataframe.loc[name, k] = extract_name_df[k].sum()
+                if len(extract_name_df) > 1:
+                    output_dataframe.loc[name, k + "_0"] = extract_name_df[k].to_list()[
+                        0
+                    ]
+                    output_dataframe.loc[name, k + "_1"] = extract_name_df[k].to_list()[
+                        1
+                    ]
+                elif name in dir_0_names:
+                    output_dataframe.loc[name, k + "_0"] = extract_name_df[k].to_list()[
+                        0
+                    ]
+                else:
+                    output_dataframe.loc[name, k + "_1"] = extract_name_df[k].to_list()[
+                        0
+                    ]
+        for k in model_variable_names:
+            output_dataframe.loc[name, k] = (
+                extract_name_df[k + "_0"].sum() + extract_name_df[k + "_1"].sum()
+            )
+            if len(extract_name_df) > 1:
+                output_dataframe.loc[name, k + "_0"] = extract_name_df[
+                    k + "_0"
+                ].to_list()[0]
+                output_dataframe.loc[name, k + "_1"] = extract_name_df[
+                    k + "_1"
+                ].to_list()[1]
+            elif name in dir_0_names:
+                output_dataframe.loc[name, k + "_0"] = extract_name_df[
+                    k + "_0"
+                ].to_list()[0]
+            else:
+                output_dataframe.loc[name, k + "_1"] = extract_name_df[
+                    k + "_1"
+                ].to_list()[0]
 
-    # TODO: best would be to create a new df with ra names as index and to this procedure for all columns; then merge
-    #  with output
+    output_dataframe = output_dataframe.fillna(0.0)
 
-    singular_info.extend(["pXi_dir"])
-    output_df = output_dir_0.append(output_dir_1)
-    output_df.index = range(0, len(output_df))
-    total_number_charging_poles_dic = {}
-    inds_both_dirs = output_df[output_df[col_directions] == 2].index
-    for ij in range(0, len(inds_both_dirs)):
-        ra_name = output_df.iloc[inds_both_dirs[ij]][col_rest_area_name]
-        total_number_charging_poles_dic[ra_name] = (
-            output_df[output_df[col_rest_area_name] == ra_name]["pYi_dir_0"].sum()
-            + output_df[output_df[col_rest_area_name] == ra_name]["pYi_dir_1"].sum()
-        )
-    inds_both_dirs = output_df[output_df[col_directions] == 0].index
-    for ij in range(0, len(inds_both_dirs)):
-        ra_name = output_df.iloc[inds_both_dirs[ij]][col_rest_area_name]
-        total_number_charging_poles_dic[ra_name] = output_df[
-            output_df[col_rest_area_name] == ra_name
-        ]["pYi_dir_0"].sum()
-
-    inds_both_dirs = output_df[output_df[col_directions] == 1].index
-    for ij in range(0, len(inds_both_dirs)):
-        ra_name = output_df.iloc[inds_both_dirs[ij]][col_rest_area_name]
-        total_number_charging_poles_dic[ra_name] = output_df[
-            output_df[col_rest_area_name] == ra_name
-        ]["pYi_dir_1"].sum()
-
-    output_df = output_df.drop_duplicates(subset=["Name"], keep="last")
-    output_df = output_df.fillna(0.0)
-    output_df = output_df.drop(columns=["pYi_dir_0", "pYi_dir_1"])
-    output_df = output_df.set_index(col_rest_area_name)
-    total_number_cp_pd_ser = pd.Series(
-        total_number_charging_poles_dic, name="total_number_charging_poles"
-    )
-    output_df = pd.concat([output_df, total_number_cp_pd_ser], axis=1)
     output_filename = (
         "results/"
         + time.strftime("%Y%m%d-%H%M%S")
         + "_optimization_result_charging_stations.csv"
     )
-    output_df.to_csv(output_filename)
+    output_dataframe.to_csv(output_filename)
 
     return model.obj.values()
 
