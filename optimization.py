@@ -15,6 +15,8 @@ from optimization_parameters import *
 import time
 import warnings
 from pandas.core.common import SettingWithCopyWarning
+from visualize_results import *
+from termcolor import colored
 
 warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
 
@@ -49,12 +51,12 @@ def optimization():
     # a fictitious energy load is passed on from ra to ra along a highway which (pE_Zu) which is the difference between
     # energy demand and covered energy demand at a resting area (pE_Laden); the remaining energy is passed on to the
     # next ra (pE_Ab)
-    model.pE_input_0 = Var(model.IDX_0, within=NonNegativeReals)
-    model.pE_input_1 = Var(model.IDX_1, within=NonNegativeReals)
-    model.pE_output_0 = Var(model.IDX_0, within=NonNegativeReals)
-    model.pE_output_1 = Var(model.IDX_1, within=NonNegativeReals)
-    model.pE_charged_0 = Var(model.IDX_0, within=NonNegativeReals)
-    model.pE_charged_1 = Var(model.IDX_1, within=NonNegativeReals)
+    model.pE_input_0 = Var(model.IDX_0)
+    model.pE_input_1 = Var(model.IDX_1)
+    model.pE_output_0 = Var(model.IDX_0)
+    model.pE_output_1 = Var(model.IDX_1)
+    model.pE_charged_0 = Var(model.IDX_0)
+    model.pE_charged_1 = Var(model.IDX_1)
 
     # ------------------------------------------------- constraints -------------------------------------------------
 
@@ -143,8 +145,9 @@ def optimization():
         dir_1_inds = dir_1[dir_1[col_rest_area_name] == name].index
         model.c11.add(model.pXi_dir_0[ind] == 1)
         model.c11.add(model.pYi_dir_0[ind] >= 1)
-        model.c11.add(model.pXi_dir_1[dir_1_inds[0]] == 1)
-        model.c11.add(model.pYi_dir_1[dir_1_inds[0]] >= 1)
+        if len(dir_1_inds) > 0:
+            model.c11.add(model.pXi_dir_1[dir_1_inds[0]] == 1)
+            model.c11.add(model.pYi_dir_1[dir_1_inds[0]] >= 1)
     count = len(inds_pref)
     # setting a maximum number at each station + defining relation between the binary variable defining whether a
     # resting area has a charging station and the number of charging poles at one
@@ -156,12 +159,25 @@ def optimization():
     for ij in model.IDX_1:
         model.c12.add(model.pYi_dir_1[ij] <= g * model.pXi_dir_1[ij])
 
+    # zero-constraints
+    model.c14 = ConstraintList()
+    for ij in model.IDX_0:
+        model.c14.add(model.pE_charged_0[ij] >= 0)
+        model.c14.add(model.pE_input_0[ij] >= 0)
+        model.c14.add(model.pE_output_0[ij] >= 0)
+
+    for ij in model.IDX_1:
+        model.c14.add(model.pE_charged_1[ij] >= 0)
+        model.c14.add(model.pE_input_1[ij] >= 0)
+        model.c14.add(model.pE_output_1[ij] >= 0)
+
+
     # ------------------------------------------------- objective -------------------------------------------------
     # maximization of revenue during the observed observation period
 
     model.obj = Objective(
         expr=(
-            sum(model.pE_charged_0[n] * (ec - e_tax) for n in model.IDX_0)
+             sum(model.pE_charged_0[n] * (ec - e_tax) for n in model.IDX_0)
             + sum(model.pE_charged_1[n] * (ec - e_tax) for n in model.IDX_1)
             - (
                 1
@@ -171,7 +187,7 @@ def optimization():
                 * (
                     (
                         sum(model.pXi_dir_0[n] for n in model.IDX_0)
-                        + sum(model.pYi_dir_1[n] for n in model.IDX_1)
+                        + sum(model.pXi_dir_1[n] for n in model.IDX_1)
                         - count
                     )
                     * cfix
@@ -206,8 +222,11 @@ def optimization():
     pE_charged_1 = np.array([model.pE_charged_1[n].value for n in model.IDX_1])
     umsatz = sum(pE_charged_0 * ec) + sum(pE_charged_1 * ec)
 
-    print(f"Total revenue per year: € {umsatz*365}")
-    print(f"Total amount of charging poles: {sum(pYi_dir_0)+sum(pYi_dir_1)}")
+    print(pXi_dir_1)
+    print(colored("Total revenue per year: € " + str(umsatz*365), 'green'))
+    print(colored("Total Profit per year (obj. fun.): € " + str(model.obj.value()*365), 'green'))
+    print(colored("Total Profit per year for one charing pole: € " + str(model.obj.value() * 365/(sum(pYi_dir_0)+sum(pYi_dir_1))), 'green'))
+    print(colored("Total amount of charging poles: " + str(sum(pYi_dir_0)+sum(pYi_dir_1)), 'green'))
 
     # creating output file
     # merging both dataframes to singular table with all resting areas and calculated data
@@ -336,6 +355,8 @@ def optimization():
         f.write(additional_info)
         f.write(data)
         f.close()
+
+    visualize_results()
 
     return model.obj.values()
 

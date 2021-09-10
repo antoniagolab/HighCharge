@@ -6,25 +6,26 @@ Definition of parameters for charging station allocation
 import pandas as pd
 
 dir_0 = pd.read_csv(
-    "data/resting_areas_dir_0.csv"
+    "data/rest_area_0_input_optimization_v3.csv"
 )  # file containing service stations for both directions + for "normal" direction
 dir_1 = pd.read_csv(
-    "data/resting_areas_dir_1.csv"
+    "data/rest_area_1_input_optimization_v3.csv"
 )  # file containing service stations for both directions + for "inverse" direction
+
 col_energy_demand = (
-    "Energiebedarf"  # specification of column name for energy demand per day
+    "energy_demand"  # specification of column name for energy demand per day
 )
-col_directions = "Richtung"  # specification of column name for directions: 0 = 'normal'; 1 = 'inverse'; 2 = both directions
-col_rest_area_name = "Name"  # specification of column nameholding names of rest areas
-col_traffic_flow = "Fluss"
-col_type = "Art"
-col_position = "Standort"
-col_highway = "Autobahn"
+col_directions = "direction"  # specification of column name for directions: 0 = 'normal'; 1 = 'inverse'; 2 = both directions
+col_rest_area_name = "name"  # specification of column nameholding names of rest areas
+col_traffic_flow = "traffic_flow"
+col_type = "asfinag_type"
+col_position = "asfinag_position"
+col_highway = "highway"
 n0 = len(dir_0)
 n1 = len(dir_1)
 
 g = 10000  # Maximum number of charging poles at one charging station
-acc = 20  # (kWh) charged energy by a car
+acc = 20  # (kWh) charged energy by a car during one charging
 ec = 0.25  # (€/kWh) charging price for EV driver
 e_tax = 0.15  # (€/kWh) total taxes and other charges
 cfix = 50000  # (€) total installation costs of charging station installation
@@ -42,7 +43,7 @@ e_average = (
     (sum(energy_demand_0) + sum(energy_demand_1)) * eta / (n0 + n1)
 )  # (kWh/d) average energy demand at a charging station per day
 i = 0.05  # interest rate
-T = 10  # (a) calculation period für RBF (=annuity value)
+T = 12  # (a) calculation period für RBF (=annuity value)
 RBF = 1 / i - 1 / (i * (1 + i) ** T)  # (€/a) annuity value for period T
 
 
@@ -60,9 +61,11 @@ highway_names = list(set(l_ext))
 for name in highway_names:
     if name in l0:
         dir0_extract_indices = dir_0[dir_0[col_highway] == name].index
-        dir_0.loc[dir0_extract_indices[0], "first"] = True
-        dir_0.loc[dir0_extract_indices[-1], "last"] = True
+        if len(dir0_extract_indices) > 0:
+            dir_0.loc[dir0_extract_indices[0], "first"] = True
+            dir_0.loc[dir0_extract_indices[-1], "last"] = True
     if name in l1:
         dir1_extract_indices = dir_1[dir_1[col_highway] == name].index
-        dir_1.loc[dir1_extract_indices[0], "first"] = True
-        dir_1.loc[dir1_extract_indices[-1], "last"] = True
+        if len(dir1_extract_indices) > 0:
+            dir_1.loc[dir1_extract_indices[0], "first"] = True
+            dir_1.loc[dir1_extract_indices[-1], "last"] = True
