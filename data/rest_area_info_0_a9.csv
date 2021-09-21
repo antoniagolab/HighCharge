@@ -1,0 +1,20 @@
+,highway,name,asfinag_position,asfinag_type,direction,osm_id,osm_name
+1,A9,'Maisdorf/West',12.73,2,0,376804459.0,
+2,A9,'St. Pankraz',36.36,0,2,376804460.0,
+4,A9,'Pyhrn-Priel West',55.04,1,0,376804457.0,Parkplatz Maisdorf/West
+6,A9,'Ardning West',66.04,2,0,510816662.0,Rastplatz Pyhrn-Priel West
+8,A9,'Rottenmann/Süd',78.18,2,0,376715081.0,Rastplatz Ardning West
+9,A9,'Trieben',85.7,0,2,376715082.0,
+11,A9,'Treglwang',94.03,2,0,94440598.0,Rastplatz Gaishorn
+12,A9,'Kalwang',106.26,1,0,665215184.0,Parkplatz Treglwang
+14,A9,'Kammern Süd',121.26,0,2,950302829.0,
+15,A9,'St. Michael',135.01,2,0,94438967.0,Raststation Kammern
+17,A9,'Ortnerhof Süd’,135.65,2,0,664756706.0,
+18,A9,'Hinterlainsach/Ost',139.16,2,0,664756052.0,Übelbach I
+20,A9,'Kleintal',150.57,2,0,235790130.0,Raststation Deutschfeistritz
+22,A9,'Übelbach 2',154.24,2,0,178135178.0,Rastplatz Premstätten
+23,A9,'Deutschfeistritz',161.95,0,2,664741198.0,Parkplatz Thalerhof
+24,A9,'Eggenfeld',169.13,2,0,178135179.0,
+26,A9,'Premstätten',192.48,1,0,193064709.0,Raststation Gralla Ost
+28,A9,'Gralla West',211.06,0,0,314047000.0,Rastplatz Straß West
+30,A9,'Straß West',225.02,2,0,664717430.0,

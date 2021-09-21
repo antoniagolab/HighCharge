@@ -21,7 +21,14 @@ from termcolor import colored
 warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
 
 
-def optimization():
+def optimization(
+    maximum_dist_between_charging_stations=maximum_dist_between_charging_stations,
+    eta=eta,
+    ec=ec,
+    acc=acc,
+    charging_capacity=charging_capacity,
+    specific_demand=specific_demand,
+):
     """
     Constraint and objective function definition + solution of optimization using parameters defined in
     optimization_parameters.py
@@ -36,10 +43,12 @@ def optimization():
 
     model.IDX_0 = range(n0)
     model.IDX_1 = range(n1)
+    model.IDX_2 = range(0, n3)
 
     # binary variables stating whether a charging station is installed at given ra (=resting area)
-    model.pXi_dir_0 = Var(model.IDX_0, within=Binary)
-    model.pXi_dir_1 = Var(model.IDX_1, within=Binary)
+    # model.pXi_dir_0 = Var(model.IDX_0, within=Binary)
+    # model.pXi_dir_1 = Var(model.IDX_1, within=Binary)
+    model.pXi = Var(model.IDX_2, within=Binary)
 
     # integer variables indicating number of charging poles at a charging station
     model.pYi_dir_0 = Var(
@@ -58,6 +67,8 @@ def optimization():
     model.pE_charged_0 = Var(model.IDX_0)
     model.pE_charged_1 = Var(model.IDX_1)
 
+    cars_per_day = hours_of_constant_charging / (acc / charging_capacity)
+    energy = acc * cars_per_day  # (kWh) charging energy per day by one charging pole
     # ------------------------------------------------- constraints -------------------------------------------------
 
     # the pE_Zu needs to be 0 at each first ra as it is assumed that no energy demand is previously covered;
@@ -87,21 +98,32 @@ def optimization():
         model.c2.add(model.pE_input_1[ij] == model.pE_output_1[ij - 1])
 
     # constraining the fictitiously passed on energy to ensure evenly distributed charging network
+
+    dir_0_highways = dir_0[col_highway].to_list()
     model.c3 = ConstraintList()
     for ij in model.IDX_0:
-        model.c3.add(model.pE_input_0[ij] <= e_average)
+        highway = dir_0_highways[ij]
+        model.c3.add(
+            model.pE_input_0[ij] / (traffic_flows_dir_0[ij] * specific_demand * eta)
+            <= maximum_dist_between_charging_stations
+        )
+        model.c3.add(
+            model.pE_output_0[ij] / (traffic_flows_dir_0[ij] * specific_demand * eta)
+            <= maximum_dist_between_charging_stations
+        )
 
+    dir_1_highways = dir_1[col_highway].to_list()
     model.c4 = ConstraintList()
     for ij in model.IDX_1:
-        model.c4.add(model.pE_input_1[ij] <= e_average)
-
-    model.c5 = ConstraintList()
-    for ij in model.IDX_0:
-        model.c5.add(model.pE_output_0[ij] <= e_average)
-
-    model.c6 = ConstraintList()
-    for ij in model.IDX_1:
-        model.c6.add(model.pE_output_1[ij] <= e_average)
+        highway = dir_1_highways[ij]
+        model.c4.add(
+            model.pE_input_1[ij] / (traffic_flows_dir_1[ij] * specific_demand * eta)
+            <= maximum_dist_between_charging_stations
+        )
+        model.c4.add(
+            model.pE_output_1[ij] / (traffic_flows_dir_1[ij] * specific_demand * eta)
+            <= maximum_dist_between_charging_stations
+        )
 
     # defining the relationship between energy demand, demand coverage and net energy demand
     model.c7 = ConstraintList()
@@ -133,31 +155,45 @@ def optimization():
     for ij in model.IDX_1:
         model.c10.add(model.pYi_dir_1[ij] * energy >= model.pE_charged_1[ij])
 
-    # installing a constraint preferring charging station at ras for both directions
-    model.c11 = ConstraintList()
-    inds_pref = [
-        ij
-        for ij in range(0, len(directions_0))
-        if directions_0[ij] == 2 and energy_demand_0[ij] > energy / eta
-    ]
-    for ind in inds_pref:
-        name = dir_0[col_rest_area_name].to_list()[ind]
-        dir_1_inds = dir_1[dir_1[col_rest_area_name] == name].index
-        model.c11.add(model.pXi_dir_0[ind] == 1)
-        model.c11.add(model.pYi_dir_0[ind] >= 1)
-        if len(dir_1_inds) > 0:
-            model.c11.add(model.pXi_dir_1[dir_1_inds[0]] == 1)
-            model.c11.add(model.pYi_dir_1[dir_1_inds[0]] >= 1)
-    count = len(inds_pref)
     # setting a maximum number at each station + defining relation between the binary variable defining whether a
     # resting area has a charging station and the number of charging poles at one
-    model.c12 = ConstraintList()
-    for ij in model.IDX_0:
-        model.c12.add(model.pYi_dir_0[ij] <= g * model.pXi_dir_0[ij])
 
-    model.c13 = ConstraintList()
-    for ij in model.IDX_1:
-        model.c12.add(model.pYi_dir_1[ij] <= g * model.pXi_dir_1[ij])
+    dir_names = dir[col_rest_area_name].to_list()
+    dir_directions = dir[col_directions].to_list()
+    dir_highways = dir[col_highway].to_list()
+    model.c12 = ConstraintList()
+    for ij in model.IDX_2:
+        name = dir_names[ij]
+        direc = dir_directions[ij]
+        highway = dir_highways[ij]
+        extract_dir_0 = dir_0[
+            (
+                (dir_0[col_rest_area_name] == name)
+                & (dir_0[col_directions] == direc)
+                & (dir_0[col_highway] == highway)
+            )
+        ].index.to_list()
+        extract_dir_1 = dir_1[
+            (
+                (dir_1[col_rest_area_name] == name)
+                & (dir_1[col_directions] == direc)
+                & (dir_1[col_highway] == highway)
+            )
+        ].index.to_list()
+        if len(extract_dir_0) > 0 and len(extract_dir_1) > 0:
+            ind_0 = extract_dir_0[0]
+            ind_1 = extract_dir_1[0]
+            model.c12.add(
+                model.pYi_dir_0[model.IDX_0[ind_0]]
+                + model.pYi_dir_1[model.IDX_1[ind_1]]
+                <= g * model.pXi[ij]
+            )
+        if len(extract_dir_0) > 0:
+            ind_0 = extract_dir_0[0]
+            model.c12.add(model.pYi_dir_0[model.IDX_0[ind_0]] <= g * model.pXi[ij])
+        if len(extract_dir_1) > 0:
+            ind_1 = extract_dir_1[0]
+            model.c12.add(model.pYi_dir_1[model.IDX_1[ind_1]] <= g * model.pXi[ij])
 
     # zero-constraints
     model.c14 = ConstraintList()
@@ -171,13 +207,12 @@ def optimization():
         model.c14.add(model.pE_input_1[ij] >= 0)
         model.c14.add(model.pE_output_1[ij] >= 0)
 
-
     # ------------------------------------------------- objective -------------------------------------------------
     # maximization of revenue during the observed observation period
 
     model.obj = Objective(
         expr=(
-             sum(model.pE_charged_0[n] * (ec - e_tax) for n in model.IDX_0)
+            sum(model.pE_charged_0[n] * (ec - e_tax) for n in model.IDX_0)
             + sum(model.pE_charged_1[n] * (ec - e_tax) for n in model.IDX_1)
             - (
                 1
@@ -185,12 +220,7 @@ def optimization():
                 * 1
                 / 365
                 * (
-                    (
-                        sum(model.pXi_dir_0[n] for n in model.IDX_0)
-                        + sum(model.pXi_dir_1[n] for n in model.IDX_1)
-                        - count
-                    )
-                    * cfix
+                    sum(model.pXi[n] for n in model.IDX_2) * cfix
                     + (
                         sum(model.pYi_dir_0[n] for n in model.IDX_0)
                         + sum(model.pYi_dir_1[n] for n in model.IDX_1)
@@ -212,8 +242,9 @@ def optimization():
 
     pYi_dir_0 = np.array([model.pYi_dir_0[n].value for n in model.IDX_0])
     pYi_dir_1 = np.array([model.pYi_dir_1[n].value for n in model.IDX_1])
-    pXi_dir_0 = np.array([model.pXi_dir_0[n].value for n in model.IDX_0])
-    pXi_dir_1 = np.array([model.pXi_dir_1[n].value for n in model.IDX_1])
+    pXi = np.array([model.pXi[n].value for n in model.IDX_2])
+    pXi_dir_0 = np.where(pYi_dir_0 > 0, 1, 0)
+    pXi_dir_1 = np.where(pYi_dir_1 > 0, 1, 0)
     pE_input_0 = np.array([model.pE_input_0[n].value for n in model.IDX_0])
     pE_input_1 = np.array([model.pE_input_1[n].value for n in model.IDX_1])
     pE_output_0 = np.array([model.pE_output_0[n].value for n in model.IDX_0])
@@ -222,11 +253,26 @@ def optimization():
     pE_charged_1 = np.array([model.pE_charged_1[n].value for n in model.IDX_1])
     umsatz = sum(pE_charged_0 * ec) + sum(pE_charged_1 * ec)
 
-    print(pXi_dir_1)
-    print(colored("Total revenue per year: € " + str(umsatz*365), 'green'))
-    print(colored("Total Profit per year (obj. fun.): € " + str(model.obj.value()*365), 'green'))
-    print(colored("Total Profit per year for one charing pole: € " + str(model.obj.value() * 365/(sum(pYi_dir_0)+sum(pYi_dir_1))), 'green'))
-    print(colored("Total amount of charging poles: " + str(sum(pYi_dir_0)+sum(pYi_dir_1)), 'green'))
+    print(colored("Total revenue per year: € " + str(umsatz * 365), "green"))
+    print(
+        colored(
+            "Total Profit per year (obj. fun.): € " + str(model.obj.value() * 365),
+            "green",
+        )
+    )
+    print(
+        colored(
+            "Total Profit per year for one charing pole: € "
+            + str(model.obj.value() * 365 / (sum(pYi_dir_0) + sum(pYi_dir_1))),
+            "green",
+        )
+    )
+    print(
+        colored(
+            "Total amount of charging poles: " + str(sum(pYi_dir_0) + sum(pYi_dir_1)),
+            "green",
+        )
+    )
 
     # creating output file
     # merging both dataframes to singular table with all resting areas and calculated data
@@ -339,8 +385,8 @@ def optimization():
         + str(cvar1)
         + ";  eta="
         + str(eta)
-        + ";  cars="
-        + str(cars)
+        + ";  hours_of_constant_charging="
+        + str(hours_of_constant_charging)
         + ";  i="
         + str(i)
         + ";  T="
@@ -356,9 +402,19 @@ def optimization():
         f.write(data)
         f.close()
 
-    visualize_results()
+    visualize_results(
+        filename=output_filename[:-4] + "_all_info.txt",
+        maximum_dist_between_charging_stations=maximum_dist_between_charging_stations,
+        eta=eta,
+        ec=ec,
+        acc=acc,
+        charging_capacity=charging_capacity,
+        cars_per_day=cars_per_day,
+        energy=energy,
+        specific_demand=specific_demand,
+    )
 
-    return model.obj.values()
+    return sum(pXi), sum(pYi_dir_0) + sum(pYi_dir_1), model.obj.value() * 365
 
 
 if __name__ == "__main__":

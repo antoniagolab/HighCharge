@@ -1,0 +1,18 @@
+,highway,name,asfinag_position,asfinag_type,direction,osm_id,osm_name
+0,A9,'Maisdorf/Ost',12.66,2,1,47030388.0,Voralpenkreuz
+2,A9,'St. Pankraz',36.36,0,2,376804460.0,
+3,A9,'Pyhrn-Priel Ost’,55.03,1,1,376804458.0,Parkplatz Maisdorf/Ost
+5,A9,'Ardning Ost',65.96,2,1,691535511.0,Rastplatz Pyhrn-Priel Ost
+7,A9,'Rottenmann/Nord',77.91,2,1,376715079.0,Rastplatz Ardning Ost
+9,A9,'Trieben',85.7,0,2,376715082.0,
+10,A9,'Gaishorn',92.11,1,1,376715085.0,
+13,A9,'Kammern Nord',121.18,2,1,665214827.0,Rastplatz Kalwang
+14,A9,'Kammern Süd',121.26,0,2,950302829.0,
+16,A9,'Ortnerhof/West',135.65,2,1,664756705.0,
+19,A9,'Hinterlainsach/West',139.3,2,1,664756053.0,Übelbach II
+21,A9,'Übelbach 1',154.16,2,1,449595803.0,
+23,A9,'Deutschfeistritz',161.95,0,2,664741198.0,Parkplatz Thalerhof
+25,A9,'Feldkirchen',186.97,2,1,192707339.0,Rastatation Gralla West
+27,A9,'Thalerhof',196.52,2,1,314046999.0,Rastplatz Straß Ost
+29,A9,'Gralla Ost',211.45,0,1,664717429.0,
+31,A9,'Straß Ost’,225.02,2,1,,

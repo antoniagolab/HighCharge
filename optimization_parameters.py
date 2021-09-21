@@ -3,6 +3,7 @@
 Definition of parameters for charging station allocation
 
 """
+import numpy as np
 import pandas as pd
 
 dir_0 = pd.read_csv(
@@ -21,31 +22,54 @@ col_traffic_flow = "traffic_flow"
 col_type = "asfinag_type"
 col_position = "asfinag_position"
 col_highway = "highway"
+
+
+dir = dir_0.append(dir_1)
+dir = dir[[col_highway, col_rest_area_name, col_position, col_directions]]
+dir = dir.sort_values(by=[col_highway, col_position])
+dir = dir.drop_duplicates(subset=[col_rest_area_name, col_directions])
+dir["ID"] = range(0, len(dir))
+dir = dir.set_index("ID")
+
 n0 = len(dir_0)
 n1 = len(dir_1)
-
+k = len(dir)
+n3 = k
+# 50 kW annehmen -> + 20h durchgehende Besetzung
 g = 10000  # Maximum number of charging poles at one charging station
-acc = 20  # (kWh) charged energy by a car during one charging
+specific_demand = 0.2  # (kWh/100km) average specific energy usage for 100km
+acc = (
+    specific_demand * 100
+)  # (kWh) charged energy by a car during one charging for 100km
+charging_capacity = 50  # (kW)
 ec = 0.25  # (€/kWh) charging price for EV driver
 e_tax = 0.15  # (€/kWh) total taxes and other charges
 cfix = 50000  # (€) total installation costs of charging station installation
 cvar1 = 10000  # (€) total installation costs of charging pole installation
-eta = 0.003  # share of electric vehicles of car fleet
-cars = 20  # number of charged cars per day at one charging pole
+eta = 0.011  # share of electric vehicles of car fleet
+hours_of_constant_charging = (
+    20  # number of hours of continuous charging at one charging pole
+)
 energy_demand_0 = dir_0[
     col_energy_demand
 ].to_list()  # (kWh/d) energy demand at each rest area per day
 energy_demand_1 = dir_1[col_energy_demand].to_list()
 directions_0 = dir_0[col_directions].to_list()
 directions_1 = dir_1[col_directions].to_list()
-energy = acc * cars  # (kWh) charging energy per day by one charging pole
+
+cars_per_day = hours_of_constant_charging / (acc / charging_capacity)
+energy = acc * cars_per_day  # (kWh) charging energy per day by one charging pole
+
 e_average = (
     (sum(energy_demand_0) + sum(energy_demand_1)) * eta / (n0 + n1)
 )  # (kWh/d) average energy demand at a charging station per day
 i = 0.05  # interest rate
-T = 12  # (a) calculation period für RBF (=annuity value)
+T = 10  # (a) calculation period für RBF (=annuity value)
 RBF = 1 / i - 1 / (i * (1 + i) ** T)  # (€/a) annuity value for period T
 
+maximum_dist_between_charging_stations = 30  # (km)
+traffic_flows_dir_0 = dir_0[col_traffic_flow].to_list()
+traffic_flows_dir_1 = dir_1[col_traffic_flow].to_list()
 
 # extracting all highway names to create two additional columns: "first" and "last" to indicate whether resting areas
 # are first resting areas along a singular highway in "normal" direction
@@ -69,3 +93,19 @@ for name in highway_names:
         if len(dir1_extract_indices) > 0:
             dir_1.loc[dir1_extract_indices[0], "first"] = True
             dir_1.loc[dir1_extract_indices[-1], "last"] = True
+
+e_average_0 = {}
+e_average_1 = {}
+
+for name in highway_names:
+    energy_demand_dir_0 = dir_0[dir_0[col_highway] == name][col_energy_demand].to_list()
+    if len(energy_demand_dir_0) > 0:
+        e_average_0[name] = np.average(energy_demand_dir_0) * eta
+    else:
+        e_average_0[name] = 0
+
+    energy_demand_dir_1 = dir_1[dir_1[col_highway] == name][col_energy_demand].to_list()
+    if len(energy_demand_dir_1) > 0:
+        e_average_1[name] = np.average(energy_demand_dir_1) * eta
+    else:
+        e_average_1[name] = 0
