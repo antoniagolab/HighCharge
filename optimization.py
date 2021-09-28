@@ -57,7 +57,7 @@ def optimization(
     dir_0_inds = dir_0.index.to_list()
     dir_1_inds = dir_1.index.to_list()
     if time_of_charging > max_charging_at_pp:
-            for name in ['A1']:
+            for name in highway_names:
                 extract_dir_0 = dir_0[dir_0[col_highway] == name]
                 extract_dir_1 = dir_1[dir_1[col_highway] == name]
                 for ij in range(0, len(extract_dir_0)-1):
@@ -94,6 +94,9 @@ def optimization(
 
     n0 = len(refac_dir_0)
     n1 = len(refac_dir_1)
+
+    print(n0, n1)
+
     # --------------------------------------------- variable definition ---------------------------------------------
     # driving directions "normal" (=0) and "inverse" (=1) are treated separately throughout the optimization model
     # charging demand at each resting area is then summed up if it is for both directions
