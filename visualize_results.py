@@ -17,7 +17,7 @@ def visualize_results(
     ec=ec,
     acc=acc,
     charging_capacity=charging_capacity,
-    cars_per_day=cars_per_hour,
+    cars_per_day=cars_per_day,
     energy=energy,
     specific_demand=specific_demand,
 ):
@@ -189,7 +189,11 @@ def visualize_results(
         + "_charging_capacity_per_km.png"
     )
 
-
+    print(
+        "Total available capacity: "
+        + str(plot_copy_highway_geometries.charging_capacity.sum())
+        + " kW"
+    )
 
 
 if __name__ == "__main__":

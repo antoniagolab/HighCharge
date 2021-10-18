@@ -6,27 +6,14 @@ Optimization of charging station allocation
 
 last edit: 2021/12/08
 
-
-TODO:
-    - if waiting time > 10min to charge, then remove parking places (3)
-    - recalculate demand based on this (4)
-    - make it possible to read status quo and set constraints based on these
-    - recalculate demand based on this
-    - evaluate whether charging stations are to be placed based on profitability
-    - cost minimum objective function
-    - some small e-charge which is to be removed? -> some small amount for which it is not profitable to be covered
-
-
-TODO: comparison of different optimization strategies: placing a charging station everywhere where it is profitable
-    based on the local demand - then (A) minimizing total costs OR (B) setting for each charging station a profitability
-    constraint but maximizing the amount of charging stations
 """
-
 
 import pandas as pd
 import numpy as np
-from optimization_parameters import *
 from pyomo.environ import *
+from optimization_parameters import *
+from optimization_additional_functions import *
+from integrating_exxisting_infrastructure import *
 import time
 import warnings
 from pandas.core.common import SettingWithCopyWarning
@@ -42,7 +29,7 @@ def optimization(
     ec=ec,
     acc=acc,
     charging_capacity=charging_capacity,
-    specific_demand=specific_demand,
+    specific_demand=specific_demand, input_existing_infrastructure=False
 ):
     """
     Constraint and objective function definition + solution of optimization using parameters defined in
@@ -50,58 +37,14 @@ def optimization(
 
     :return:
     """
-    # removing parking places from possible locations if charging time < 10 min
-    # and recalculate demands
-    asfinag_type_list_0 = dir_0[col_type].to_list()
-    asfinag_type_list_1 = dir_1[col_type].to_list()
-    dir_0_inds = dir_0.index.to_list()
-    dir_1_inds = dir_1.index.to_list()
-    if time_of_charging > max_charging_at_pp:
-            for name in highway_names:
-                extract_dir_0 = dir_0[dir_0[col_highway] == name]
-                extract_dir_1 = dir_1[dir_1[col_highway] == name]
-                for ij in range(0, len(extract_dir_0)-1):
-                    if asfinag_type_list_0[ij] == 2:
-                        energy_demand_0[ij + 1] = energy_demand_0[ij] + energy_demand_0[ij+1]
-
-                for ij in range(0, len(extract_dir_1)-1):
-                    if asfinag_type_list_1[ij] == 2:
-                        energy_demand_1[ij + 1] = energy_demand_1[ij] + energy_demand_1[ij + 1]
-
-
-            refac_dir_0 = dir_0
-            refac_dir_1 = dir_1
-            refac_dir_0[col_energy_demand] = energy_demand_0
-            refac_dir_1[col_energy_demand] = energy_demand_1
-            refac_dir_0 = refac_dir_0[~(refac_dir_0[col_type] == 2)]
-            refac_dir_1 = refac_dir_1[~(refac_dir_1[col_type] == 2)]
-            refac_energy_demand_0 = [d * tf_at_peak for d in refac_dir_0[
-                col_energy_demand].to_list()]  # (kWh/d) energy demand at each rest area per day
-            refac_energy_demand_1 = [d * tf_at_peak for d in refac_dir_1[col_energy_demand].to_list()]
-    else:
-        refac_dir_0 = dir_0
-        refac_dir_1 = dir_1
-        refac_energy_demand_0 = [d * tf_at_peak for d in refac_dir_0[
-            col_energy_demand].to_list()]  # (kWh/d) energy demand at each rest area per day
-        refac_energy_demand_1 = [d * tf_at_peak for d in refac_dir_1[col_energy_demand].to_list()]
-
-    refac_dir_0["ID"] = range(0, len(refac_dir_0))
-    refac_dir_0 = refac_dir_0.set_index("ID")
-
-    refac_dir_1["ID"] = range(0, len(refac_dir_1))
-    refac_dir_1 = refac_dir_1.set_index("ID")
     model = ConcreteModel()  # Model initialization
-
-    n0 = len(refac_dir_0)
-    n1 = len(refac_dir_1)
-
-    print(n0, n1)
 
     # --------------------------------------------- variable definition ---------------------------------------------
     # driving directions "normal" (=0) and "inverse" (=1) are treated separately throughout the optimization model
     # charging demand at each resting area is then summed up if it is for both directions
-    model.IDX_0 = range(0, n0)
-    model.IDX_1 = range(0, n1)
+
+    model.IDX_0 = range(n0)
+    model.IDX_1 = range(n1)
     model.IDX_2 = range(0, n3)
 
     # binary variables stating whether a charging station is installed at given ra (=resting area)
@@ -126,70 +69,97 @@ def optimization(
     model.pE_charged_0 = Var(model.IDX_0)
     model.pE_charged_1 = Var(model.IDX_1)
 
-    cars_per_hour = hourly_res / (acc / charging_capacity)
-    energy = acc * cars_per_hour  # (kWh) charging energy per day by one charging pole
+    cars_per_day = hours_of_constant_charging / (acc / charging_capacity)
+    energy = acc * cars_per_day  # (kWh) charging energy per day by one charging pole
     # ------------------------------------------------- constraints -------------------------------------------------
 
     # the pE_Zu needs to be 0 at each first ra as it is assumed that no energy demand is previously covered;
     # all energy demand is constrained to be covered at the last ra on a highway
     model.c1 = ConstraintList()
 
-    firsts_0 = refac_dir_0[refac_dir_0["first"]].index
+    firsts_0 = dir_0[dir_0["first"] == True].index
     for ind in firsts_0:
         model.c1.add(model.pE_input_0[ind] == 0)
-    lasts_0 = refac_dir_0[refac_dir_0["last"]].index
+    lasts_0 = dir_0[dir_0["last"] == True].index
     for ind in lasts_0:
         model.c1.add(model.pE_output_0[ind] == 0)
 
-    firsts_1 = refac_dir_1[refac_dir_1["first"]].index
+    firsts_1 = dir_1[dir_1["first"] == True].index
     for ind in firsts_1:
         model.c1.add(model.pE_input_1[ind] == 0)
-    lasts_1 = refac_dir_1[refac_dir_1["last"]].index
+    lasts_1 = dir_1[dir_1["last"] == True].index
     for ind in lasts_1:
         model.c1.add(model.pE_output_1[ind] == 0)
 
+    #
+    model.c55 = ConstraintList()
+    model.c55.add(model.pE_charged_0[model.IDX_0[21]] + model.pE_charged_0[model.IDX_0[22]]>= 1)
+    model.c55.add(sum([model.pE_charged_0[ij] for ij in model.IDX_0]) >= 1)
+
     # constraints defining the passing on of the fictitious energy
+    #
+    # TODO: rethink here the direction!! dir_1 goes in a different direction
+    #   -> also: this relationship does only stand within one highway -> this is not caught by this constraint
     model.c2 = ConstraintList()
-    for ij in range(1, n0):
-        model.c2.add(model.pE_input_0[ij] == model.pE_output_0[ij - 1])
+    # for ij in range(1, n0):
+    #     model.c2.add(model.pE_input_0[ij] == model.pE_output_0[ij - 1])
+    #
+    # for ij in range(1, n1):
+    #     model.c2.add(model.pE_input_1[ij] == model.pE_output_1[ij - 1])
 
-    for ij in range(1, n1):
-        model.c2.add(model.pE_input_1[ij] == model.pE_output_1[ij - 1])
+    for name in highway_names:
+        if name in l0:
+            dir0_extract_indices = dir_0[dir_0[col_highway] == name].index
+            if len(dir0_extract_indices) > 0:
+                for kl in range(1, len(dir0_extract_indices)):
+                    model.c2.add(
+                        model.pE_input_0[dir0_extract_indices[kl]] == model.pE_output_0[dir0_extract_indices[kl - 1]])
 
-    # constraining the fictitiously passed on energy to ensure evenly distributed charging network
+        if name in l1:
+            dir1_extract_indices = dir_1[dir_1[col_highway] == name].index
+            if len(dir1_extract_indices) > 0:
+                for kl in range(len(dir1_extract_indices) - 2, -1, -1):
+                    model.c2.add(
+                        model.pE_input_1[dir1_extract_indices[kl]] == model.pE_output_1[dir1_extract_indices[kl] + 1])
 
-    dir_0_highways = refac_dir_0[col_highway].to_list()
-    model.c3 = ConstraintList()
-    for ij in model.IDX_0:
-        highway = dir_0_highways[ij]
-        model.c3.add(
-            model.pE_input_0[ij] / (traffic_flows_dir_0[ij] * specific_demand * tf_at_peak * eta * mu)
-            <= maximum_dist_between_charging_stations
-        )
-        model.c3.add(
-            model.pE_output_0[ij] / (traffic_flows_dir_0[ij] * specific_demand * tf_at_peak * eta * mu)
-            <= maximum_dist_between_charging_stations
-        )
+                                                                                        # constraining the fictitiously passed on energy to ensure evenly distributed charging network
+    #
+    # dir_0_highways = dir_0[col_highway].to_list()
+    # model.c3 = ConstraintList()
+    # for ij in model.IDX_0:
+    #     highway = dir_0_highways[ij]
+    #     model.c3.add(
+    #         model.pE_input_0[ij] / (traffic_flows_dir_0[ij] * specific_demand * eta)
+    #         <= maximum_dist_between_charging_stations
+    #     )
+    #     model.c3.add(
+    #         model.pE_output_0[ij] / (traffic_flows_dir_0[ij] * specific_demand * eta)
+    #         <= maximum_dist_between_charging_stations
+    #     )
+    #
+    # dir_1_highways = dir_1[col_highway].to_list()
+    # model.c4 = ConstraintList()
+    # for ij in model.IDX_1:
+    #     highway = dir_1_highways[ij]
+    #     model.c4.add(
+    #         model.pE_input_1[ij] / (traffic_flows_dir_1[ij] * specific_demand * eta)
+    #         <= maximum_dist_between_charging_stations
+    #     )
+    #     model.c4.add(
+    #         model.pE_output_1[ij] / (traffic_flows_dir_1[ij] * specific_demand * eta)
+    #         <= maximum_dist_between_charging_stations
+    #     )
 
-    dir_1_highways = refac_dir_1[col_highway].to_list()
-    model.c4 = ConstraintList()
-    for ij in model.IDX_1:
-        highway = dir_1_highways[ij]
-        model.c4.add(
-            model.pE_input_1[ij] / (traffic_flows_dir_1[ij] * specific_demand * tf_at_peak * eta * mu)
-            <= maximum_dist_between_charging_stations
-        )
-        model.c4.add(
-            model.pE_output_1[ij] / (traffic_flows_dir_1[ij] * specific_demand * tf_at_peak * eta * mu)
-            <= maximum_dist_between_charging_stations
-        )
+    dir_names = dir[col_rest_area_name].to_list()
+    dir_directions = dir[col_directions].to_list()
+    dir_highways = dir[col_highway].to_list()
 
     # defining the relationship between energy demand, demand coverage and net energy demand
     model.c7 = ConstraintList()
     for ij in model.IDX_0:
         model.c7.add(
             model.pE_charged_0[ij]
-            - refac_energy_demand_0[ij] * eta * mu
+            - energy_demand_0[ij] * eta * mu
             - model.pE_input_0[ij]
             + model.pE_output_0[ij]
             == 0
@@ -199,13 +169,15 @@ def optimization(
     for ij in model.IDX_1:
         model.c8.add(
             model.pE_charged_1[ij]
-            - refac_energy_demand_1[ij] * eta * mu
+            - energy_demand_1[ij] * eta * mu
             - model.pE_input_1[ij]
             + model.pE_output_1[ij]
             == 0
         )
 
     # defining how much energy demand a charging station is able to cover
+    # TODO: SHARED usage -> one pole can be used by cars coming from both directions
+
     model.c9 = ConstraintList()
     for ij in model.IDX_0:
         model.c9.add(model.pYi_dir_0[ij] * energy >= model.pE_charged_0[ij])
@@ -214,45 +186,136 @@ def optimization(
     for ij in model.IDX_1:
         model.c10.add(model.pYi_dir_1[ij] * energy >= model.pE_charged_1[ij])
 
-    # setting a maximum number at each station + defining relation between the binary variable defining whether a
-    # resting area has a charging station and the number of charging poles at one
-
-    dir_names = dir[col_rest_area_name].to_list()
-    dir_directions = dir[col_directions].to_list()
-    dir_highways = dir[col_highway].to_list()
+    model.c_profitable_stations = ConstraintList()
     model.c12 = ConstraintList()
-    for ij in model.IDX_2:
-        name = dir_names[ij]
-        direc = dir_directions[ij]
-        highway = dir_highways[ij]
-        extract_dir_0 = refac_dir_0[
-            (
-                (refac_dir_0[col_rest_area_name] == name)
-                & (refac_dir_0[col_directions] == direc)
-                & (refac_dir_0[col_highway] == highway)
-            )
-        ].index.to_list()
-        extract_dir_1 = refac_dir_1[
-            (
-                (refac_dir_1[col_rest_area_name] == name)
-                & (refac_dir_1[col_directions] == direc)
-                & (refac_dir_1[col_highway] == highway)
-            )
-        ].index.to_list()
-        if len(extract_dir_0) > 0 and len(extract_dir_1) > 0:
-            ind_0 = extract_dir_0[0]
-            ind_1 = extract_dir_1[0]
-            model.c12.add(
-                model.pYi_dir_0[model.IDX_0[ind_0]]
-                + model.pYi_dir_1[model.IDX_1[ind_1]]
-                <= g * model.pXi[ij]
-            )
-        if len(extract_dir_0) > 0:
-            ind_0 = extract_dir_0[0]
-            model.c12.add(model.pYi_dir_0[model.IDX_0[ind_0]] <= g * model.pXi[ij])
-        if len(extract_dir_1) > 0:
-            ind_1 = extract_dir_1[0]
-            model.c12.add(model.pYi_dir_1[model.IDX_1[ind_1]] <= g * model.pXi[ij])
+    model.installed_infrastructure = ConstraintList()
+    # install existing infrastructure
+    if input_existing_infrastructure:
+        remaining_demand_0, remaining_demand_1, installed_cs, total_poles = calculate_remaining_demand()
+        print('remaining_demand', sum(remaining_demand_0) + sum(remaining_demand_1))
+        for ij in model.IDX_2:
+            name = dir_names[ij]
+            direc = dir_directions[ij]
+            highway = dir_highways[ij]
+            extract_dir_0 = dir_0[
+                (
+                        (dir_0[col_rest_area_name] == name)
+                        & (dir_0[col_directions] == direc)
+                        & (dir_0[col_highway] == highway)
+                )
+            ].index.to_list()
+            extract_dir_1 = dir_1[
+                (
+                        (dir_1[col_rest_area_name] == name)
+                        & (dir_1[col_directions] == direc)
+                        & (dir_1[col_highway] == highway)
+                )
+            ].index.to_list()
+
+            if len(extract_dir_0) > 0 and len(extract_dir_1) > 0:
+                ind_0 = extract_dir_0[0]
+                ind_1 = extract_dir_1[0]
+                model.c12.add(
+                    model.pYi_dir_0[model.IDX_0[ind_0]]
+                    + model.pYi_dir_1[model.IDX_1[ind_1]]
+                    <= g * model.pXi[ij]
+                )
+                if installed_cs[ij] > 0:
+                    model.installed_infrastructure.add(model.pXi[ij] == 1)
+                    model.installed_infrastructure.add(model.pYi_dir_0[model.IDX_0[ind_0]] + model.pYi_dir_1[model.IDX_1[ind_1]] >= total_poles[ij])
+                else:
+                    current_demand = (remaining_demand_0[model.IDX_0[model.IDX_0[ind_0]]] + remaining_demand_1[
+                        model.IDX_1[ind_1]]) * eta * mu
+                    is_profitable, num_var = profitable(i, ec, T, e_tax, cfix, cvar, current_demand, energy)
+                    if is_profitable:
+                        model.c_profitable_stations.add(model.pXi[ij] == 1)
+                        model.c_profitable_stations.add(
+                            model.pYi_dir_0[model.IDX_0[ind_0]] + model.pYi_dir_1[model.IDX_1[ind_1]] >= 1)
+
+            elif len(extract_dir_0) > 0:
+                ind_0 = extract_dir_0[0]
+                model.c12.add(
+                    model.pYi_dir_0[model.IDX_0[ind_0]]
+                    <= g * model.pXi[ij]
+                )
+                if installed_cs[ij] > 0:
+                    model.installed_infrastructure.add(model.pXi[ij] == 1)
+                    model.installed_infrastructure.add(model.pYi_dir_0[ind_0] >= total_poles[ij])
+                else:
+                    current_demand = (remaining_demand_0[model.IDX_0[model.IDX_0[ind_0]]]) * eta * mu
+                    is_profitable, num_var = profitable(i, ec, T, e_tax, cfix, cvar, current_demand, energy)
+                    if is_profitable:
+                        model.c_profitable_stations.add(model.pXi[ij] == 1)
+                        model.c_profitable_stations.add(
+                            model.pYi_dir_0[model.IDX_0[ind_0]] >= 1)
+            elif len(extract_dir_1) > 0:
+                ind_1 = extract_dir_1[0]
+                model.c12.add(
+                    model.pYi_dir_1[model.IDX_1[ind_1]]
+                    <= g * model.pXi[ij]
+                )
+                if installed_cs[ij] > 0:
+                    model.installed_infrastructure.add(model.pXi[ij] == 1)
+                    model.installed_infrastructure.add(model.pYi_dir_1[ind_1] >= total_poles[ij])
+                else:
+                    current_demand = (remaining_demand_1[
+                        model.IDX_1[ind_1]]) * eta * mu
+                    is_profitable, num_var = profitable(i, ec, T, e_tax, cfix, cvar, current_demand, energy)
+                    if is_profitable:
+                        model.c_profitable_stations.add(model.pXi[ij] == 1)
+                        model.c_profitable_stations.add(model.pYi_dir_1[model.IDX_1[ind_1]] >= 1)
+
+    else:
+        for ij in model.IDX_2:
+            name = dir_names[ij]
+            direc = dir_directions[ij]
+            highway = dir_highways[ij]
+            extract_dir_0 = dir_0[
+                (
+                    (dir_0[col_rest_area_name] == name)
+                    & (dir_0[col_directions] == direc)
+                    & (dir_0[col_highway] == highway)
+                )
+            ].index.to_list()
+            extract_dir_1 = dir_1[
+                (
+                    (dir_1[col_rest_area_name] == name)
+                    & (dir_1[col_directions] == direc)
+                    & (dir_1[col_highway] == highway)
+                )
+            ].index.to_list()
+            if len(extract_dir_0) > 0 and len(extract_dir_1) > 0:
+                ind_0 = extract_dir_0[0]
+                ind_1 = extract_dir_1[0]
+                model.c12.add(
+                    model.pYi_dir_0[model.IDX_0[ind_0]]
+                    + model.pYi_dir_1[model.IDX_1[ind_1]]
+                    <= g * model.pXi[ij]
+                )
+                current_demand = (energy_demand_0[model.IDX_0[ind_0]] + energy_demand_1[model.IDX_1[ind_1]]) * eta * mu
+                is_profitable, num_var = profitable(i, ec, T, e_tax, cfix, cvar, current_demand, energy)
+                if is_profitable:
+                    model.c_profitable_stations.add(model.pXi[ij] == 1)
+                    model.c_profitable_stations.add((model.pXi[ij] == 1) >>
+                                    (model.pYi_dir_0[model.IDX_0[ind_0]] + model.pYi_dir_1[model.IDX_1[ind_1]] >= 1))
+
+            elif len(extract_dir_0) > 0:
+                ind_0 = extract_dir_0[0]
+                model.c12.add(model.pYi_dir_0[model.IDX_0[ind_0]] <= g * model.pXi[ij])
+                current_demand = energy_demand_0[model.IDX_0[ind_0]] * eta * mu
+                is_profitable, num_var = profitable(i, ec, T, e_tax, cfix, cvar, current_demand, energy)
+                if is_profitable:
+                    model.c_profitable_stations.add(model.pXi[ij] == 1)
+                    model.c_profitable_stations.add(model.pYi_dir_0[model.IDX_0[ind_0]] >= 1)
+
+            elif len(extract_dir_1) > 0:
+                ind_1 = extract_dir_1[0]
+                model.c12.add(model.pYi_dir_1[model.IDX_1[ind_1]] <= g * model.pXi[ij])
+                current_demand = energy_demand_1[model.IDX_1[ind_1]] * eta * mu
+                is_profitable, num_var = profitable(i, ec, T, e_tax, cfix, cvar, current_demand, energy)
+                if is_profitable:
+                    model.c_profitable_stations.add(model.pXi[ij] == 1)
+                    model.c_profitable_stations.add(model.pYi_dir_1[model.IDX_1[ind_1]] >= 1)
 
     # zero-constraints
     model.c14 = ConstraintList()
@@ -267,29 +330,28 @@ def optimization(
         model.c14.add(model.pE_output_1[ij] >= 0)
 
     # ------------------------------------------------- objective -------------------------------------------------
-    # maximization of profit during the observed observation period
-    # TODO: change to minimization of costs
+    # maximization of revenue during the observed observation period
 
     model.obj = Objective(
         expr=(
-            sum(model.pE_charged_0[n] * (ec - e_tax) for n in model.IDX_0) * 24 * tf_at_peak
-            + sum(model.pE_charged_1[n] * (ec - e_tax) for n in model.IDX_1) * 24 * tf_at_peak
-            - (
+            sum(model.pE_charged_0[n] * (e_tax) for n in model.IDX_0)
+            + sum(model.pE_charged_1[n] * (e_tax) for n in model.IDX_1)
+            + (
                 1
                 / RBF
                 * 1
                 / 365
                 * (
-                    sum(model.pXi[n] for n in model.IDX_2) * cfix
-                    + (
+                        sum(model.pXi[n] for n in model.IDX_2) * cfix
+                        + (
                         sum(model.pYi_dir_0[n] for n in model.IDX_0)
                         + sum(model.pYi_dir_1[n] for n in model.IDX_1)
                     )
-                    * cvar1
+                        * cvar
                 )
             )
         ),
-        sense=maximize,
+        sense=minimize,
     )
 
     # ------------------------------------------------- solution --------------------------------------------------
@@ -353,8 +415,8 @@ def optimization(
         col_type,
         "pXi_dir",
     ]
-    output_dir_0 = refac_dir_0[output_cols]
-    output_dir_1 = refac_dir_1[output_cols]
+    output_dir_0 = dir_0[output_cols]
+    output_dir_1 = dir_1[output_cols]
     output_dir_0["pXi_dir"] = pXi_dir_0
     output_dir_1["pXi_dir"] = pXi_dir_1
     output_dir_0["pYi_dir_0"] = pYi_dir_0
@@ -371,8 +433,8 @@ def optimization(
     all_info_df.index = range(0, len(all_info_df))
     all_info_df = all_info_df.fillna(0.0)
     output_dataframe = pd.DataFrame()
-    dir_0_names = refac_dir_0[col_rest_area_name].to_list()
-    dir_1_names = refac_dir_1[col_rest_area_name].to_list()
+    dir_0_names = dir_0[col_rest_area_name].to_list()
+    dir_1_names = dir_1[col_rest_area_name].to_list()
     all_ra_names = list(set(dir_0_names + dir_1_names))
     output_dataframe.index = all_ra_names
     key_list = all_info_df.keys().to_list()
@@ -442,13 +504,11 @@ def optimization(
         + ";  cfix="
         + str(cfix)
         + ";  cvar="
-        + str(cvar1)
+        + str(cvar)
         + ";  eta="
         + str(eta)
-        + "; mu="
+        + ";  mu="
         + str(mu)
-        + "; tf_at_peak="
-        + str(tf_at_peak)
         + ";  hours_of_constant_charging="
         + str(hours_of_constant_charging)
         + ";  i="
@@ -473,7 +533,7 @@ def optimization(
         ec=ec,
         acc=acc,
         charging_capacity=charging_capacity,
-        cars_per_day=cars_per_hour,
+        cars_per_day=cars_per_day,
         energy=energy,
         specific_demand=specific_demand,
     )
@@ -482,4 +542,4 @@ def optimization(
 
 
 if __name__ == "__main__":
-    optimization()
+    optimization(input_existing_infrastructure=False)
