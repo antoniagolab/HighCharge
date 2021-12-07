@@ -3,37 +3,90 @@
 Definition of parameters for charging station allocation
 
 """
+
 import numpy as np
 import pandas as pd
+from utils import clean_segments, filter_segments, split_by_dir, pd2gpd
+# read pois_df and reindex
 
-dir_0 = pd.read_csv(
-    "data/rest_area_0_input_optimization_v4.csv"
-)  # file containing service stations for both directions + for "normal" direction
-dir_1 = pd.read_csv(
-    "data/rest_area_1_input_optimization_v4.csv"
-)  # file containing service stations for both directions + for "inverse" direction
+pois_df = pd.read_csv('data/_demand_calculated.csv')    # file containing POIs (points of interest) which
+                                                        # highway crossing and service stations (no parking spots at
+                                                        # this point
+pois_df['POI_ID'] = range(0, len(pois_df))
+segments_gdf = pd2gpd(pd.read_csv('data/highway_segments.csv'))
+links_gdf = pd2gpd(pd.read_csv('data/highway_intersections.csv'))
+links_gdf = links_gdf[~(links_gdf.index==19)]
+# pois_df, segments_gdf, links_gdf = filter_segments(pois_df, segments_gdf, links_gdf,
+#                                                     [ind for ind in segments_gdf.ID.to_list() if ind not in [34,44,0,1,2]])
+# links_gdf.at[14, 'conn_edges'] = '[33,31]'
+# links_gdf.at[21, 'conn_edges'] = '[42,46]'
+# segments_gdf.at[43, 'link_0'] = np.NaN
+# segments_gdf.at[45, 'link_0'] = np.NaN
+
+
+# TODO: das probieren:
+# pois_df, segments_gdf, links_gdf = filter_segments(pois_df, segments_gdf, links_gdf,
+#                                                     [34, 43, 44, 45])
+
+# # links_gdf.at[17, 'conn_edges'] = '[38,36]'
+#
+# segments_gdf.at[34, 'link_0'] = np.NaN
+# segments_gdf.at[44, 'link_1'] = np.NaN
+# segments_gdf.at[45, 'link_1'] = np.NaN
+# segments_gdf.at[43, 'link_1'] = np.NaN
+
+
+# segments_gdf.at[31, 'link_1'] = np.NaN
+
+#
+#segments_gdf.at[37, 'link_1'] = np.NaN
+# segments_gdf.at[53, 'link_0'] = np.NaN
+# segments_gdf.at[47, 'link_1'] = np.NaN
+# segments_gdf.at[39, 'link_1'] = np.NaN
+
+# segments_gdf.at[1, 'link_0'] = np.NaN
+# segments_gdf.at[1, 'link_1'] = np.NaN
+# segments_gdf.at[0, 'link_0'] = np.NaN
+pois_df, segments_gdf, links_gdf = clean_segments(links_gdf, segments_gdf, pois_df)
+
+pois_0, pois_1 = split_by_dir(pois_df, 'dir')
+
+# TODO np.Nan values need to be filled!!
+# dir_0 = pd.read_csv(
+#     "data/rest_area_0_input_optimization_v4.csv"
+# )  # file containing service stations for both directions + for "normal" direction
+# dir_1 = pd.read_csv(
+#     "data/rest_area_1_input_optimization_v4.csv"
+# )  # file containing service stations for both directions + for "inverse" direction
 
 col_energy_demand = (
     "energy_demand"  # specification of column name for energy demand per day
 )
-col_directions = "direction"  # specification of column name for directions: 0 = 'normal'; 1 = 'inverse'; 2 = both directions
+col_directions = "dir"  # specification of column name for directions: 0 = 'normal'; 1 = 'inverse'; 2 = both directions
 col_rest_area_name = "name"  # specification of column nameholding names of rest areas
 col_traffic_flow = "traffic_flow"
 col_type = "asfinag_type"
-col_position = "asfinag_position"
+# col_position = "asfinag_position"
 col_highway = "highway"
 col_has_cs = "has_charging_station"
-col_distance = "dist_along_highway"
+col_distance = "dist_along_segment"
+col_segment_id = 'segment_id'
 input_existing_infrastructure = False
+col_type_ID = 'type_ID'
+col_POI_ID = 'POI_ID'
+pois_0[col_energy_demand] = pois_0['demand_0']
+pois_1[col_energy_demand] = pois_1['demand_1']
+dir_0 = pois_0
+dir_1 = pois_1
 
-dir_1 = dir_1.sort_values(by=[col_highway, col_distance], ascending=[True, False])
+dir_1 = dir_1.sort_values(by=[col_segment_id, col_distance], ascending=[True, False])
 dir_1["ID"] = range(0, len(dir_1))
 dir_1 = dir_1.set_index("ID")
 
 dir = dir_0.append(dir_1)
-dir = dir[[col_highway, col_rest_area_name, col_position, col_directions, col_distance]]
-dir = dir.sort_values(by=[col_highway, col_distance])
-dir = dir.drop_duplicates(subset=[col_rest_area_name, col_directions])
+dir = dir[[col_POI_ID, col_segment_id, col_directions, col_distance, col_type_ID, 'pois_type']]
+dir = dir.sort_values(by=[col_segment_id, col_POI_ID, 'pois_type', col_distance])
+dir = dir.drop_duplicates(subset=[col_POI_ID, col_directions])
 dir["ID"] = range(0, len(dir))
 dir = dir.set_index("ID")
 
@@ -53,8 +106,7 @@ e_tax = 0.15  # (€/kWh) total taxes and other charges
 cfix = 150000  # (€) total installation costs of charging station installation
 cvar = 10000  # (€) total installation costs of charging pole installation
 eta = 0.011  # share of electric vehicles of car fleet
-
-mu = 0.5  # share of cars travelling long-distance
+mu = 0.7  # share of cars travelling long-distance
 hours_of_constant_charging = (
     20  # number of hours of continuous charging at one charging pole
 )
@@ -74,63 +126,28 @@ e_average = (
 i = 0.05  # interest rate
 T = 10  # (a) calculation period für RBF (=annuity value)
 RBF = 1 / i - 1 / (i * (1 + i) ** T)  # (€/a) annuity value for period T
-
-maximum_dist_between_charging_stations = 30  # (km)
-traffic_flows_dir_0 = dir_0[col_traffic_flow].to_list()
-traffic_flows_dir_1 = dir_1[col_traffic_flow].to_list()
-
+dmax = 100000
 # extracting all highway names to create two additional columns: "first" and "last" to indicate whether resting areas
 # are first resting areas along a singular highway in "normal" direction
-dir_0["first"] = [False] * n0
-dir_0["last"] = dir_0["first"]
-dir_1["first"] = [False] * n1
-dir_1["last"] = dir_1["first"]
-l1 = dir_1[col_highway].to_list()
-l0 = dir_0[col_highway].to_list()
+
+l1 = dir_1[col_segment_id].to_list()
+l0 = dir_0[col_segment_id].to_list()
 l_ext = l0
 l_ext.extend(l1)
 highway_names = list(set(l_ext))
-for name in highway_names:
-    if name in l0:
-        dir0_extract_indices = dir_0[dir_0[col_highway] == name].index
-        if len(dir0_extract_indices) > 0:
-            dir_0.loc[dir0_extract_indices[0], "first"] = True
-            dir_0.loc[dir0_extract_indices[-1], "last"] = True
-    if name in l1:
-        dir1_extract_indices = dir_1[dir_1[col_highway] == name].index
-        if len(dir1_extract_indices) > 0:
-            dir_1.loc[dir1_extract_indices[-1], "first"] = True
-            dir_1.loc[dir1_extract_indices[0], "last"] = True
-
-e_average_0 = {}
-e_average_1 = {}
-
-for name in highway_names:
-    energy_demand_dir_0 = dir_0[dir_0[col_highway] == name][col_energy_demand].to_list()
-    if len(energy_demand_dir_0) > 0:
-        e_average_0[name] = np.average(energy_demand_dir_0) * eta * mu
-    else:
-        e_average_0[name] = 0
-
-    energy_demand_dir_1 = dir_1[dir_1[col_highway] == name][col_energy_demand].to_list()
-    if len(energy_demand_dir_1) > 0:
-        e_average_1[name] = np.average(energy_demand_dir_1) * eta * mu
-    else:
-        e_average_1[name] = 0
 
 # read existing infrastructure
 ex_infr_0 = pd.read_csv("data/rest_areas_0_charging_stations.csv")
 ex_infr_1 = pd.read_csv("data/rest_areas_1_charging_stations.csv")
-
 
 # define masks
 mask_0 = np.zeros((n0, n0))
 mask_1 = np.zeros((n1, n1))
 enum_0 = mask_0
 enum_1 = mask_1
-
-energy_demand_matrix_0 = np.diag(energy_demand_0) * eta * mu
-energy_demand_matrix_1 = np.diag(energy_demand_1) * eta * mu
+maximum_dist_between_charging_stations = 3000
+energy_demand_matrix_0 = np.append(np.diag(energy_demand_0) * eta * mu, np.zeros([n0, n1]), axis=1)
+energy_demand_matrix_1 = np.append(np.diag(energy_demand_1) * eta * mu, np.zeros([n1, n0]), axis=1)
 
 all_indices_0 = dir_0.index.to_list()
 all_indices_1 = dir_1.index.to_list()
@@ -138,7 +155,7 @@ all_indices_1 = dir_1.index.to_list()
 for ij in range(0, len(dir_0)):
     current_highway = l0[ij]
     enum_0[ij, ij] = 1
-    extract_dir_0_ind = dir_0[dir_0[col_highway] == current_highway].index.to_list()
+    extract_dir_0_ind = dir_0[dir_0[col_segment_id] == current_highway].index.to_list()
     current_ind = all_indices_0[ij]
     count = 1
     for ind in extract_dir_0_ind:
@@ -150,7 +167,7 @@ for ij in range(0, len(dir_0)):
 for ij in range(0, len(dir_1)):
     current_highway = l1[ij]
     enum_1[ij, ij] = 1
-    extract_dir_1_ind = dir_1[dir_1[col_highway] == current_highway].index.to_list()
+    extract_dir_1_ind = dir_1[dir_1[col_segment_id] == current_highway].index.to_list()
     current_ind = all_indices_1[ij]
     count = 1
     for ind in extract_dir_1_ind:
@@ -161,3 +178,4 @@ for ij in range(0, len(dir_1)):
 
 mask_0 = np.where(enum_0 > 0, 1, 0)
 mask_1 = np.where(enum_1 > 0, 1, 0)
+

@@ -15,7 +15,6 @@ edit_asfinag_file(filename)
 asfinag_data = pd.read_csv(filename + "_edited.csv")
 
 
-
 # filtering asfinag data after vehicle types of interest
 vehicle_type_of_interest = 'Kfz <= 3,5t hzG'
 filtered_asfinag_data = asfinag_data[asfinag_data['Unnamed: 6'] == vehicle_type_of_interest]
@@ -85,7 +84,6 @@ for name in highway_names:
     plt.legend()
     plt.xlim([min(extract_ra_0.dist_along_highway.to_list() + extract_tc_0.position.to_list()), max(extract_ra_0.dist_along_highway.to_list() + extract_tc_0.position.to_list()) + 5000])
     plt.savefig('traffic_counts/' + name + '_dir_0.png')
-
 
     # inverse direction
     extract_tc_1 = tc_flow_1[tc_flow_1.highway == name]

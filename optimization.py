@@ -1,11 +1,7 @@
 """
-
 Created by Antonia Golab
-
 Optimization of charging station allocation
-
 last edit: 2021/12/08
-
 """
 
 
@@ -23,12 +19,13 @@ import warnings
 from pandas.core.common import SettingWithCopyWarning
 from visualize_results import *
 from termcolor import colored
+from optimization_utils import *
 
 warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
 
 
 def optimization(
-    maximum_dist_between_charging_stations=maximum_dist_between_charging_stations,
+    dmax=dmax,
     eta=eta,
     ec=ec,
     acc=acc,
@@ -39,7 +36,6 @@ def optimization(
     """
     Constraint and objective function definition + solution of optimization using parameters defined in
     optimization_parameters.py
-
     :return:
     """
     model = ConcreteModel()  # Model initialization
@@ -51,10 +47,10 @@ def optimization(
     model.IDX_0 = range(n0)
     model.IDX_1 = range(n1)
     model.IDX_2 = range(0, n3)
+    model.IDX_3 = range(n0 + n1)
 
     # binary variables stating whether a charging station is installed at given ra (=resting area)
     model.pXi = Var(model.IDX_2, within=Binary)
-    # model.X = Var(model.IDX_0, within=Binary)
 
     # integer variables indicating number of charging poles at a charging station
     model.pYi_dir_0 = Var(model.IDX_0, within=Integers)
@@ -63,168 +59,204 @@ def optimization(
     # a fictitious energy load is passed on from ra to ra along a highway which (pE_Zu) which is the difference between
     # energy demand and covered energy demand at a resting area (pE_Laden); the remaining energy is passed on to the
     # next ra (pE_Ab)
-    model.pE_input_0 = Var(model.IDX_0, model.IDX_0)
-    model.pE_input_1 = Var(model.IDX_1, model.IDX_1)
-    model.pE_output_0 = Var(model.IDX_0, model.IDX_0)
-    model.pE_output_1 = Var(model.IDX_1, model.IDX_1)
-    model.pE_charged_0 = Var(model.IDX_0, model.IDX_0)
-    model.pE_charged_1 = Var(model.IDX_1, model.IDX_1)
+    model.pE_input_0 = Var(model.IDX_0, model.IDX_3)
+    model.pE_input_1 = Var(model.IDX_1, model.IDX_3)
+    model.pE_output_0 = Var(model.IDX_0, model.IDX_3)
+    model.pE_output_1 = Var(model.IDX_1, model.IDX_3)
+    model.pE_charged_0 = Var(model.IDX_0, model.IDX_3)
+    model.pE_charged_1 = Var(model.IDX_1, model.IDX_3)
 
     cars_per_day = hours_of_constant_charging / (acc / charging_capacity)
     energy = acc * cars_per_day  # (kWh) charging energy per day by one charging pole
 
+    const_input_0, const_input_1, const_output_0, const_output_1, mask_0, mask_1, path_directory \
+        = create_mask_enum(model, dir_0, dir_1, links_gdf, segments_gdf, dmax)
     # ------------------------------------------------- constraints -------------------------------------------------
-
     # the pE_Zu needs to be 0 at each first ra as it is assumed that no energy demand is previously covered;
     # all energy demand is constrained to be covered at the last ra on a highway
+
+    constraint_Y_i(model, dir_0, dir_1)
     model.c1 = ConstraintList()
+    pois_type_0 = pois_0['pois_type'].to_list() + pois_1['pois_type'].to_list()
 
     # direction == 0
     for ij in model.IDX_0:
-        for kl in model.IDX_0:
+        seg_id = dir_0[dir_0.index == ij].segment_id.to_list()[0]
+        path = path_directory[str(seg_id) + '_0']
+        for kl in model.IDX_3:
             if mask_0[ij, kl] == 0:
                 model.c1.add(model.pE_input_0[ij, kl] == 0)
                 model.c1.add(model.pE_output_0[ij, kl] == 0)
                 model.c1.add(model.pE_charged_0[ij, kl] == 0)
-            if enum_0[ij, kl] == 1:
+            if const_input_0[ij, kl] == 1:
                 model.c1.add(model.pE_input_0[ij, kl] == 0)
-            if enum_0[ij, kl] == max(
-                enum_0[
-                    ij,
-                ]
-            ):
-                model.c1.add(model.pE_output_0[ij, kl] == 0)
+            # if const_output_0[ij, kl] == 1 and list(set([pois_type_0[mn] for mn in range(0, n0+n1) if mask_0[ij, mn] == 1])) == ['link']:
+            # #if ij == kl and const_output_0[ij, kl] == 1 and pois_type_0[ij] == 'link':
+            #     print(0, ij, kl, energy_demand_matrix_0[ij, ij])
+            #     model.c1.add(model.pE_output_0[ij, kl] <= energy_demand_matrix_0[ij, ij])
+            # elif const_output_0[ij, kl] == 1:
+            #     model.c1.add(model.pE_output_0[ij, kl] == 0)
 
+            if const_output_0[ij, kl] == 1:
+                if kl < n0:
+                    end_seg_id = dir_0[dir_0.index == kl].segment_id.to_list()[0]
+                    end_direction = 0
+                else:
+                    end_seg_id = dir_1[dir_1.index == kl-n0].segment_id.to_list()[0]
+                    end_direction = 1
+                if not are_ras_along_the_way(ij, seg_id, 0, path, dir_0, dir_1, kl, end_seg_id, end_direction, n0, n1, segments_gdf)[0]:
+                    factor = \
+                    are_ras_along_the_way(ij, seg_id, 0, path, dir_0, dir_1, kl, end_seg_id, end_direction, n0, n1, segments_gdf)[1]
+                    print(0, ij, kl, energy_demand_matrix_0[ij, ij], factor, end_direction)
+                    model.c1.add(model.pE_output_0[ij, kl] <= energy_demand_matrix_0[ij, ij] * factor)
+                else:
+                    model.c1.add(model.pE_output_0[ij, kl] == 0)
+
+
+    pois_type_1 = pois_1['pois_type'].to_list() +  pois_0['pois_type'].to_list()
     # direction == 1
     for ij in model.IDX_1:
-        for kl in model.IDX_1:
+        seg_id = dir_1[dir_1.index == ij].segment_id.to_list()[0]
+        path = path_directory[str(seg_id) + '_1']
+        for kl in model.IDX_3:
             if mask_1[ij, kl] == 0:
                 model.c1.add(model.pE_input_1[ij, kl] == 0)
                 model.c1.add(model.pE_output_1[ij, kl] == 0)
                 model.c1.add(model.pE_charged_1[ij, kl] == 0)
-            if enum_1[ij, kl] == 1:
+            if const_input_1[ij, kl] == 1:
                 model.c1.add(model.pE_input_1[ij, kl] == 0)
-            if enum_1[ij, kl] == max(
-                enum_1[
-                    ij,
-                ]
-            ):
-                model.c1.add(model.pE_output_1[ij, kl] == 0)
+            # if const_output_1[ij, kl] == 1 and list(set([pois_type_1[mn] for mn in range(0, n0 + n1) if mask_1[ij, mn] == 1])) == ['link']:
+            # #if ij == kl and const_output_1[ij, kl] == 1 and pois_type_1[ij] == 'link':
+            #     print(1, ij, kl, energy_demand_matrix_1[ij, ij])
+            #     model.c1.add(model.pE_output_1[ij, kl] <= energy_demand_matrix_1[ij, ij])
+            # elif const_output_1[ij, kl] == 1:
+            #     model.c1.add(model.pE_output_1[ij, kl] == 0)
+
+            if const_output_1[ij, kl] == 1:
+                if kl < n1:
+                    end_seg_id = dir_1[dir_1.index == kl].segment_id.to_list()[0]
+                    end_direction = 1
+                else:
+                    end_seg_id = dir_0[dir_0.index == kl-n1].segment_id.to_list()[0]
+                    end_direction = 0
+                if not are_ras_along_the_way(ij, seg_id, 1, path, dir_0, dir_1, kl, end_seg_id, end_direction, n0, n1, segments_gdf)[0]:
+                    factor = are_ras_along_the_way(ij, seg_id, 1, path, dir_0, dir_1, kl, end_seg_id, end_direction, n0, n1, segments_gdf)[1]
+                    print(1, ij, kl, energy_demand_matrix_1[ij, ij], factor, end_direction)
+                    model.c1.add(model.pE_output_1[ij, kl] <= energy_demand_matrix_1[ij, ij] * factor)
+                else:
+                    model.c1.add(model.pE_output_1[ij, kl] == 0)
+
 
     # constraints defining the passing on of the fictitious energy
-    model.c2 = ConstraintList()
+    # model.c2 = ConstraintList()
 
-    for ij in model.IDX_0:
-        current_enum = enum_0[
-            ij,
-        ]
-        ind_sortation_list = np.argsort(current_enum)
-        ind_sortation_list = [
-            kl for kl in ind_sortation_list if not current_enum[kl] == 0
-        ]
-        for mn in range(1, len(ind_sortation_list)):
-            model.c2.add(
-                model.pE_output_0[ij, ind_sortation_list[mn - 1]]
-                == model.pE_input_0[ij, ind_sortation_list[mn]]
-            )
+    # for ij in model.IDX_0:
+    #     current_enum = enum_0[
+    #         ij,
+    #     ]
+    #     ind_sortation_list = np.argsort(current_enum)
+    #     ind_sortation_list = [
+    #         kl for kl in ind_sortation_list if not current_enum[kl] == 0
+    #     ]
+    #     for mn in range(1, len(ind_sortation_list)):
+    #         model.c2.add(
+    #             model.pE_output_0[ij, ind_sortation_list[mn - 1]]
+    #             == model.pE_input_0[ij, ind_sortation_list[mn]]
+    #         )
+    #
+    # for ij in model.IDX_1:
+    #     current_enum = enum_1[
+    #         ij,
+    #     ]
+    #     ind_sortation_list = np.argsort(current_enum)
+    #     ind_sortation_list = [
+    #         kl for kl in ind_sortation_list if not current_enum[kl] == 0
+    #     ]
+    #     for mn in range(1, len(ind_sortation_list)):
+    #         model.c2.add(
+    #             model.pE_output_1[ij, ind_sortation_list[mn - 1]]
+    #             == model.pE_input_1[ij, ind_sortation_list[mn]]
+    #         )
 
-    for ij in model.IDX_1:
-        current_enum = enum_1[
-            ij,
-        ]
-        ind_sortation_list = np.argsort(current_enum)
-        ind_sortation_list = [
-            kl for kl in ind_sortation_list if not current_enum[kl] == 0
-        ]
-        for mn in range(1, len(ind_sortation_list)):
-            model.c2.add(
-                model.pE_output_1[ij, ind_sortation_list[mn - 1]]
-                == model.pE_input_1[ij, ind_sortation_list[mn]]
-            )
-
-    for ij in model.IDX_0:
-        model.c2.add(
-            sum(model.pE_charged_0[ij, kl] for kl in model.IDX_0)
-            == energy_demand_matrix_0[ij, ij]
-        )
-
-    for ij in model.IDX_1:
-        model.c2.add(
-            sum(model.pE_charged_1[ij, kl] for kl in model.IDX_1)
-            == energy_demand_matrix_1[ij, ij]
-        )
+    # for ij in model.IDX_0:
+    #     model.c2.add(
+    #         sum(model.pE_charged_0[ij, kl] for kl in model.IDX_0)
+    #         == energy_demand_matrix_0[ij, ij]
+    #     )
+    #
+    # for ij in model.IDX_1:
+    #     model.c2.add(
+    #         sum(model.pE_charged_1[ij, kl] for kl in model.IDX_1)
+    #         == energy_demand_matrix_1[ij, ij]
+    #     )
 
     # defining the relationship between energy demand, demand coverage and net energy demand
-    model.c7 = ConstraintList()
-
+    # model.c7 = ConstraintList()
+    constraint_rel_dem_i_o_charge(model, energy_demand_matrix_0, energy_demand_matrix_1, dir_0, dir_1, links_gdf)
     # relationship between individual matrix elements
-    for ij in model.IDX_0:
-        for kl in model.IDX_0:
-            model.c7.add(
-                model.pE_charged_0[ij, kl]
-                - energy_demand_matrix_0[ij, kl]
-                - model.pE_input_0[ij, kl]
-                + model.pE_output_0[ij, kl]
-                == 0
-            )
-
-    for ij in model.IDX_1:
-        for kl in model.IDX_1:
-            model.c7.add(
-                model.pE_charged_1[ij, kl]
-                - energy_demand_matrix_1[ij, kl]
-                - model.pE_input_1[ij, kl]
-                + model.pE_output_1[ij, kl]
-                == 0
-            )
+    # for ij in model.IDX_0:
+    #     for kl in model.IDX_0:
+    #         model.c7.add(
+    #             model.pE_charged_0[ij, kl]
+    #             - energy_demand_matrix_0[ij, kl]
+    #             - model.pE_input_0[ij, kl]
+    #             + model.pE_output_0[ij, kl]
+    #             == 0
+    #         )
+    #
+    # for ij in model.IDX_1:
+    #     for kl in model.IDX_1:
+    #         model.c7.add(
+    #             model.pE_charged_1[ij, kl]
+    #             - energy_demand_matrix_1[ij, kl]
+    #             - model.pE_input_1[ij, kl]
+    #             + model.pE_output_1[ij, kl]
+    #             == 0
+    #         )
 
     # relating overall energy movement
 
-    model.c8 = ConstraintList()
-    for ij in model.IDX_0:
-        model.c8.add(
-            sum(model.pE_charged_0[kl, ij] for kl in model.IDX_0)
-            - energy_demand_matrix_0[ij, ij]
-            - sum(model.pE_input_0[kl, ij] for kl in model.IDX_0)
-            + sum(model.pE_output_0[kl, ij] for kl in model.IDX_0)
-            == 0
-        )
-
-    for ij in model.IDX_1:
-        model.c8.add(
-            sum(model.pE_charged_1[kl, ij] for kl in model.IDX_1)
-            - energy_demand_matrix_1[ij, ij]
-            - sum(model.pE_input_1[kl, ij] for kl in model.IDX_1)
-            + sum(model.pE_output_1[kl, ij] for kl in model.IDX_1)
-            == 0
-        )
+    # model.c8 = ConstraintList()
+    # for ij in model.IDX_0:
+    #     model.c8.add(
+    #         sum(model.pE_charged_0[kl, ij] for kl in model.IDX_0)
+    #         - energy_demand_matrix_0[ij, ij]
+    #         - sum(model.pE_input_0[kl, ij] for kl in model.IDX_0)
+    #         + sum(model.pE_output_0[kl, ij] for kl in model.IDX_0)
+    #         == 0
+    #     )
+    #
+    # for ij in model.IDX_1:
+    #     model.c8.add(
+    #         sum(model.pE_charged_1[kl, ij] for kl in model.IDX_1)
+    #         - energy_demand_matrix_1[ij, ij]
+    #         - sum(model.pE_input_1[kl, ij] for kl in model.IDX_1)
+    #         + sum(model.pE_output_1[kl, ij] for kl in model.IDX_1)
+    #         == 0
+    #     )
 
     # total demand needs to be covered
-    model.c10 = ConstraintList()
-    for ij in model.IDX_0:
-        model.c10.add(
-            sum([model.pE_charged_0[ij, kl] for kl in model.IDX_0])
-            == energy_demand_matrix_0[ij, ij]
-        )
+    # constraint_coverage_of_energy_demand(model, energy_demand_matrix_0, energy_demand_matrix_1)
 
-    for ij in model.IDX_1:
-        model.c10.add(
-            sum([model.pE_charged_1[ij, kl] for kl in model.IDX_1])
-            == energy_demand_matrix_1[ij, ij]
-        )
-
-    # TODO: to correctly regard already installed charging infrastructure, it is important to implement two additional
-    #   variables (X installed, Y installed) with are also introduced to the objective function as some kind of price
-    #   reduction or so because these are charging station possibilities "for free"; here it has to be specifically
-    #   evaluated if this is current handling of charging infrastructure is enough and we just have to insert a minus
-    #   term to the objective function
+    # model.c10 = ConstraintList()
+    # for ij in model.IDX_0:
+    #     model.c10.add(
+    #         sum([model.pE_charged_0[ij, kl] for kl in model.IDX_0])
+    #         == energy_demand_matrix_0[ij, ij]
+    #     )
+    #
+    # for ij in model.IDX_1:
+    #     model.c10.add(
+    #         sum([model.pE_charged_1[ij, kl] for kl in model.IDX_1])
+    #         == energy_demand_matrix_1[ij, ij]
+    #     )
 
     model.c_profitable_stations = ConstraintList()
     model.c12 = ConstraintList()
     model.installed_infrastructure = ConstraintList()
-    dir_names = dir[col_rest_area_name].to_list()
+    dir_names = dir[col_POI_ID].to_list()
     dir_directions = dir[col_directions].to_list()
-    dir_highways = dir[col_highway].to_list()
+    dir_highways = dir[col_segment_id].to_list()
 
     for ij in model.IDX_2:
         name = dir_names[ij]
@@ -232,16 +264,16 @@ def optimization(
         highway = dir_highways[ij]
         extract_dir_0 = dir_0[
             (
-                (dir_0[col_rest_area_name] == name)
-                & (dir_0[col_directions] == direc)
-                & (dir_0[col_highway] == highway)
+                    (dir_0[col_POI_ID] == name)
+                    & (dir_0[col_directions] == direc)
+                    & (dir_0[col_segment_id] == highway)
             )
         ].index.to_list()
         extract_dir_1 = dir_1[
             (
-                (dir_1[col_rest_area_name] == name)
-                & (dir_1[col_directions] == direc)
-                & (dir_1[col_highway] == highway)
+                    (dir_1[col_POI_ID] == name)
+                    & (dir_1[col_directions] == direc)
+                    & (dir_1[col_segment_id] == highway)
             )
         ].index.to_list()
         if len(extract_dir_0) > 0 and len(extract_dir_1) > 0:
@@ -254,8 +286,8 @@ def optimization(
             )
             model.c12.add(
                 (
-                    model.pYi_dir_0[model.IDX_0[ind_0]]
-                    + model.pYi_dir_1[model.IDX_1[ind_1]]
+                        model.pYi_dir_0[model.IDX_0[ind_0]]
+                        + model.pYi_dir_1[model.IDX_1[ind_1]]
                 )
                 * energy
                 >= sum(
@@ -263,6 +295,12 @@ def optimization(
                 )
                 + sum(
                     [model.pE_charged_1[kl, model.IDX_1[ind_1]] for kl in model.IDX_1]
+                )
+                + sum(
+                    [model.pE_charged_1[kl, n1 + model.IDX_0[ind_0]] for kl in model.IDX_1]
+                )
+                + sum(
+                    [model.pE_charged_0[kl, n0 + model.IDX_1[ind_1]] for kl in model.IDX_0]
                 )
             )
 
@@ -274,7 +312,8 @@ def optimization(
                 model.pYi_dir_0[model.IDX_0[ind_0]] * energy
                 >= sum(
                     [model.pE_charged_0[kl, model.IDX_0[ind_0]] for kl in model.IDX_0]
-                )
+
+                ) + sum([model.pE_charged_1[kl, n1 + model.IDX_0[ind_0]] for kl in model.IDX_1])
             )
 
         elif len(extract_dir_1) > 0:
@@ -286,22 +325,27 @@ def optimization(
                 >= sum(
                     [model.pE_charged_1[kl, model.IDX_1[ind_1]] for kl in model.IDX_1]
                 )
+                + sum(
+                    [model.pE_charged_0[kl, n0 + model.IDX_1[ind_1]] for kl in model.IDX_0]
+                )
             )
 
     # zero-constraints
-    model.c14 = ConstraintList()
-    for ij in model.IDX_0:
-        for kl in model.IDX_0:
-            model.c14.add(model.pE_charged_0[ij, kl] >= 0)
-            model.c14.add(model.pE_input_0[ij, kl] >= 0)
-            model.c14.add(model.pE_output_0[ij, kl] >= 0)
 
-    # zero-constraints
-    for ij in model.IDX_1:
-        for kl in model.IDX_1:
-            model.c14.add(model.pE_charged_1[ij, kl] >= 0)
-            model.c14.add(model.pE_input_1[ij, kl] >= 0)
-            model.c14.add(model.pE_output_1[ij, kl] >= 0)
+    constraint_zero(model)
+    # model.c14 = ConstraintList()
+    # for ij in model.IDX_0:
+    #     for kl in model.IDX_0:
+    #         model.c14.add(model.pE_charged_0[ij, kl] >= 0)
+    #         model.c14.add(model.pE_input_0[ij, kl] >= 0)
+    #         model.c14.add(model.pE_output_0[ij, kl] >= 0)
+    #
+    # # zero-constraints
+    # for ij in model.IDX_1:
+    #     for kl in model.IDX_1:
+    #         model.c14.add(model.pE_charged_1[ij, kl] >= 0)
+    #         model.c14.add(model.pE_input_1[ij, kl] >= 0)
+    #         model.c14.add(model.pE_output_1[ij, kl] >= 0)
 
     # ------------------------------------------------- objective -------------------------------------------------
     # minimization of installation costs
@@ -333,8 +377,12 @@ def optimization(
     # -------------------------------------------------- results --------------------------------------------------
 
     pYi_dir_0 = np.array([model.pYi_dir_0[n].value for n in model.IDX_0])
+
+    print(pYi_dir_0)
     pYi_dir_1 = np.array([model.pYi_dir_1[n].value for n in model.IDX_1])
+    print(pYi_dir_1)
     pXi = np.array([model.pXi[n].value for n in model.IDX_2])
+    print(pXi)
     pXi_dir_0 = np.where(pYi_dir_0 > 0, 1, 0)
     pXi_dir_1 = np.where(pYi_dir_1 > 0, 1, 0)
     pE_input_0_m = []
@@ -345,18 +393,21 @@ def optimization(
     pE_charged_1_m = []
 
     for ij in model.IDX_0:
-        pE_charged_0_m.append([model.pE_charged_0[ij, kl].value for kl in model.IDX_0])
-        pE_input_0_m.append([model.pE_input_0[ij, kl].value for kl in model.IDX_0])
-        pE_output_0_m.append([model.pE_output_0[ij, kl].value for kl in model.IDX_0])
+        pE_charged_0_m.append([model.pE_charged_0[ij, kl].value for kl in model.IDX_3])
+        pE_input_0_m.append([model.pE_input_0[ij, kl].value for kl in model.IDX_3])
+        pE_output_0_m.append([model.pE_output_0[ij, kl].value for kl in model.IDX_3])
 
     for ij in model.IDX_1:
-        pE_input_1_m.append([model.pE_input_1[ij, kl].value for kl in model.IDX_1])
-        pE_charged_1_m.append([model.pE_charged_1[ij, kl].value for kl in model.IDX_1])
-        pE_output_1_m.append([model.pE_output_1[ij, kl].value for kl in model.IDX_1])
+        pE_input_1_m.append([model.pE_input_1[ij, kl].value for kl in model.IDX_3])
+        pE_charged_1_m.append([model.pE_charged_1[ij, kl].value for kl in model.IDX_3])
+        pE_output_1_m.append([model.pE_output_1[ij, kl].value for kl in model.IDX_3])
 
     pE_charged_0_m = np.array(pE_charged_0_m)
+    print(pE_charged_0_m)
     pE_input_0_m = np.array(pE_input_0_m)
+    print(pE_input_0_m)
     pE_output_0_m = np.array(pE_output_0_m)
+    print(pE_output_0_m)
     pE_output_1_m = np.array(pE_output_1_m)
     pE_input_1_m = np.array(pE_input_1_m)
     pE_charged_1_m = np.array(pE_charged_1_m)
@@ -368,6 +419,7 @@ def optimization(
     pE_output_0 = np.sum(pE_output_0_m, axis=0)
     pE_output_1 = np.sum(pE_output_1_m, axis=0)
 
+    print("total charges", sum(pE_charged_0), sum(pE_charged_1))
     print(
         colored(
             "Total Profit installation costs: € " + str(model.obj.value()),
@@ -386,7 +438,6 @@ def optimization(
     output_cols = [
         col_highway,
         col_rest_area_name,
-        col_position,
         col_directions,
         col_type,
         col_traffic_flow,
@@ -395,7 +446,6 @@ def optimization(
     singular_info = [
         col_highway,
         col_rest_area_name,
-        col_position,
         col_directions,
         col_type,
     ]
