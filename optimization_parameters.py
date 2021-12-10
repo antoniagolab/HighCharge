@@ -27,7 +27,7 @@ links_gdf = links_gdf[~(links_gdf.index == 19)]
 # segments_gdf.at[45, 'link_0'] = np.NaN
 #
 # pois_df, segments_gdf, links_gdf = filter_segments(pois_df, segments_gdf, links_gdf,
-#                                                    [0, 1, 2])
+#                                                     [0, 1, 2])
 # links_gdf.at[23, 'conn_edges'] = '[46,51,49]'
 # links_gdf.at[20, 'conn_edges'] = '[44,45, 43]'
 # links_gdf.at[27, 'conn_edges'] = '[51,45]'
@@ -106,6 +106,7 @@ ec = 0.25  # (€/kWh) charging price for EV driver
 e_tax = 0.15  # (€/kWh) total taxes and other charges
 cfix = 150000  # (€) total installation costs of charging station installation
 cvar = 10000  # (€) total installation costs of charging pole installation
+c_non_covered_demand = 900000000000
 eta = 0.011  # share of electric vehicles of car fleet
 mu = 0.7  # share of cars travelling long-distance
 hours_of_constant_charging = (

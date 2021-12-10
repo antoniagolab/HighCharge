@@ -320,7 +320,6 @@ def get_children_from_seg(seg_id, prev_name, direc, segments_gdf, links_gdf, poi
     :param stop_then: boolean; True if dmax is reached
     :return:
     """
-    print(seg_id, direc)
     ancestor_segms = [n.name for n in seg_tree[prev_name].ancestors]
     # ancestor_segms = []
     if direc == 0:
@@ -461,7 +460,6 @@ def filter_path(path, segments_gdf, origin_name):
         sort_inds = np.argsort(lengths)
         to_del = sort_inds[1:len(sort_inds)]
         for d in to_del:
-            print(keys_with_this_name[d])
             path[keys_with_this_name[d]].parent = None
             del path[keys_with_this_name[d]]
         clean_path_directory(path, origin_name)
@@ -470,7 +468,6 @@ def filter_path(path, segments_gdf, origin_name):
 
 
 def clean_path_directory(path, origin_name):
-    print(path.keys())
     path_descendants = path[origin_name].descendants
     keys = list(path.keys())
     for k in keys:
@@ -587,7 +584,7 @@ def append_for_last_link(io_rels, seg_id, direction, pois_df_0, pois_df_1, links
                     # io needed to nearest node on the segment
                     # TODO: for this, I need to (1) get the segment id of the current node
                     #   (2) evaluate travel direction, (3) get poi extract based on segment id
-                    #   (4) flip the extract if needed, (4) get second row of this data frame and define io for this
+                    #   (4) flip the extract if needed, (4) get second row of this data frame, (5) define io for this
 
 
         return None

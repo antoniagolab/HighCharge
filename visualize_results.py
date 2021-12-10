@@ -97,7 +97,7 @@ def visualize_results(
         * fact,
         label="Charging station",
         edgecolors='black',
-        zorder=10
+        zorder=10,
     )
 
     plot_austrian_border.plot(ax=ax, color='grey')
