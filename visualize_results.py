@@ -42,23 +42,23 @@ def visualize_results(
     latest_file = max(list_of_files, key=os.path.getctime)
 
     results = pd.read_csv(filename, header=1)
-
+    filtered_results = results[results[col_type] == "ra"]
     # osm geometries
-    input_0 = pd.read_csv("data/rest_area_0_input_optimization.csv")
-    input_1 = pd.read_csv("data/rest_area_1_input_optimization.csv")
-    input_data = input_0.append(input_1)
-    input_data = input_data.drop_duplicates(subset=[col_rest_area_name, col_directions])
-    input_data = input_data[
-        [col_highway, col_rest_area_name, col_directions, "centroid"]
-    ]
+
+    rest_areas = pd2gpd(
+        pd.read_csv("data/projected_ras.csv"), geom_col_name="centroid"
+    ).sort_values(by=["on_segment", "dist_along_highway"])
+    rest_areas["segment_id"] = rest_areas["on_segment"]
+    rest_areas[col_type_ID] = rest_areas["nb"]
+    rest_areas[col_directions] = rest_areas["evaluated_dir"]
 
     # merge here
     results_and_geom_df = pd.merge(
-        results, input_data, on=[col_highway, col_rest_area_name, col_directions]
+        results, rest_areas, on=[col_segment_id, col_type_ID, col_directions]
     )
 
     # turn into GeoDataframe
-    results_and_geom_df["geometry"] = results_and_geom_df.centroid.apply(wkt.loads)
+    results_and_geom_df["geometry"] = results_and_geom_df.centroid
     results_and_geom_df["total_charging_pole_number"] = np.where(
         np.array(results_and_geom_df.pYi_dir) == 0,
         np.nan,
@@ -71,128 +71,56 @@ def visualize_results(
         results_and_geom_df["total_charging_pole_number"] * energy
     )
 
-    highway_capacities = results_and_geom_df.groupby(col_highway).sum()
-    highway_capacities["ind"] = range(0, len(highway_capacities))
-    highway_capacities[col_highway] = highway_capacities.index
-    highway_capacities = highway_capacities.set_index("ind")
-    print(highway_capacities.keys())
-    copy_highway_geometries = pd.merge(
-        copy_highway_geometries[[col_highway, "length", "geometry"]],
-        highway_capacities[["highway", "charging_capacity"]],
-        left_on=col_highway,
-        right_on=col_highway,
-    )
-    copy_highway_geometries["capacity_per_km_per_day"] = (
-        copy_highway_geometries["charging_capacity"] / copy_highway_geometries["length"]
-    )
-    copy_highway_geometries = copy_highway_geometries.fillna(0.0)
-
     # plot
     plot_results_and_geom_df = results_and_geom_df.to_crs("EPSG:3857")
+    plot_results_and_geom_df = plot_results_and_geom_df[
+        plot_results_and_geom_df.total_charging_pole_number > 0
+    ]
     plot_highway_geometries = highway_geometries.to_crs("EPSG:3857")
     plot_austrian_border = austrian_border.to_crs("EPSG:3857")
-    plot_copy_highway_geometries = copy_highway_geometries.to_crs(crs="EPSG:3857")
     plot_highway_geometries["null"] = [0] * len(plot_highway_geometries)
+    plot_results_and_geom_df["x"] = plot_results_and_geom_df.geometry.x
+    plot_results_and_geom_df["y"] = plot_results_and_geom_df.geometry.y
 
-    # color bar
-    norm1 = colors.Normalize(
-        vmin=0, vmax=plot_results_and_geom_df.total_charging_pole_number.max()
-    )
-    cbar1 = plt.cm.ScalarMappable(norm=norm1, cmap="Reds")
-    norm2 = colors.Normalize(
-        vmin=0, vmax=plot_results_and_geom_df.charging_capacity.max()
-    )
-    cbar2 = plt.cm.ScalarMappable(norm=norm2, cmap="GnBu")
-    norm3 = colors.Normalize(vmin=0, vmax=0.5)
-    cbar3 = plt.cm.ScalarMappable(norm=norm3, cmap="terrain")
-    print(plot_copy_highway_geometries.capacity_per_km_per_day.max())
+    # scale marker sizes
+    max_size = 300
+    max_val = plot_results_and_geom_df["total_charging_pole_number"].max()
+    fact = max_size/max_val
+
     # figure 1
     fig, ax = plt.subplots(figsize=(15, 7))
-    plot_highway_geometries.plot(ax=ax)
-    plot_results_and_geom_df.plot(
-        column="total_charging_pole_number",
-        cmap="Reds",
-        ax=ax,
-        legend=False,
-        markersize=100,
-        vmin=0,
+    plot_highway_geometries.plot(ax=ax, label="Austrian highway network", color='grey', zorder=0)
+    scatter = plt.scatter(
+        plot_results_and_geom_df["x"].to_list(),
+        plot_results_and_geom_df["y"].to_list(),
+        s=np.array(plot_results_and_geom_df["total_charging_pole_number"].to_list())
+        * fact,
+        label="Charging station",
+        edgecolors='black',
+        zorder=10
     )
-    plot_austrian_border.plot(ax=ax)
-    # ctx.add_basemap(ax, url=ctx.providers.Stamen.TonerLite)
-    ax_cbar = fig.colorbar(cbar1, ax=ax)
-    ax_cbar.set_label("number of charging poles")
+
+    plot_austrian_border.plot(ax=ax, color='grey')
+
+    ls = np.arange(
+        plot_results_and_geom_df["total_charging_pole_number"].min(),
+        plot_results_and_geom_df["total_charging_pole_number"].max() + 1,
+    )
+    labels = []
+    for l in ls:
+        labels.append("$\\mathdefault{" + str(int(l)) + "}$")
+
+    handles, _ = scatter.legend_elements(prop="sizes", alpha=0.6)
+    legend = ax.legend(
+        handles, labels, loc="upper left", title="Nb. of 50 kW charging poles"
+    )
+    ax.add_artist(legend)
+
+    ax.legend(loc="lower left")
     ax.set_xlabel("X (EPSG:3857)")
     ax.set_ylabel("Y (EPSG:3857)")
-    ax.set_title(
-        "Optimized charging pole allocation at highway resting areas in Austria; dmax="
-        + str(maximum_dist_between_charging_stations)
-        + " km; epsilon="
-        + str(eta)
-        + "; \n cel="
-        + str(ec)
-        + "; "
-        + str(charging_capacity)
-        + "; specific_demand = "
-        + str(specific_demand)
-    )
     plt.savefig(
         "results/" + latest_file.split("\\")[-1].split("_")[0] + "_visualization.png"
-    )
-
-    # figure 2
-    fig, ax2 = plt.subplots(figsize=(15, 7))
-    plot_highway_geometries.plot(ax=ax2)
-    plot_results_and_geom_df.plot(
-        column="charging_capacity",
-        cmap="GnBu",
-        ax=ax2,
-        legend=False,
-        markersize=100,
-        vmin=0,
-    )
-    plot_austrian_border.plot(ax=ax2)
-    # ctx.add_basemap(ax2, url=ctx.providers.Stamen.TonerLite)
-    ax_cbar = fig.colorbar(cbar2, ax=ax2)
-    ax_cbar.set_label("charging capacity per day (kWh/24h)")
-    ax2.set_xlabel("X (EPSG:3857)")
-    ax2.set_ylabel("Y (EPSG:3857)")
-    ax2.set_title("Charging capacity per day")
-    plt.savefig(
-        "results/"
-        + latest_file.split("\\")[-1].split("_")[0]
-        + "_charging_capacity_per_day.png"
-    )
-
-    # figure 2 - charging capacity per km illustrated in line thickness
-    fig, ax3 = plt.subplots(figsize=(15, 7))
-    plot_highway_geometries.plot(
-        column="null", ax=ax3, cmap="terrain", linewidth=5, legend=False
-    )
-    plot_copy_highway_geometries.plot(
-        column="capacity_per_km_per_day",
-        cmap="terrain",
-        ax=ax3,
-        legend=False,
-        linewidth=5,
-        vmax=0.5,
-    )
-    plot_austrian_border.plot(ax=ax3)
-    ctx.add_basemap(ax3, url=ctx.providers.Stamen.TonerLite)
-    ax_cbar2 = fig.colorbar(cbar3, ax=ax3)
-    ax_cbar2.set_label("charging capacity per day per km [kWh/(km24h)]")
-    ax3.set_xlabel("X (EPSG:3857)")
-    ax3.set_ylabel("Y (EPSG:3857)")
-    ax3.set_title("Charging capacity for 24h")
-    plt.savefig(
-        "results/"
-        + latest_file.split("\\")[-1].split("_")[0]
-        + "_charging_capacity_per_km.png"
-    )
-
-    print(
-        "Total available capacity: "
-        + str(plot_copy_highway_geometries.charging_capacity.sum())
-        + " kW"
     )
 
 

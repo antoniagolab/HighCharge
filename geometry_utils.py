@@ -149,6 +149,13 @@ def classify_dir(segment, point):
 
 
 def calculate_distances_along_segments(segment_df, poi_df, info_column="on_segment"):
+    """
+    calculates for all pois the distance along a belonging segment
+    :param segment_df:
+    :param poi_df:
+    :param info_column:
+    :return:
+    """
     poi_geoms = poi_df.geometry.to_list()
     segm_geoms = segment_df.geometry.to_list()
     on_which_segments = poi_df[info_column].to_list()
@@ -159,4 +166,7 @@ def calculate_distances_along_segments(segment_df, poi_df, info_column="on_segme
     return dists
 
 
+def add_geometries_of_pois(pois_df, segments_gdf):
+
+    return None
 
