@@ -1460,6 +1460,7 @@ def constraint_rel_dem_i_o_charge(model, energy_demand_matrix_0, energy_demand_m
                 - energy_demand_matrix_0[ij, kl]
                 - model.pE_input_0[ij, kl]
                 + model.pE_output_0[ij, kl]
+                + model.test_var_0[ij, kl]
                 == 0
             )
 
@@ -1471,6 +1472,7 @@ def constraint_rel_dem_i_o_charge(model, energy_demand_matrix_0, energy_demand_m
                 - energy_demand_matrix_1[ij, kl]
                 - model.pE_input_1[ij, kl]
                 + model.pE_output_1[ij, kl]
+                + model.test_var_1[ij, kl]
                 == 0
             )
 
@@ -1810,32 +1812,58 @@ def constraint_zero(model):
             model.constraint_zero.add(model.pE_input_0[ij, kl] >= 0)
             model.constraint_zero.add(model.pE_charged_0[ij, kl] >= 0)
             model.constraint_zero.add(model.pE_output_0[ij, kl] >= 0)
+            model.constraint_zero.add(model.test_var_0[ij, kl] >= 0)
 
     for ij in model.IDX_1:
         for kl in model.IDX_3:
             model.constraint_zero.add(model.pE_charged_1[ij, kl] >= 0)
             model.constraint_zero.add(model.pE_input_1[ij, kl] >= 0)
             model.constraint_zero.add(model.pE_output_1[ij, kl] >= 0)
+            model.constraint_zero.add(model.test_var_1[ij, kl] >= 0)
 
 
-def complement_rels(io_relations, pois_0, pois_1, links_gdf):
+def complement_rels(io_relations, pois_0, pois_1, links_gdf, path):
     io_relations = io_relations.copy()
     linkage_dir, link_nodes = equal_linkages_points(pois_0, pois_1, links_gdf)
     new_rels = []
     # set of source_nodes
     source_nodes = list(set([io[0] for io in io_relations]))
+    # TODO: only add new IO-rel if seg_id of upcoming is a child of the other
     for ij in range(0, len(source_nodes)):
         sn = source_nodes[ij]
         filtered_rels = [io[1] for io in io_relations if io[0] == sn]
         out_rels = [io[0] for io in filtered_rels]
         in_rels = [io[1] for io in filtered_rels]
         for n in in_rels:
+            if n[1] == 0:
+                prev_seg = pois_0[pois_0.index==n[0]].segment_id.to_list()[0]
+            else:
+                prev_seg = pois_1[pois_1.index == n[0]].segment_id.to_list()[0]
+            # finding key in path
+            prev_seg_key = None
+            for k in path.keys():
+                if path[k].name == (prev_seg, n[1]):
+                    prev_seg_key = k
+                    break
+
             if is_linkage(n, pois_0, pois_1, links_gdf)[0]:
                 k = is_linkage(n, pois_0, pois_1, links_gdf)[1]
                 ln = linkage_dir[k]
                 for mn in ln:
-                    if mn in out_rels:
+                    if mn[1] == 0:
+                        next_seg = pois_0[pois_0.index == mn[0]].segment_id.to_list()[0]
+                    else:
+                        next_seg = pois_1[pois_1.index == mn[0]].segment_id.to_list()[0]
+
+                    next_seg_key = None
+                    for k in path.keys():
+                        if path[k].name == (next_seg, mn[1]):
+                            next_seg_key = k
+                            break
+
+                    if mn in out_rels and path[next_seg_key] in path[prev_seg_key].children:
                         new_rels.append((sn, (n, mn)))
+
         if is_linkage(sn, pois_0, pois_1, links_gdf)[0]:
             k = is_linkage(sn, pois_0, pois_1, links_gdf)[1]
             ln = linkage_dir[k]
@@ -1846,12 +1874,17 @@ def complement_rels(io_relations, pois_0, pois_1, links_gdf):
     return io_relations + new_rels
 
 
-def add_ratios_to_io_rels(filtered_ios, ):
+def add_ratios_to_io_rels(filtered_ios, pois_0, pois_1):
     singular_io_rels = list(set(filtered_ios))
     extended_information_rels = []
     for s in singular_io_rels:
-        same_o = [io[0] for io in singular_io_rels if io[0] == s[0]]
-        extended_information_rels.append(s + (1/len(same_o),))
+        same_o = [s[1]] + [io[1] for io in singular_io_rels if io[0] == s[0] and not io == s]
+        # collect all traffic_flow numbers for each same_o
+        segs = [get_segment(same_o[ij][0], same_o[ij][1], pois_0, pois_1) for ij in range(0, len(same_o))]
+        trafficflow_numbers = [get_traffic_count(segs[ij], same_o[ij][1], pois_0, pois_1) for ij in range(0, len(segs))]
+
+        #if len(same_o) > 1:
+        extended_information_rels.append((s + (trafficflow_numbers[0]/sum(trafficflow_numbers),)))
 
     return extended_information_rels
 
@@ -1883,25 +1916,27 @@ def create_mask_enum(model, pois_df_0, pois_df_1, links_gdf, segments_gdf, dmax)
 
     no_io_indices_0 = []
     no_io_indices_1 = []
+    prev_seg = None
     for ij in range(0, n0):
         ind = poi_indices_0[ij]
         seg_id = segment_ids_0[ij]
+        if not prev_seg == seg_id:
+            output, path = constraint_input_ouput_relations_for_pois_on_segm(
+                seg_id,
+                direction,
+                pois_df,
+                pois_df_0,
+                pois_df_1,
+                links_gdf,
+                segments_gdf,
+                dmax,
+            )
 
-        output, path = constraint_input_ouput_relations_for_pois_on_segm(
-            seg_id,
-            direction,
-            pois_df,
-            pois_df_0,
-            pois_df_1,
-            links_gdf,
-            segments_gdf,
-            dmax,
-        )
+            path_directory[str(seg_id) + '_' + str(direction)] = path
+            io_rels = output[0]
+            io_rels = complement_rels(io_rels, pois_df_0, pois_df_1, links_gdf, path)
 
-        path_directory[str(seg_id) + '_' + str(direction)] = path
-        io_rels = output[0]
-        io_rels = complement_rels(io_rels, pois_df_0, pois_df_1, links_gdf)
-        filtered_rels = add_ratios_to_io_rels([io[1] for io in io_rels if io[0] == (ind, direction)])
+        filtered_rels = add_ratios_to_io_rels([io[1] for io in io_rels if io[0] == (ind, direction)], pois_df_0, pois_df_1)
         out_rels = [io[0] for io in filtered_rels]
         in_rels = [io[1] for io in filtered_rels]
 
@@ -1941,26 +1976,29 @@ def create_mask_enum(model, pois_df_0, pois_df_1, links_gdf, segments_gdf, dmax)
                 input_0[ind_mat, next_ind] = 1
                 model.constraint_io.add(
                     model.pE_output_0[ind_mat, n0 + prev_ind] * ratio == model.pE_input_0[ind_mat, next_ind])
+        prev_seg = seg_id
 
+    prev_seg = None
     direction = 1
     for ij in range(0, n1):
         ind = poi_indices_1[ij]
         seg_id = segment_ids_1[ij]
 
-        output, path = constraint_input_ouput_relations_for_pois_on_segm(
-            seg_id,
-            direction,
-            pois_df,
-            pois_df_0,
-            pois_df_1,
-            links_gdf,
-            segments_gdf,
-            dmax,
-        )
-        path_directory[str(seg_id) + '_' + str(direction)] = path
-        io_rels = output[0]
-        io_rels = complement_rels(io_rels, pois_df_0, pois_df_1, links_gdf)
-        filtered_rels = add_ratios_to_io_rels([io[1] for io in io_rels if io[0] == (ind, direction)])
+        if not prev_seg == seg_id:
+            output, path = constraint_input_ouput_relations_for_pois_on_segm(
+                seg_id,
+                direction,
+                pois_df,
+                pois_df_0,
+                pois_df_1,
+                links_gdf,
+                segments_gdf,
+                dmax,
+            )
+            path_directory[str(seg_id) + '_' + str(direction)] = path
+            io_rels = output[0]
+            io_rels = complement_rels(io_rels, pois_df_0, pois_df_1, links_gdf, path)
+        filtered_rels = add_ratios_to_io_rels([io[1] for io in io_rels if io[0] == (ind, direction)], pois_df_0, pois_df_1)
         out_rels = [io[0] for io in filtered_rels]
         in_rels = [io[1] for io in filtered_rels]
         if len(filtered_rels) == 0:
@@ -1997,6 +2035,7 @@ def create_mask_enum(model, pois_df_0, pois_df_1, links_gdf, segments_gdf, dmax)
                 output_1[ind_mat, n1 + prev_ind] = 1
                 input_1[ind_mat, next_ind] = 1
                 model.constraint_io.add(model.pE_output_1[ind_mat, n1 + prev_ind] * ratio== model.pE_input_1[ind_mat, next_ind])
+        prev_seg = seg_id
 
     for ij in range(0, n0):
         if ij in no_io_indices_0:

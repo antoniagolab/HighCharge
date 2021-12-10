@@ -156,8 +156,6 @@ existing_infr_0 = pd.merge(rest_areas_0, ex_infr_0, on=[col_highway, 'name', 'di
 existing_infr_1 = pd.merge(rest_areas_1, ex_infr_1, on=[col_highway, 'name', 'direction'])
 
 
-
-
 maximum_dist_between_charging_stations = dmax
 
 energy_demand_matrix_0 = np.append(

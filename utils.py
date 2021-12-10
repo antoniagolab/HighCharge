@@ -23,11 +23,11 @@ def unite_dfs(dataframe1, dataframe2, drop_duplicate_list=[]):
 
 
 def retrieve_tc_data_for_all_segments_for_dir(
-    segments_gdf,
-    traffic_counter_df,
-    asfinag_data,
-    vehicle_type="Kfz <= 3,5t hzG",
-    tc_column="Kfz/24h",
+        segments_gdf,
+        traffic_counter_df,
+        asfinag_data,
+        vehicle_type="Kfz <= 3,5t hzG",
+        tc_column="Kfz/24h",
 ):
     """
 
@@ -64,7 +64,7 @@ def retrieve_tc_data_for_all_segments_for_dir(
                 id = tcs_ids[ij]
                 extract_tc = filtered_asfinag_data[
                     filtered_asfinag_data["Unnamed: 3"] == id
-                ]
+                    ]
                 if len(extract_tc):
                     numbers = extract_tc[tc_column].to_list()
                     if dir0[ij] == 0:
@@ -231,7 +231,6 @@ def calculate_demand(pois_df, tc_df, sp_demand, col_tc_dir_0, col_tc_dir_1, std=
             plot_tc_GRNN(seg_id, 0, x_values, y_values_0, dists_0, traffic_counts_0)
             plot_tc_GRNN(seg_id, 1, x_values, y_values_1, dists_1, traffic_counts_1)
 
-
             pois_df.at[inds_0, "demand_0"] = demand_dir_0
             pois_df.at[inds_1, "demand_1"] = demand_dir_1
             pois_df.at[inds_0, "tc_0"] = traffic_counts_0
@@ -304,7 +303,8 @@ def get_direction_from_poi(id, pois_gdf):
     return direction, seg_id
 
 
-def get_children_from_seg(seg_id, prev_name, direc, segments_gdf, links_gdf, pois_df, seg_tree, current_dist, dmax, stop_then=False):
+def get_children_from_seg(seg_id, prev_name, direc, segments_gdf, links_gdf, pois_df, seg_tree, current_dist, dmax,
+                          stop_then=False):
     """
      TODO:
      do not visit a segment again in same direction!!
@@ -357,9 +357,11 @@ def get_children_from_seg(seg_id, prev_name, direc, segments_gdf, links_gdf, poi
                         seg_tree[name] = Node((c, 0), parent=seg_tree[prev_name])
                         if not stop_then:
                             if current_dist > dmax:
-                                get_children_from_seg(c, name, 0, segments_gdf, links_gdf, pois_df, seg_tree, current_dist, dmax, stop_then=True)
+                                get_children_from_seg(c, name, 0, segments_gdf, links_gdf, pois_df, seg_tree,
+                                                      current_dist, dmax, stop_then=True)
                             else:
-                                get_children_from_seg(c, name, 0, segments_gdf, links_gdf, pois_df, seg_tree, current_dist, dmax)
+                                get_children_from_seg(c, name, 0, segments_gdf, links_gdf, pois_df, seg_tree,
+                                                      current_dist, dmax)
 
                     elif link_id == segments_gdf[segments_gdf.ID == c].link_1.to_list()[0]:
                         name = str(c) + '_1_0'
@@ -370,10 +372,12 @@ def get_children_from_seg(seg_id, prev_name, direc, segments_gdf, links_gdf, poi
                         seg_tree[name] = Node((c, 1), parent=seg_tree[prev_name])
                         if not stop_then:
                             if current_dist > dmax:
-                                get_children_from_seg(c, name, 1, segments_gdf, links_gdf, pois_df, seg_tree, current_dist, dmax,
+                                get_children_from_seg(c, name, 1, segments_gdf, links_gdf, pois_df, seg_tree,
+                                                      current_dist, dmax,
                                                       stop_then=True)
                             else:
-                                get_children_from_seg(c, name, 1, segments_gdf, links_gdf, pois_df, seg_tree, current_dist, dmax)
+                                get_children_from_seg(c, name, 1, segments_gdf, links_gdf, pois_df, seg_tree,
+                                                      current_dist, dmax)
 
     else:
         link_id = segments_gdf[segments_gdf.ID == seg_id].link_0.to_list()[0]
@@ -406,10 +410,12 @@ def get_children_from_seg(seg_id, prev_name, direc, segments_gdf, links_gdf, poi
                         seg_tree[name] = Node((c, 0), parent=seg_tree[prev_name])
                         if not stop_then:
                             if current_dist > dmax:
-                                get_children_from_seg(c, name, 0, segments_gdf, links_gdf, pois_df, seg_tree, current_dist, dmax,
+                                get_children_from_seg(c, name, 0, segments_gdf, links_gdf, pois_df, seg_tree,
+                                                      current_dist, dmax,
                                                       stop_then=True)
                             else:
-                                get_children_from_seg(c, name, 0, segments_gdf, links_gdf, pois_df, seg_tree, current_dist, dmax)
+                                get_children_from_seg(c, name, 0, segments_gdf, links_gdf, pois_df, seg_tree,
+                                                      current_dist, dmax)
                     elif link_id == segments_gdf[segments_gdf.ID == c].link_1.to_list()[0]:
                         name = str(c) + '_1_0'
                         ii = 0
@@ -419,10 +425,12 @@ def get_children_from_seg(seg_id, prev_name, direc, segments_gdf, links_gdf, poi
                         seg_tree[name] = Node((c, 1), parent=seg_tree[prev_name])
                         if not stop_then:
                             if current_dist > dmax:
-                                get_children_from_seg(c, name, 1, segments_gdf, links_gdf, pois_df, seg_tree, current_dist, dmax,
+                                get_children_from_seg(c, name, 1, segments_gdf, links_gdf, pois_df, seg_tree,
+                                                      current_dist, dmax,
                                                       stop_then=True)
                             else:
-                                get_children_from_seg(c, name, 1, segments_gdf, links_gdf, pois_df, seg_tree, current_dist, dmax)
+                                get_children_from_seg(c, name, 1, segments_gdf, links_gdf, pois_df, seg_tree,
+                                                      current_dist, dmax)
     return seg_tree
 
 
@@ -481,7 +489,8 @@ def print_tree(tree):
         print("%s%s" % (pre, node.name))
 
 
-def append_children_pois_on_same_segm(poi_id, segment_id, direction, pois_gdf, dist, last_name, counter, segm_tree, dmax):
+def append_children_pois_on_same_segm(poi_id, segment_id, direction, pois_gdf, dist, last_name, counter, segm_tree,
+                                      dmax):
     dist_reached = False
 
     extract_pois = pois_gdf[pois_gdf.segment_id == segment_id]
@@ -497,11 +506,11 @@ def append_children_pois_on_same_segm(poi_id, segment_id, direction, pois_gdf, d
     dist_init = extract_pois.dist_along_segment.to_list()
     dists = [d - dist_init for d in extract_pois.dist_along_segment.to_list()[1:len(extract_pois)]]
 
-    cs = ["v_0"] + ["v_" + str(counter) + str(mn) for mn in range(1, len(extract_pois)) ]
+    cs = ["v_0"] + ["v_" + str(counter) + str(mn) for mn in range(1, len(extract_pois))]
     for kl in range(1, len(extract_pois)):
         dist = dist + dists[kl]
         if dist <= dmax:
-            segm_tree[cs[kl]] = Node((pois_indices[kl], direction, dist), parent=cs[kl-1])
+            segm_tree[cs[kl]] = Node((pois_indices[kl], direction, dist), parent=cs[kl - 1])
         else:
             dist_reached = True
             break
@@ -534,7 +543,7 @@ def append_children_pois(pois_gdf, segment_id, dir, dist, last_c, counter, varia
     chain = [last_node] + ["v" + str(mn + counter) for mn in range(0, len(extract_seg_gdf))]
     for kl in range(1, len(chain)):
         dist = dist + distances[kl]
-        variable_dic[chain[kl]] = Node((node_ids[kl], dir), parent=chain[kl-1])
+        variable_dic[chain[kl]] = Node((node_ids[kl], dir), parent=chain[kl - 1])
 
     return variable_dic, counter + len(chain) - 1
 
@@ -586,7 +595,6 @@ def append_for_last_link(io_rels, seg_id, direction, pois_df_0, pois_df_1, links
                     #   (2) evaluate travel direction, (3) get poi extract based on segment id
                     #   (4) flip the extract if needed, (4) get second row of this data frame, (5) define io for this
 
-
         return None
 
 
@@ -621,7 +629,7 @@ def retrieve_demand_split_ratios(segment_id, direction, pois_df, links_gdf, segm
                 tcs.append((kl, 0, other_pois_extract.tc_0.to_list()[-1]))
 
     sum_tc = sum([el[-1] for el in tcs])
-    return [(tcs[ij][0], tcs[ij][1], tcs[ij][2]/sum_tc) for ij in range(0, len(tcs))], connected_edges
+    return [(tcs[ij][0], tcs[ij][1], tcs[ij][2] / sum_tc) for ij in range(0, len(tcs))], connected_edges
 
 
 def retrieve_demand_split_ratios_for_demand_on_lonely_linkage(link_id, links_gdf, segments_gdf, poi_dir_0, poi_dir_1):
@@ -648,7 +656,7 @@ def retrieve_demand_split_ratios_for_demand_on_lonely_linkage(link_id, links_gdf
                 tcs.append((kl, 0, other_pois_extract.tc_0.to_list()[-1]))
 
     sum_tc = sum([el[-1] for el in tcs])
-    return [(tcs[ij][0], tcs[ij][1], tcs[ij][2]/sum_tc) for ij in range(0, len(tcs))], connected_edges
+    return [(tcs[ij][0], tcs[ij][1], tcs[ij][2] / sum_tc) for ij in range(0, len(tcs))], connected_edges
 
 
 def equal_linkages_points(poi_dir_0, poi_dir_1, links_gdf):
@@ -670,10 +678,10 @@ def equal_linkages_points(poi_dir_0, poi_dir_1, links_gdf):
         link_id = link_indices[kl]
         extract_poi_0 = poi_dir_0[
             (poi_dir_0.type_ID == link_id) & (poi_dir_0.pois_type == "link")
-        ]
+            ]
         extract_poi_1 = poi_dir_1[
             (poi_dir_1.type_ID == link_id) & (poi_dir_1.pois_type == "link")
-        ]
+            ]
         for ind in extract_poi_0.index.to_list():
             equal_vars.append((ind, 0))
 
@@ -707,7 +715,14 @@ def is_linkage(ID, direction, pois_df_0, pois_df_1):
 
 
 def get_segment(ID, direction, pois_df_0, pois_df_1):
-
+    """
+    function retrieving the segment ID of the segment the POI lies on
+    :param ID:
+    :param direction:
+    :param pois_df_0:
+    :param pois_df_1:
+    :return:
+    """
     if direction == 0:
         return pois_df_0[pois_df_0.index == ID].segment_id.to_list()[0]
     else:
@@ -715,7 +730,6 @@ def get_segment(ID, direction, pois_df_0, pois_df_1):
 
 
 def clean_segments(links_gdf, segments_gdf, pois_df):
-
     to_del = []
     segment_ids = segments_gdf.ID.to_list()
     for s in segment_ids:
@@ -774,7 +788,8 @@ def filter_segments(pois_df, segments_gdf, links_gdf, keep_segment):
     return pois_df, segments_gdf, links_gdf
 
 
-def are_ras_along_the_way(ij, seg_id, direction, path, pois_df_0, pois_df_1, kl, end_seg_id, end_direction, n0, n1, segments_gdf):
+def are_ras_along_the_way(ij, seg_id, direction, path, pois_df_0, pois_df_1, kl, end_seg_id, end_direction, n0, n1,
+                          segments_gdf):
     ras_appears = []
     factor = 1
 
@@ -788,9 +803,9 @@ def are_ras_along_the_way(ij, seg_id, direction, path, pois_df_0, pois_df_1, kl,
         indices = seg_extract.index.to_list()
         ind_0 = indices.index(ij)
         ind_1 = indices.index(kl)
-        seg_extract = seg_extract[seg_extract.index.isin(indices[ind_0:(ind_1+1)])]
+        seg_extract = seg_extract[seg_extract.index.isin(indices[ind_0:(ind_1 + 1)])]
 
-        if not 'ra' in seg_extract.pois_type.to_list():
+        if 'ra' not in seg_extract.pois_type.to_list():
             ras_appears.append(False)
         else:
             ras_appears.append(True)
@@ -799,9 +814,9 @@ def are_ras_along_the_way(ij, seg_id, direction, path, pois_df_0, pois_df_1, kl,
         # I need to trace on the path
 
         if direction == 0 and end_direction == 1:
-            kl = kl-n0
+            kl = kl - n0
         elif direction == 1 and end_direction == 0:
-            kl = kl-n1
+            kl = kl - n1
 
         # check position of source node on seg_id -> is there a ra along the way?
         if direction == 0:
@@ -813,13 +828,18 @@ def are_ras_along_the_way(ij, seg_id, direction, path, pois_df_0, pois_df_1, kl,
         ind = indices.index(ij)
         seg_extract = seg_extract[seg_extract.index.isin(indices[ind:len(indices)])]
 
-        if not 'ra' in seg_extract.pois_type.to_list():
+        if 'ra' not in seg_extract.pois_type.to_list():
             ras_appears.append(False)
         else:
             ras_appears.append(True)
-
+        # TODO: change "children"-based rationing to "parent"-based
+        #   -> for each ancestor -> parent ->
         if len(path[str(seg_id) + '_' + str(direction) + '_0'].children) > 0:
-            factor = factor * (1/len(path[str(seg_id) + '_' + str(direction) + '_0'].children))
+            segs = [p.name[0] for p in path[str(seg_id) + '_' + str(direction) + '_0'].children]
+            dirs = [p.name[1] for p in path[str(seg_id) + '_' + str(direction) + '_0'].children]
+            # factor = factor * (1 / len(path[str(seg_id) + '_' + str(direction) + '_0'].children))
+            # factor = factor *
+
         # check segments in between
         # find end_seg node
         name = (end_seg_id, end_direction)
@@ -830,7 +850,7 @@ def are_ras_along_the_way(ij, seg_id, direction, path, pois_df_0, pois_df_1, kl,
                 break
         prev_seg = seg_id
         prev_dir = direction
-        if not end_node == None:
+        if end_node is not None:
             ancestors = end_node.ancestors
             filtered_ancestors = [node for node in ancestors if not node.name == (seg_id, direction)]
 
@@ -849,9 +869,13 @@ def are_ras_along_the_way(ij, seg_id, direction, path, pois_df_0, pois_df_1, kl,
                     else:
                         ras_appears.append(True)
 
-                    if len(a.children) > 0:
-                        factor = factor * (1/len(a.children))
-
+                    siblings = a.parent.children
+                    filtered_siblings = [a.name] + [s.name for s in siblings if s is not a]
+                    # collect all traffic_flow numbers for each same_o
+                    trafficflow_numbers = [get_traffic_count(filtered_siblings[ij][0], filtered_siblings[ij][1], pois_df_0, pois_df_1) for ij in
+                                           range(0, len(filtered_siblings))]
+                    #if len(a.children) > 0:
+                    factor = factor * (trafficflow_numbers[0]/sum(trafficflow_numbers))
 
         # check ending segment
         prev_seg = end_node.parent.name[0]
@@ -879,16 +903,31 @@ def are_ras_along_the_way(ij, seg_id, direction, path, pois_df_0, pois_df_1, kl,
         else:
             ras_appears.append(True)
 
+        siblings = end_node.parent.children
+        filtered_siblings = [end_node.name] + [s.name for s in siblings if s is not end_node]
+        # collect all traffic_flow numbers for each same_o
+        trafficflow_numbers = [
+            get_traffic_count(filtered_siblings[ij][0], filtered_siblings[ij][1], pois_df_0, pois_df_1) for ij in
+            range(0, len(filtered_siblings))]
+        # if len(a.children) > 0:
+        factor = factor * (trafficflow_numbers[0] / sum(trafficflow_numbers))
+
     if True in ras_appears:
         return True, factor
     else:
         return False, factor
 
 
-
-
-
-    # an then check whether others are along the paths
-
-
-
+def get_traffic_count(seg_id, direction, pois_0, pois_1):
+    """
+    getting traffic count
+    :param seg_id:
+    :param direction:
+    :param pois_0:
+    :param pois_1:
+    :return:
+    """
+    if direction == 0:
+        return pois_0[pois_0.segment_id == seg_id]['traffic_flow'].to_list()[0]
+    else:
+        return pois_1[pois_1.segment_id == seg_id]['traffic_flow'].to_list()[0]

@@ -184,6 +184,7 @@ def optimization(
                         n1,
                         segments_gdf,
                     )[1]
+                    print(ij, kl, energy_demand_matrix_0[ij, ij] * factor, factor)
                     model.c1.add(
                         model.pE_output_0[ij, kl]
                         <= energy_demand_matrix_0[ij, ij] * factor
@@ -241,6 +242,7 @@ def optimization(
                         n1,
                         segments_gdf,
                     )[1]
+                    print(ij, kl, energy_demand_matrix_0[ij, ij] * factor, factor)
                     model.c1.add(
                         model.pE_output_1[ij, kl]
                         <= energy_demand_matrix_1[ij, ij] * factor
