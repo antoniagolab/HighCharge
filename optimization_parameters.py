@@ -102,6 +102,7 @@ acc = (
     specific_demand * 100
 )  # (kWh) charged energy by a car during one charging for 100km
 charging_capacity = 50  # (kW)
+energy = charging_capacity  # (kWh/h)
 ec = 0.25  # (€/kWh) charging price for EV driver
 e_tax = 0.15  # (€/kWh) total taxes and other charges
 cfix = 150000  # (€) total installation costs of charging station installation
@@ -109,26 +110,14 @@ cvar = 10000  # (€) total installation costs of charging pole installation
 c_non_covered_demand = 900000000000
 eta = 0.011  # share of electric vehicles of car fleet
 mu = 0.7  # share of cars travelling long-distance
-hours_of_constant_charging = (
-    20  # number of hours of continuous charging at one charging pole
-)
+gamma_h = 0.1   # share of cars travelling during peak hour
 energy_demand_0 = dir_0[
     col_energy_demand
 ].to_list()  # (kWh/d) energy demand at each rest area per day
 energy_demand_1 = dir_1[col_energy_demand].to_list()
 directions_0 = dir_0[col_directions].to_list()
 directions_1 = dir_1[col_directions].to_list()
-
-cars_per_day = hours_of_constant_charging / (acc / charging_capacity)
-energy = acc * cars_per_day  # (kWh) charging energy per day by one charging pole
-
-e_average = (
-    (sum(energy_demand_0) + sum(energy_demand_1)) * eta * mu / (n0 + n1)
-)  # (kWh/d) average energy demand at a charging station per day
-i = 0.05  # interest rate
-T = 10  # (a) calculation period für RBF (=annuity value)
-RBF = 1 / i - 1 / (i * (1 + i) ** T)  # (€/a) annuity value for period T
-dmax = 50000
+dmax = 100000
 # extracting all highway names to create two additional columns: "first" and "last" to indicate whether resting areas
 # are first resting areas along a singular highway in "normal" direction
 
@@ -159,7 +148,7 @@ existing_infr_1 = pd.merge(rest_areas_1, ex_infr_1, on=[col_highway, 'name', 'di
 maximum_dist_between_charging_stations = dmax
 
 energy_demand_matrix_0 = np.append(
-    np.diag(energy_demand_0) * eta * mu, np.zeros([n0, n1]), axis=1
+    np.diag(energy_demand_0) * eta * mu * gamma_h, np.zeros([n0, n1]), axis=1
 )
 energy_demand_matrix_1 = np.append(
-    np.diag(energy_demand_1) * eta * mu, np.zeros([n1, n0]), axis=1)
+    np.diag(energy_demand_1) * eta * mu * gamma_h, np.zeros([n1, n0]), axis=1)

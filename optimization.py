@@ -64,6 +64,8 @@ def optimization(
         str(eta),
         "; mu=",
         str(mu),
+        "; gamma_h=",
+        str(gamma_h),
         "; dist_max=",
         dmax,
     )
@@ -103,8 +105,7 @@ def optimization(
     model.test_var_0 = Var(model.IDX_0, model.IDX_3)
     model.test_var_1 = Var(model.IDX_0, model.IDX_3)
 
-    cars_per_day = hours_of_constant_charging / (acc / charging_capacity)
-    energy = acc * cars_per_day  # (kWh) charging energy per day by one charging pole
+    energy = charging_capacity  # (kWh) charging energy per day by one charging pole
 
     # ------------------------------------------------- constraints -------------------------------------------------
     print("------------------------------------------")
