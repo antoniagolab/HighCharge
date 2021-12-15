@@ -73,6 +73,9 @@ def optimization(
     )
     print("------------------------------------------")
 
+    if no_new_infrastructure:
+        input_existing_infrastructure = True
+
     # --------------------------------------------- model initialization ---------------------------------------------
 
     print("Model initialization ...")
@@ -371,6 +374,22 @@ def optimization(
                         )
                         + installed_poles
                     )
+                    if no_new_infrastructure:
+                        model.c12.add(
+                            model.pYi_dir_0[model.IDX_0[ind_0]]
+                            + model.pYi_dir_1[model.IDX_1[ind_1]]
+                            == max(
+                                existing_infr_0.at[infr_0, "cs_below_50kwh"],
+                                existing_infr_1.at[infr_1, "cs_below_50kwh"],
+                            )
+                        )
+                elif no_new_infrastructure:
+                    print("infrastructure vorbidden")
+                    model.c12.add(
+                        model.pYi_dir_0[model.IDX_0[ind_0]]
+                        + model.pYi_dir_1[model.IDX_1[ind_1]] == 0
+                    )
+                    model.c12.add(model.pXi[ij] == 0)
 
         elif len(extract_dir_0) > 0:
 
@@ -401,6 +420,20 @@ def optimization(
                     installed_poles = (
                         existing_infr_0.at[infr_0, "cs_below_50kwh"] + installed_poles
                     )
+                    if no_new_infrastructure:
+                        model.c12.add(
+                            model.pYi_dir_0[model.IDX_0[ind_0]]
+                            == existing_infr_0.at[infr_0, "cs_below_50kwh"]
+                        )
+
+                elif no_new_infrastructure:
+                    print("infrastructure vorbidden")
+
+                    model.c12.add(
+                        model.pYi_dir_0[model.IDX_0[ind_0]]
+                        == 0
+                    )
+                    model.c12.add(model.pXi[ij] == 0)
 
         elif len(extract_dir_1) > 0:
 
@@ -430,6 +463,21 @@ def optimization(
                     installed_poles = (
                         existing_infr_1.at[infr_1, "cs_below_50kwh"] + installed_poles
                     )
+                    if no_new_infrastructure:
+                        model.c12.add(
+                            model.pYi_dir_1[model.IDX_1[ind_1]]
+                            == existing_infr_1.at[infr_1, "cs_below_50kwh"]
+                        )
+
+                elif no_new_infrastructure:
+                    print("infrastructure vorbidden")
+                    model.c12.add(
+                        model.pYi_dir_1[model.IDX_1[ind_1]]
+                        == 0
+                    )
+                    model.c12.add(model.pXi[ij] == 0)
+
+
     print("... took ", str(time.time() - t4), " sec")
 
     # zero-constraints
@@ -525,7 +573,7 @@ def optimization(
     print("------------------------------------------")
     print(
         colored(
-            "Total Profit installation costs: € " + str(installation_costs),
+            "Total installation costs: € " + str(installation_costs),
             "green",
         )
     )
