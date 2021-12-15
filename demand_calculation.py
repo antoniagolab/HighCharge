@@ -8,7 +8,6 @@ import geopandas as gpd
 import pandas as pd
 from shapely import wkt
 import numpy as np
-from optimization_parameters import *
 from demand_related_parameters import *
 from utils import *
 from geometry_utils import *

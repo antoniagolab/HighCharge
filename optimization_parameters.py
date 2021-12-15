@@ -11,7 +11,7 @@ from utils import clean_segments, filter_segments, split_by_dir, pd2gpd
 # read pois_df and reindex
 
 pois_df = pd.read_csv(
-    "data/_demand_calculated - Kopie.csv"
+    "data/_demand_calculated.csv"
 )  # file containing POIs (points of interest) which
 # highway crossing and service stations (no parking spots at
 # this point
@@ -67,7 +67,7 @@ col_highway = "highway"
 col_has_cs = "has_charging_station"
 col_distance = "dist_along_segment"
 col_segment_id = "segment_id"
-input_existing_infrastructure = False
+input_existing_infrastructure = True
 col_type_ID = "type_ID"
 col_POI_ID = "POI_ID"
 pois_0[col_energy_demand] = pois_0["demand_0"]
@@ -97,19 +97,20 @@ k = len(dir)
 n3 = k
 # 50 kW annehmen -> + 20h durchgehende Besetzung
 g = 100000  # Maximum number of charging poles at one charging station
-specific_demand = 0.2  # (kWh/100km) average specific energy usage for 100km
+specific_demand = 25  # (kWh/100km) average specific energy usage for 100km
+
 acc = (
     specific_demand * 100
 )  # (kWh) charged energy by a car during one charging for 100km
 charging_capacity = 50  # (kW)
-energy = charging_capacity  # (kWh/h)
+energy = charging_capacity * 0.95  # (kWh/h)
 ec = 0.25  # (€/kWh) charging price for EV driver
 e_tax = 0.15  # (€/kWh) total taxes and other charges
-cfix = 150000  # (€) total installation costs of charging station installation
-cvar = 10000  # (€) total installation costs of charging pole installation
+cfix = 7000  # (€) total installation costs of charging station installation
+cvar = 17750  # (€) total installation costs of charging pole installation
 c_non_covered_demand = 900000000000
-eta = 0.011  # share of electric vehicles of car fleet
-mu = 0.7  # share of cars travelling long-distance
+eta = 0.01  # share of electric vehicles of car fleet
+mu = 0.4  # share of cars travelling long-distance
 gamma_h = 0.1   # share of cars travelling during peak hour
 energy_demand_0 = dir_0[
     col_energy_demand
@@ -117,7 +118,8 @@ energy_demand_0 = dir_0[
 energy_demand_1 = dir_1[col_energy_demand].to_list()
 directions_0 = dir_0[col_directions].to_list()
 directions_1 = dir_1[col_directions].to_list()
-dmax = 100000
+dmax = 250000
+introduce_existing_infrastructure = True
 # extracting all highway names to create two additional columns: "first" and "last" to indicate whether resting areas
 # are first resting areas along a singular highway in "normal" direction
 
@@ -127,28 +129,30 @@ l_ext = l0
 l_ext.extend(l1)
 highway_names = list(set(l_ext))
 
-# read existing infrastructure
-ex_infr_0 = pd.read_csv("data/rest_areas_0_charging_stations.csv")
-ex_infr_1 = pd.read_csv("data/rest_areas_1_charging_stations.csv")
-
-# join this with rest areas
-rest_areas = pd2gpd(
-    pd.read_csv("data/projected_ras.csv"), geom_col_name="centroid"
-).sort_values(by=["on_segment", "dist_along_highway"])
-rest_areas["segment_id"] = rest_areas["on_segment"]
-rest_areas[col_type_ID] = rest_areas["nb"]
-rest_areas[col_directions] = rest_areas["evaluated_dir"]
-
-rest_areas_0, rest_areas_1 = split_by_dir(rest_areas, col_directions, reindex=True)
-
-existing_infr_0 = pd.merge(rest_areas_0, ex_infr_0, on=[col_highway, 'name', 'direction'])
-existing_infr_1 = pd.merge(rest_areas_1, ex_infr_1, on=[col_highway, 'name', 'direction'])
-
-
-maximum_dist_between_charging_stations = dmax
-
 energy_demand_matrix_0 = np.append(
     np.diag(energy_demand_0) * eta * mu * gamma_h, np.zeros([n0, n1]), axis=1
 )
 energy_demand_matrix_1 = np.append(
     np.diag(energy_demand_1) * eta * mu * gamma_h, np.zeros([n1, n0]), axis=1)
+
+maximum_dist_between_charging_stations = dmax
+
+# read existing infrastructure
+
+
+if introduce_existing_infrastructure:
+    ex_infr_0 = pd.read_csv("data/rest_areas_0_charging_stations.csv")
+    ex_infr_1 = pd.read_csv("data/rest_areas_1_charging_stations.csv")
+
+    # join this with rest areas
+    rest_areas = pd2gpd(
+        pd.read_csv("data/projected_ras.csv"), geom_col_name="centroid"
+    ).sort_values(by=["on_segment", "dist_along_highway"])
+    rest_areas["segment_id"] = rest_areas["on_segment"]
+    rest_areas[col_type_ID] = rest_areas["nb"]
+    rest_areas[col_directions] = rest_areas["evaluated_dir"]
+
+    rest_areas_0, rest_areas_1 = split_by_dir(rest_areas, col_directions, reindex=True)
+
+    existing_infr_0 = pd.merge(rest_areas_0, ex_infr_0, on=[col_highway, 'name', 'direction'])
+    existing_infr_1 = pd.merge(rest_areas_1, ex_infr_1, on=[col_highway, 'name', 'direction'])

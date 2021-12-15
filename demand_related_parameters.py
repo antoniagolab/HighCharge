@@ -29,7 +29,7 @@ edit_asfinag_file(input_tc_file)
 asfinag_data = pd.read_csv(input_tc_file + "_edited.csv")
 
 #
-spec_demand = 0.2   # (kWh/100km)
+spec_demand = 25   # (kWh/100km)
 
 
 # column definitions

@@ -12,7 +12,7 @@ import matplotlib.colors as colors
 
 def visualize_results(
     filename,
-    maximum_dist_between_charging_stations=maximum_dist_between_charging_stations,
+    maximum_dist_between_charging_stations=dmax,
     eta=eta,
     ec=ec,
     acc=acc,
@@ -41,6 +41,9 @@ def visualize_results(
     latest_file = max(list_of_files, key=os.path.getctime)
 
     results = pd.read_csv(filename, header=1)
+    print(results.keys())
+    print(filename)
+
     filtered_results = results[results[col_type] == "ra"]
     # osm geometries
 
@@ -53,7 +56,7 @@ def visualize_results(
 
     # merge here
     results_and_geom_df = pd.merge(
-        results, rest_areas, on=[col_segment_id, col_type_ID, col_directions]
+        filtered_results, rest_areas, on=[col_segment_id, col_type_ID, col_directions]
     )
 
     # turn into GeoDataframe

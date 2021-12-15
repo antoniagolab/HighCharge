@@ -179,7 +179,6 @@ def calculate_demand(pois_df, tc_df, sp_demand, col_tc_dir_0, col_tc_dir_1, std=
 
     # clear data
     cleaned_tc_df = tc_df[tc_df[col_tc_dir_0] > 0]
-
     for seg_id in segment_ids:
         extract_tc = cleaned_tc_df[cleaned_tc_df.on_segment == seg_id]
         extract_tc = extract_tc.sort_values(by='dist_along_segm')
@@ -213,7 +212,7 @@ def calculate_demand(pois_df, tc_df, sp_demand, col_tc_dir_0, col_tc_dir_1, std=
             for kl in range(1, len(poi_extract_dir_0)):
                 ub_x = dists_0[kl]
                 integral = calculate_integral(fun0, lb_x, ub_x)
-                demand_dir_0.append(integral * (1 / 1000000) * sp_demand)
+                demand_dir_0.append(integral * (1 / 100000) * sp_demand)
                 lb_x = ub_x
 
             ub_x = dists_1[-1]
@@ -222,7 +221,7 @@ def calculate_demand(pois_df, tc_df, sp_demand, col_tc_dir_0, col_tc_dir_1, std=
             for kl in range(len(poi_extract_dir_1) - 2, -1, -1):
                 lb_x = dists_1[kl]
                 integral = calculate_integral(fun1, lb_x, ub_x)
-                demand_dir_1.append(integral * (1 / 1000000) * sp_demand)
+                demand_dir_1.append(integral * (1 / 100000) * sp_demand)
                 ub_x = lb_x
             demand_dir_1.append(0)
 
@@ -235,6 +234,7 @@ def calculate_demand(pois_df, tc_df, sp_demand, col_tc_dir_0, col_tc_dir_1, std=
             pois_df.at[inds_1, "demand_1"] = demand_dir_1
             pois_df.at[inds_0, "tc_0"] = traffic_counts_0
             pois_df.at[inds_1, "tc_1"] = traffic_counts_1
+            print(seg_id, " done")
 
     return pois_df.demand_0.to_list(), pois_df.demand_1.to_list(), pois_df.tc_0.to_list(), pois_df.tc_1.to_list()
 
@@ -272,11 +272,12 @@ def plot_tc_GRNN(segment_id, dir, x_0, y_0, x_1, y_1):
     plt.figure()
     plt.plot(x_0, y_0, '*-', label='traffic count by ASFINAG')
     plt.plot(x_1, y_1, '*-', label='estimated traffic counts at rest areas')
-    plt.xlabel('distance (km)')
+    plt.xlabel('distance (m)')
     plt.ylabel('traffic count')
     plt.title(str(segment_id) + ' dir=' + str(dir))
     plt.legend()
     plt.savefig('traffic_counts/' + str(segment_id) + '_dir_' + str(dir) + '.png')
+    plt.close()
 
 
 def make_mask(pois_gdf, link_gdf, ):

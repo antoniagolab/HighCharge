@@ -68,6 +68,8 @@ def optimization(
         str(gamma_h),
         "; dist_max=",
         dmax,
+        "; introduce_existing_infrastructure=",
+        str(introduce_existing_infrastructure)
     )
     print("------------------------------------------")
 
@@ -295,24 +297,24 @@ def optimization(
                 & (dir_1[col_segment_id] == highway)
             )
         ].index.to_list()
+        if introduce_existing_infrastructure:
+            ex_infr_0 = existing_infr_0[
+                (
+                    (existing_infr_0[col_type_ID] == type_id)
+                    & (existing_infr_0[col_directions] == direc)
+                    & (existing_infr_0[col_segment_id] == highway)
+                    & (existing_infr_0["cs_below_50kwh"] > 0)
+                )
+            ].index.to_list()
 
-        ex_infr_0 = existing_infr_0[
-            (
-                (existing_infr_0[col_type_ID] == type_id)
-                & (existing_infr_0[col_directions] == direc)
-                & (existing_infr_0[col_segment_id] == highway)
-                & (existing_infr_0["cs_below_50kwh"] > 0)
-            )
-        ].index.to_list()
-
-        ex_infr_1 = existing_infr_1[
-            (
-                (existing_infr_1[col_type_ID] == type_id)
-                & (existing_infr_1[col_directions] == direc)
-                & (existing_infr_1[col_segment_id] == highway)
-                & (existing_infr_1["cs_below_50kwh"] > 0)
-            )
-        ].index.to_list()
+            ex_infr_1 = existing_infr_1[
+                (
+                    (existing_infr_1[col_type_ID] == type_id)
+                    & (existing_infr_1[col_directions] == direc)
+                    & (existing_infr_1[col_segment_id] == highway)
+                    & (existing_infr_1["cs_below_50kwh"] > 0)
+                )
+            ].index.to_list()
 
         if len(extract_dir_0) > 0 and len(extract_dir_1) > 0:
             ind_0 = extract_dir_0[0]
@@ -347,27 +349,28 @@ def optimization(
                     ]
                 )
             )
-            if len(ex_infr_0) > 0 and len(ex_infr_1) > 0:
-                infr_0 = ex_infr_0[0]
-                infr_1 = ex_infr_1[0]
+            if introduce_existing_infrastructure:
+                if len(ex_infr_0) > 0 and len(ex_infr_1) > 0:
+                    infr_0 = ex_infr_0[0]
+                    infr_1 = ex_infr_1[0]
 
-                model.c12.add(
-                    model.pYi_dir_0[model.IDX_0[ind_0]]
-                    + model.pYi_dir_1[model.IDX_1[ind_1]]
-                    >= max(
-                        existing_infr_0.at[infr_0, "cs_below_50kwh"],
-                        existing_infr_1.at[infr_1, "cs_below_50kwh"],
+                    model.c12.add(
+                        model.pYi_dir_0[model.IDX_0[ind_0]]
+                        + model.pYi_dir_1[model.IDX_1[ind_1]]
+                        >= max(
+                            existing_infr_0.at[infr_0, "cs_below_50kwh"],
+                            existing_infr_1.at[infr_1, "cs_below_50kwh"],
+                        )
                     )
-                )
-                model.c12.add(model.pXi[ij] == 1)
-                installed_stations = installed_stations + 1
-                installed_poles = (
-                    max(
-                        existing_infr_0.at[infr_0, "cs_below_50kwh"],
-                        existing_infr_1.at[infr_1, "cs_below_50kwh"],
+                    model.c12.add(model.pXi[ij] == 1)
+                    installed_stations = installed_stations + 1
+                    installed_poles = (
+                        max(
+                            existing_infr_0.at[infr_0, "cs_below_50kwh"],
+                            existing_infr_1.at[infr_1, "cs_below_50kwh"],
+                        )
+                        + installed_poles
                     )
-                    + installed_poles
-                )
 
         elif len(extract_dir_0) > 0:
 
@@ -385,18 +388,19 @@ def optimization(
                     ]
                 )
             )
-            if len(ex_infr_0) > 0:
-                infr_0 = ex_infr_0[0]
+            if introduce_existing_infrastructure:
+                if len(ex_infr_0) > 0:
+                    infr_0 = ex_infr_0[0]
 
-                model.c12.add(
-                    model.pYi_dir_0[model.IDX_0[ind_0]]
-                    >= existing_infr_0.at[infr_0, "cs_below_50kwh"]
-                )
-                model.c12.add(model.pXi[ij] == 1)
-                installed_stations = installed_stations + 1
-                installed_poles = (
-                    existing_infr_0.at[infr_0, "cs_below_50kwh"] + installed_poles
-                )
+                    model.c12.add(
+                        model.pYi_dir_0[model.IDX_0[ind_0]]
+                        >= existing_infr_0.at[infr_0, "cs_below_50kwh"]
+                    )
+                    model.c12.add(model.pXi[ij] == 1)
+                    installed_stations = installed_stations + 1
+                    installed_poles = (
+                        existing_infr_0.at[infr_0, "cs_below_50kwh"] + installed_poles
+                    )
 
         elif len(extract_dir_1) > 0:
 
@@ -414,17 +418,18 @@ def optimization(
                     ]
                 )
             )
-            if len(ex_infr_1) > 0:
-                infr_1 = ex_infr_1[0]
-                model.c12.add(
-                    model.pYi_dir_1[model.IDX_1[ind_1]]
-                    >= existing_infr_1.at[infr_1, "cs_below_50kwh"]
-                )
-                model.c12.add(model.pXi[ij] == 1)
-                installed_stations = installed_stations + 1
-                installed_poles = (
-                    existing_infr_1.at[infr_1, "cs_below_50kwh"] + installed_poles
-                )
+            if introduce_existing_infrastructure:
+                if len(ex_infr_1) > 0:
+                    infr_1 = ex_infr_1[0]
+                    model.c12.add(
+                        model.pYi_dir_1[model.IDX_1[ind_1]]
+                        >= existing_infr_1.at[infr_1, "cs_below_50kwh"]
+                    )
+                    model.c12.add(model.pXi[ij] == 1)
+                    installed_stations = installed_stations + 1
+                    installed_poles = (
+                        existing_infr_1.at[infr_1, "cs_below_50kwh"] + installed_poles
+                    )
     print("... took ", str(time.time() - t4), " sec")
 
     # zero-constraints
@@ -700,12 +705,7 @@ def optimization(
         + str(eta)
         + ";  mu="
         + str(mu)
-        + ";  hours_of_constant_charging="
-        + str(hours_of_constant_charging)
         + ";  i="
-        + str(i)
-        + ";  T="
-        + str(T)
         + "\n"
     )
 
@@ -724,7 +724,6 @@ def optimization(
         ec=ec,
         acc=acc,
         charging_capacity=charging_capacity,
-        cars_per_day=cars_per_day,
         energy=energy,
         specific_demand=specific_demand,
     )
