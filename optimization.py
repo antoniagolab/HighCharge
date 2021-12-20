@@ -31,13 +31,16 @@ def optimization(
     acc=acc,
     charging_capacity=charging_capacity,
     specific_demand=specific_demand,
-    input_existing_infrastructure=False,
+    introduce_existing_infrastructure=introduce_existing_infrastructure
 ):
     """
     Constraint and objective function definition + solution of optimization using parameters defined in
     optimization_parameters.py
     :return:
     """
+    if no_new_infrastructure:
+        introduce_existing_infrastructure = True
+
     start = time.time()
     # ------------------------------------------ printing input parameters -------------------------------------------
     print("------------------------------------------")
@@ -69,12 +72,11 @@ def optimization(
         "; dist_max=",
         dmax,
         "; introduce_existing_infrastructure=",
-        str(introduce_existing_infrastructure)
+        str(introduce_existing_infrastructure),
+        "; no_new_infrastructure=",
+        str(no_new_infrastructure)
     )
     print("------------------------------------------")
-
-    if no_new_infrastructure:
-        input_existing_infrastructure = True
 
     # --------------------------------------------- model initialization ---------------------------------------------
 
@@ -111,6 +113,7 @@ def optimization(
     model.test_var_1 = Var(model.IDX_0, model.IDX_3)
 
     energy = charging_capacity  # (kWh) charging energy per day by one charging pole
+
 
     # ------------------------------------------------- constraints -------------------------------------------------
     print("------------------------------------------")
@@ -356,7 +359,6 @@ def optimization(
                 if len(ex_infr_0) > 0 and len(ex_infr_1) > 0:
                     infr_0 = ex_infr_0[0]
                     infr_1 = ex_infr_1[0]
-
                     model.c12.add(
                         model.pYi_dir_0[model.IDX_0[ind_0]]
                         + model.pYi_dir_1[model.IDX_1[ind_1]]
@@ -384,12 +386,11 @@ def optimization(
                             )
                         )
                 elif no_new_infrastructure:
-                    print("infrastructure vorbidden")
                     model.c12.add(
                         model.pYi_dir_0[model.IDX_0[ind_0]]
-                        + model.pYi_dir_1[model.IDX_1[ind_1]] == 0
+                        + model.pYi_dir_1[model.IDX_1[ind_1]]
+                        == 0
                     )
-                    model.c12.add(model.pXi[ij] == 0)
 
         elif len(extract_dir_0) > 0:
 
@@ -425,15 +426,11 @@ def optimization(
                             model.pYi_dir_0[model.IDX_0[ind_0]]
                             == existing_infr_0.at[infr_0, "cs_below_50kwh"]
                         )
-
                 elif no_new_infrastructure:
-                    print("infrastructure vorbidden")
-
                     model.c12.add(
                         model.pYi_dir_0[model.IDX_0[ind_0]]
                         == 0
                     )
-                    model.c12.add(model.pXi[ij] == 0)
 
         elif len(extract_dir_1) > 0:
 
@@ -468,15 +465,11 @@ def optimization(
                             model.pYi_dir_1[model.IDX_1[ind_1]]
                             == existing_infr_1.at[infr_1, "cs_below_50kwh"]
                         )
-
                 elif no_new_infrastructure:
-                    print("infrastructure vorbidden")
                     model.c12.add(
                         model.pYi_dir_1[model.IDX_1[ind_1]]
                         == 0
                     )
-                    model.c12.add(model.pXi[ij] == 0)
-
 
     print("... took ", str(time.time() - t4), " sec")
 
@@ -573,7 +566,7 @@ def optimization(
     print("------------------------------------------")
     print(
         colored(
-            "Total installation costs: € " + str(installation_costs),
+            "Total Profit installation costs: € " + str(installation_costs),
             "green",
         )
     )
@@ -781,4 +774,4 @@ def optimization(
 
 
 if __name__ == "__main__":
-    optimization(input_existing_infrastructure=False)
+    optimization(introduce_existing_infrastructure=introduce_existing_infrastructure)

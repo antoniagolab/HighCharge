@@ -194,6 +194,8 @@ segments_gdf = pd2gpd(pd.read_csv("data/segments.csv"))
 intersections_gdf = pd2gpd(pd.read_csv("data/highway_intersections.csv"))
 rest_areas_0 = pd2gpd(pd.read_csv("data/rest_areas_with_centroids_0.csv"), geom_col_name="centroid")
 rest_areas_1 = pd2gpd(pd.read_csv("data/rest_areas_with_centroids_1.csv"), geom_col_name="centroid")
+rest_areas_0 = rest_areas_0[~(rest_areas_0.asfinag_type == 2)]
+rest_areas_1 = rest_areas_1[~(rest_areas_1.asfinag_type == 2)]
 
 segment_geometries = segments_gdf.geometry.to_list()
 

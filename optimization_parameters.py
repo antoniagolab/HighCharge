@@ -1,7 +1,5 @@
 """
-
 Definition of parameters for charging station allocation
-
 """
 
 import numpy as np
@@ -118,8 +116,10 @@ energy_demand_0 = dir_0[
 energy_demand_1 = dir_1[col_energy_demand].to_list()
 directions_0 = dir_0[col_directions].to_list()
 directions_1 = dir_1[col_directions].to_list()
-dmax = 250000
+dmax = 250000 * (2/3) * (1/2)
 introduce_existing_infrastructure = True
+no_new_infrastructure = False
+
 # extracting all highway names to create two additional columns: "first" and "last" to indicate whether resting areas
 # are first resting areas along a singular highway in "normal" direction
 

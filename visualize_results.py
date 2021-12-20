@@ -124,6 +124,7 @@ def visualize_results(
     plt.savefig(
         "results/" + latest_file.split("\\")[-1].split("_")[0] + "_visualization.png"
     )
+    # plt.show()
 
 
 if __name__ == "__main__":

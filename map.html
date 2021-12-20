@@ -1,0 +1,2109 @@
+<!DOCTYPE html>
+<head>    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_b10203af36b740a0ac456d1b539a8c32 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+</head>
+<body>    
+    
+            <div class="folium-map" id="map_b10203af36b740a0ac456d1b539a8c32" ></div>
+        
+</body>
+<script>    
+    
+            var map_b10203af36b740a0ac456d1b539a8c32 = L.map(
+                "map_b10203af36b740a0ac456d1b539a8c32",
+                {
+                    center: [48.0, 16.0],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 10,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_dbf7bd2a2eed4d2b8510aaa48812a431 = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        
+    
+        function geo_json_35dbadf4a2584037ad5219b610b4a6bd_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_35dbadf4a2584037ad5219b610b4a6bd_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_35dbadf4a2584037ad5219b610b4a6bd = L.geoJson(null, {
+                onEachFeature: geo_json_35dbadf4a2584037ad5219b610b4a6bd_onEachFeature,
+            
+                style: geo_json_35dbadf4a2584037ad5219b610b4a6bd_styler,
+        });
+
+        function geo_json_35dbadf4a2584037ad5219b610b4a6bd_add (data) {
+            geo_json_35dbadf4a2584037ad5219b610b4a6bd
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_35dbadf4a2584037ad5219b610b4a6bd_add({"bbox": [9.657149599999999, 47.36560650008351, 9.6603527, 47.36710070008319], "features": [{"bbox": [9.657149599999999, 47.36560650008351, 9.6603527, 47.36710070008319], "geometry": {"coordinates": [[[9.657149599999999, 47.36560650008351], [9.6603527, 47.366086600083406], [9.6603422, 47.36710070008319], [9.6587054, 47.366727200083254], [9.657149599999999, 47.36560650008351]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_8e7e4d407d1e4f40a8e303ad7131ec90 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_0412d2311fc049a4b6e23408b1653e72 = $(`<div id="html_0412d2311fc049a4b6e23408b1653e72" style="width: 100.0%; height: 100.0%;">Raststation Hohenems</div>`)[0];
+            popup_8e7e4d407d1e4f40a8e303ad7131ec90.setContent(html_0412d2311fc049a4b6e23408b1653e72);
+        
+
+        geo_json_35dbadf4a2584037ad5219b610b4a6bd.bindPopup(popup_8e7e4d407d1e4f40a8e303ad7131ec90)
+        ;
+
+        
+    
+    
+        function geo_json_aa55ad5a5ce2409c8b0adac3aeb45a1a_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_aa55ad5a5ce2409c8b0adac3aeb45a1a_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_aa55ad5a5ce2409c8b0adac3aeb45a1a = L.geoJson(null, {
+                onEachFeature: geo_json_aa55ad5a5ce2409c8b0adac3aeb45a1a_onEachFeature,
+            
+                style: geo_json_aa55ad5a5ce2409c8b0adac3aeb45a1a_styler,
+        });
+
+        function geo_json_aa55ad5a5ce2409c8b0adac3aeb45a1a_add (data) {
+            geo_json_aa55ad5a5ce2409c8b0adac3aeb45a1a
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_aa55ad5a5ce2409c8b0adac3aeb45a1a_add({"bbox": [9.9238779, 47.14041310013204, 9.9257454, 47.14134870013183], "features": [{"bbox": [9.9238779, 47.14041310013204, 9.9257454, 47.14134870013183], "geometry": {"coordinates": [[[9.9238779, 47.141046300131904], [9.925558699999998, 47.14041310013204], [9.9257454, 47.140717100131965], [9.92412, 47.14134870013183], [9.9238779, 47.141046300131904]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_5026e13a218f4a168776757dcdf14365 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_a12d7002609843e297ad5440ed74ea3e = $(`<div id="html_a12d7002609843e297ad5440ed74ea3e" style="width: 100.0%; height: 100.0%;">Raststation Innerbraz</div>`)[0];
+            popup_5026e13a218f4a168776757dcdf14365.setContent(html_a12d7002609843e297ad5440ed74ea3e);
+        
+
+        geo_json_aa55ad5a5ce2409c8b0adac3aeb45a1a.bindPopup(popup_5026e13a218f4a168776757dcdf14365)
+        ;
+
+        
+    
+    
+        function geo_json_3bd86144cb004840a06e2d082117e6d3_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_3bd86144cb004840a06e2d082117e6d3_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_3bd86144cb004840a06e2d082117e6d3 = L.geoJson(null, {
+                onEachFeature: geo_json_3bd86144cb004840a06e2d082117e6d3_onEachFeature,
+            
+                style: geo_json_3bd86144cb004840a06e2d082117e6d3_styler,
+        });
+
+        function geo_json_3bd86144cb004840a06e2d082117e6d3_add (data) {
+            geo_json_3bd86144cb004840a06e2d082117e6d3
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_3bd86144cb004840a06e2d082117e6d3_add({"bbox": [9.601232699999999, 47.46047070006251, 9.6037942, 47.46101840006237], "features": [{"bbox": [9.601232699999999, 47.46047070006251, 9.6037942, 47.46101840006237], "geometry": {"coordinates": [[[9.601232699999999, 47.46087150006242], [9.6028393, 47.46047070006251], [9.6037942, 47.46086790006241], [9.6012568, 47.46101840006237], [9.601232699999999, 47.46087150006242]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_548b392150214970afabf9094d64fe51 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_b0f54bf1af02484b82c6f55d2a0b1778 = $(`<div id="html_b0f54bf1af02484b82c6f55d2a0b1778" style="width: 100.0%; height: 100.0%;">St. Margrethen Süd</div>`)[0];
+            popup_548b392150214970afabf9094d64fe51.setContent(html_b0f54bf1af02484b82c6f55d2a0b1778);
+        
+
+        geo_json_3bd86144cb004840a06e2d082117e6d3.bindPopup(popup_548b392150214970afabf9094d64fe51)
+        ;
+
+        
+    
+    
+        function geo_json_2f8bec99d6054b28885b5ac93706b0f8_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_2f8bec99d6054b28885b5ac93706b0f8_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_2f8bec99d6054b28885b5ac93706b0f8 = L.geoJson(null, {
+                onEachFeature: geo_json_2f8bec99d6054b28885b5ac93706b0f8_onEachFeature,
+            
+                style: geo_json_2f8bec99d6054b28885b5ac93706b0f8_styler,
+        });
+
+        function geo_json_2f8bec99d6054b28885b5ac93706b0f8_add (data) {
+            geo_json_2f8bec99d6054b28885b5ac93706b0f8
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_2f8bec99d6054b28885b5ac93706b0f8_add({"bbox": [9.6019354, 47.46125410006232, 9.6046874, 47.46164400006222], "features": [{"bbox": [9.6019354, 47.46125410006232, 9.6046874, 47.46164400006222], "geometry": {"coordinates": [[[9.6019354, 47.46139010006229], [9.602026600000002, 47.46125410006232], [9.6046874, 47.461275900062304], [9.6043119, 47.46164400006222], [9.6019354, 47.46139010006229]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_02ea40b489534b53be24f0f8fa504fc4 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_74425a40ec33483085d85d78a7c86b41 = $(`<div id="html_74425a40ec33483085d85d78a7c86b41" style="width: 100.0%; height: 100.0%;">St. Margrethen Nord</div>`)[0];
+            popup_02ea40b489534b53be24f0f8fa504fc4.setContent(html_74425a40ec33483085d85d78a7c86b41);
+        
+
+        geo_json_2f8bec99d6054b28885b5ac93706b0f8.bindPopup(popup_02ea40b489534b53be24f0f8fa504fc4)
+        ;
+
+        
+    
+    
+        function geo_json_1c6fecd79af142f2bdf5abaa7a930214_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_1c6fecd79af142f2bdf5abaa7a930214_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_1c6fecd79af142f2bdf5abaa7a930214 = L.geoJson(null, {
+                onEachFeature: geo_json_1c6fecd79af142f2bdf5abaa7a930214_onEachFeature,
+            
+                style: geo_json_1c6fecd79af142f2bdf5abaa7a930214_styler,
+        });
+
+        function geo_json_1c6fecd79af142f2bdf5abaa7a930214_add (data) {
+            geo_json_1c6fecd79af142f2bdf5abaa7a930214
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_1c6fecd79af142f2bdf5abaa7a930214_add({"bbox": [10.0601733, 47.12887930013446, 10.0624178, 47.1296762001343], "features": [{"bbox": [10.0601733, 47.12887930013446, 10.0624178, 47.1296762001343], "geometry": {"coordinates": [[[10.0601733, 47.12951690013433], [10.060780499999998, 47.12887930013446], [10.0624178, 47.129536900134326], [10.0623383, 47.1296762001343], [10.0601733, 47.12951690013433]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_b94e4ff8f9344131b4dce347c7967cce = L.popup({"maxWidth": "100%"});
+
+        
+            var html_df6ff432ca82499a9a1934001db08dff = $(`<div id="html_df6ff432ca82499a9a1934001db08dff" style="width: 100.0%; height: 100.0%;">Raststation Klösterle</div>`)[0];
+            popup_b94e4ff8f9344131b4dce347c7967cce.setContent(html_df6ff432ca82499a9a1934001db08dff);
+        
+
+        geo_json_1c6fecd79af142f2bdf5abaa7a930214.bindPopup(popup_b94e4ff8f9344131b4dce347c7967cce)
+        ;
+
+        
+    
+    
+        function geo_json_3d948dbb96bb4f21ac29730c1365f30c_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_3d948dbb96bb4f21ac29730c1365f30c_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_3d948dbb96bb4f21ac29730c1365f30c = L.geoJson(null, {
+                onEachFeature: geo_json_3d948dbb96bb4f21ac29730c1365f30c_onEachFeature,
+            
+                style: geo_json_3d948dbb96bb4f21ac29730c1365f30c_styler,
+        });
+
+        function geo_json_3d948dbb96bb4f21ac29730c1365f30c_add (data) {
+            geo_json_3d948dbb96bb4f21ac29730c1365f30c
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_3d948dbb96bb4f21ac29730c1365f30c_add({"bbox": [10.6957322, 47.212793700116656, 10.6992143, 47.21426870011633], "features": [{"bbox": [10.6957322, 47.212793700116656, 10.6992143, 47.21426870011633], "geometry": {"coordinates": [[[10.6957322, 47.21334110011652], [10.6969619, 47.212793700116656], [10.6992143, 47.21337600011652], [10.698921899999998, 47.21426870011633], [10.6957322, 47.21334110011652]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_9b0a44065cab43e49b002679675448f9 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_b65ae6b1bb85464db096109af6ba3190 = $(`<div id="html_b65ae6b1bb85464db096109af6ba3190" style="width: 100.0%; height: 100.0%;">Trofana Tyrol</div>`)[0];
+            popup_9b0a44065cab43e49b002679675448f9.setContent(html_b65ae6b1bb85464db096109af6ba3190);
+        
+
+        geo_json_3d948dbb96bb4f21ac29730c1365f30c.bindPopup(popup_9b0a44065cab43e49b002679675448f9)
+        ;
+
+        
+    
+    
+        function geo_json_46acf8189e9a4552a80b5d360e17dbe3_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_46acf8189e9a4552a80b5d360e17dbe3_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_46acf8189e9a4552a80b5d360e17dbe3 = L.geoJson(null, {
+                onEachFeature: geo_json_46acf8189e9a4552a80b5d360e17dbe3_onEachFeature,
+            
+                style: geo_json_46acf8189e9a4552a80b5d360e17dbe3_styler,
+        });
+
+        function geo_json_46acf8189e9a4552a80b5d360e17dbe3_add (data) {
+            geo_json_46acf8189e9a4552a80b5d360e17dbe3
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_46acf8189e9a4552a80b5d360e17dbe3_add({"bbox": [10.372954999999997, 47.148688700130286, 10.375111399999998, 47.14916180013017], "features": [{"bbox": [10.372954999999997, 47.148688700130286, 10.375111399999998, 47.14916180013017], "geometry": {"coordinates": [[[10.372954999999997, 47.14876480013026], [10.374946699999999, 47.148688700130286], [10.375111399999998, 47.14914680013019], [10.373327900000001, 47.14916180013017], [10.372954999999997, 47.14876480013026]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_6c2c346b83974269bd5d91832a15e573 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_a2f3e574713d4a7b8f656d37a5793bb4 = $(`<div id="html_a2f3e574713d4a7b8f656d37a5793bb4" style="width: 100.0%; height: 100.0%;">Raststation Schnann</div>`)[0];
+            popup_6c2c346b83974269bd5d91832a15e573.setContent(html_a2f3e574713d4a7b8f656d37a5793bb4);
+        
+
+        geo_json_46acf8189e9a4552a80b5d360e17dbe3.bindPopup(popup_6c2c346b83974269bd5d91832a15e573)
+        ;
+
+        
+    
+    
+        function geo_json_d93bbe6472b641d3870602417dd41aff_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_d93bbe6472b641d3870602417dd41aff_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_d93bbe6472b641d3870602417dd41aff = L.geoJson(null, {
+                onEachFeature: geo_json_d93bbe6472b641d3870602417dd41aff_onEachFeature,
+            
+                style: geo_json_d93bbe6472b641d3870602417dd41aff_styler,
+        });
+
+        function geo_json_d93bbe6472b641d3870602417dd41aff_add (data) {
+            geo_json_d93bbe6472b641d3870602417dd41aff
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_d93bbe6472b641d3870602417dd41aff_add({"bbox": [11.5085364, 47.006352500159956, 11.5099377, 47.00987000015922], "features": [{"bbox": [11.5085364, 47.006352500159956, 11.5099377, 47.00987000015922], "geometry": {"coordinates": [[[11.5085364, 47.00987000015922], [11.5090201, 47.00642610015995], [11.509445299999998, 47.006352500159956], [11.5099377, 47.00786760015964], [11.5085364, 47.00987000015922]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_e7be66aae5dd4e009e52df57085c89de = L.popup({"maxWidth": "100%"});
+
+        
+            var html_8f447f230d8d4430bb6999ffd547ce8a = $(`<div id="html_8f447f230d8d4430bb6999ffd547ce8a" style="width: 100.0%; height: 100.0%;">Raststation Brennerpaß</div>`)[0];
+            popup_e7be66aae5dd4e009e52df57085c89de.setContent(html_8f447f230d8d4430bb6999ffd547ce8a);
+        
+
+        geo_json_d93bbe6472b641d3870602417dd41aff.bindPopup(popup_e7be66aae5dd4e009e52df57085c89de)
+        ;
+
+        
+    
+    
+        function geo_json_9510d233c9c44773a8cba9208c440186_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_9510d233c9c44773a8cba9208c440186_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_9510d233c9c44773a8cba9208c440186 = L.geoJson(null, {
+                onEachFeature: geo_json_9510d233c9c44773a8cba9208c440186_onEachFeature,
+            
+                style: geo_json_9510d233c9c44773a8cba9208c440186_styler,
+        });
+
+        function geo_json_9510d233c9c44773a8cba9208c440186_add (data) {
+            geo_json_9510d233c9c44773a8cba9208c440186
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_9510d233c9c44773a8cba9208c440186_add({"bbox": [11.1627541, 47.28369890010137, 11.1663115, 47.28516620010104], "features": [{"bbox": [11.1627541, 47.28369890010137, 11.1663115, 47.28516620010104], "geometry": {"coordinates": [[[11.1627541, 47.28516620010104], [11.1643973, 47.284009100101294], [11.1663115, 47.28369890010137], [11.1661179, 47.28490750010112], [11.1627541, 47.28516620010104]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_8cfa6ad89610450aad922a830494818f = L.popup({"maxWidth": "100%"});
+
+        
+            var html_22e0399f3ae444e682351a9f49990dfb = $(`<div id="html_22e0399f3ae444e682351a9f49990dfb" style="width: 100.0%; height: 100.0%;">Raststätte Pettnau</div>`)[0];
+            popup_8cfa6ad89610450aad922a830494818f.setContent(html_22e0399f3ae444e682351a9f49990dfb);
+        
+
+        geo_json_9510d233c9c44773a8cba9208c440186.bindPopup(popup_8cfa6ad89610450aad922a830494818f)
+        ;
+
+        
+    
+    
+        function geo_json_953950706b01418b94f781abd24bfcb6_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_953950706b01418b94f781abd24bfcb6_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_953950706b01418b94f781abd24bfcb6 = L.geoJson(null, {
+                onEachFeature: geo_json_953950706b01418b94f781abd24bfcb6_onEachFeature,
+            
+                style: geo_json_953950706b01418b94f781abd24bfcb6_styler,
+        });
+
+        function geo_json_953950706b01418b94f781abd24bfcb6_add (data) {
+            geo_json_953950706b01418b94f781abd24bfcb6
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_953950706b01418b94f781abd24bfcb6_add({"bbox": [11.5052908, 47.01328930015853, 11.506144599999999, 47.0148721001582], "features": [{"bbox": [11.5052908, 47.01328930015853, 11.506144599999999, 47.0148721001582], "geometry": {"coordinates": [[[11.5052908, 47.01420400015836], [11.505586799999998, 47.013570900158456], [11.506067299999998, 47.01328930015853], [11.506144599999999, 47.0148721001582], [11.5052908, 47.01420400015836]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_73c618fa8a9b47d49c15852cfd397377 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_0d0293ae7dd7439da84ff1381b743edc = $(`<div id="html_0d0293ae7dd7439da84ff1381b743edc" style="width: 100.0%; height: 100.0%;">Raststation Brennersee</div>`)[0];
+            popup_73c618fa8a9b47d49c15852cfd397377.setContent(html_0d0293ae7dd7439da84ff1381b743edc);
+        
+
+        geo_json_953950706b01418b94f781abd24bfcb6.bindPopup(popup_73c618fa8a9b47d49c15852cfd397377)
+        ;
+
+        
+    
+    
+        function geo_json_cd4a93102f564a289129073b4f58a252_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_cd4a93102f564a289129073b4f58a252_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_cd4a93102f564a289129073b4f58a252 = L.geoJson(null, {
+                onEachFeature: geo_json_cd4a93102f564a289129073b4f58a252_onEachFeature,
+            
+                style: geo_json_cd4a93102f564a289129073b4f58a252_styler,
+        });
+
+        function geo_json_cd4a93102f564a289129073b4f58a252_add (data) {
+            geo_json_cd4a93102f564a289129073b4f58a252
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_cd4a93102f564a289129073b4f58a252_add({"bbox": [11.4743863, 47.038494300153324, 11.476538599999998, 47.041391600152714], "features": [{"bbox": [11.4743863, 47.038494300153324, 11.476538599999998, 47.041391600152714], "geometry": {"coordinates": [[[11.4743863, 47.038494300153324], [11.4765348, 47.040869400152836], [11.476538599999998, 47.041391600152714], [11.4747228, 47.03937480015313], [11.4743863, 47.038494300153324]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_fb0757c3e31846f29ba16dadf9d75991 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_b6868d8c7b904a1ea94e027d3c2fc0ef = $(`<div id="html_b6868d8c7b904a1ea94e027d3c2fc0ef" style="width: 100.0%; height: 100.0%;">Raststation Gries Ost</div>`)[0];
+            popup_fb0757c3e31846f29ba16dadf9d75991.setContent(html_b6868d8c7b904a1ea94e027d3c2fc0ef);
+        
+
+        geo_json_cd4a93102f564a289129073b4f58a252.bindPopup(popup_fb0757c3e31846f29ba16dadf9d75991)
+        ;
+
+        
+    
+    
+        function geo_json_1d0b5caeb2d341618fa389c24af19acd_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_1d0b5caeb2d341618fa389c24af19acd_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_1d0b5caeb2d341618fa389c24af19acd = L.geoJson(null, {
+                onEachFeature: geo_json_1d0b5caeb2d341618fa389c24af19acd_onEachFeature,
+            
+                style: geo_json_1d0b5caeb2d341618fa389c24af19acd_styler,
+        });
+
+        function geo_json_1d0b5caeb2d341618fa389c24af19acd_add (data) {
+            geo_json_1d0b5caeb2d341618fa389c24af19acd
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_1d0b5caeb2d341618fa389c24af19acd_add({"bbox": [11.4732314, 47.03715890015363, 11.473883699999998, 47.03826420015337], "features": [{"bbox": [11.4732314, 47.03715890015363, 11.473883699999998, 47.03826420015337], "geometry": {"coordinates": [[[11.4732314, 47.03726620015358], [11.473787199999999, 47.03715890015363], [11.473883699999998, 47.03818620015338], [11.473328, 47.03826420015337], [11.4732314, 47.03726620015358]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_ebb7ece0ed0449619f245a757cf897d7 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_c03a7fb07ab8461a988a554416809ee3 = $(`<div id="html_c03a7fb07ab8461a988a554416809ee3" style="width: 100.0%; height: 100.0%;">Raststation Gries West</div>`)[0];
+            popup_ebb7ece0ed0449619f245a757cf897d7.setContent(html_c03a7fb07ab8461a988a554416809ee3);
+        
+
+        geo_json_1d0b5caeb2d341618fa389c24af19acd.bindPopup(popup_ebb7ece0ed0449619f245a757cf897d7)
+        ;
+
+        
+    
+    
+        function geo_json_0671984d5eed485195dbca8bd0c380e6_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_0671984d5eed485195dbca8bd0c380e6_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_0671984d5eed485195dbca8bd0c380e6 = L.geoJson(null, {
+                onEachFeature: geo_json_0671984d5eed485195dbca8bd0c380e6_onEachFeature,
+            
+                style: geo_json_0671984d5eed485195dbca8bd0c380e6_styler,
+        });
+
+        function geo_json_0671984d5eed485195dbca8bd0c380e6_add (data) {
+            geo_json_0671984d5eed485195dbca8bd0c380e6
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_0671984d5eed485195dbca8bd0c380e6_add({"bbox": [11.689433299999997, 47.34649580008769, 11.692902499999999, 47.348575300087234], "features": [{"bbox": [11.689433299999997, 47.34649580008769, 11.692902499999999, 47.348575300087234], "geometry": {"coordinates": [[[11.689433299999997, 47.346552600087676], [11.6903273, 47.34649580008769], [11.692902499999999, 47.348575300087234], [11.6912792, 47.348254800087304], [11.689433299999997, 47.346552600087676]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_643cd8f5665f4773bb2ed5da001a8640 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_629e8b7265bc475bad48e1498876e927 = $(`<div id="html_629e8b7265bc475bad48e1498876e927" style="width: 100.0%; height: 100.0%;">Raststation Vomp</div>`)[0];
+            popup_643cd8f5665f4773bb2ed5da001a8640.setContent(html_629e8b7265bc475bad48e1498876e927);
+        
+
+        geo_json_0671984d5eed485195dbca8bd0c380e6.bindPopup(popup_643cd8f5665f4773bb2ed5da001a8640)
+        ;
+
+        
+    
+    
+        function geo_json_9fd56565932d4adcbc2a7444e13ca44f_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_9fd56565932d4adcbc2a7444e13ca44f_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_9fd56565932d4adcbc2a7444e13ca44f = L.geoJson(null, {
+                onEachFeature: geo_json_9fd56565932d4adcbc2a7444e13ca44f_onEachFeature,
+            
+                style: geo_json_9fd56565932d4adcbc2a7444e13ca44f_styler,
+        });
+
+        function geo_json_9fd56565932d4adcbc2a7444e13ca44f_add (data) {
+            geo_json_9fd56565932d4adcbc2a7444e13ca44f
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_9fd56565932d4adcbc2a7444e13ca44f_add({"bbox": [11.4457697, 47.13989810013216, 11.447193900000002, 47.14130320013186], "features": [{"bbox": [11.4457697, 47.13989810013216, 11.447193900000002, 47.14130320013186], "geometry": {"coordinates": [[[11.4457697, 47.14081500013194], [11.446254599999998, 47.14008100013209], [11.447193900000002, 47.13989810013216], [11.446173799999999, 47.14130320013186], [11.4457697, 47.14081500013194]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_81b1f8fa06e74076b06e4a620bbfc783 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_2ce182d282b04dffb2e5ff1e13694318 = $(`<div id="html_2ce182d282b04dffb2e5ff1e13694318" style="width: 100.0%; height: 100.0%;">Raststation Matrei West</div>`)[0];
+            popup_81b1f8fa06e74076b06e4a620bbfc783.setContent(html_2ce182d282b04dffb2e5ff1e13694318);
+        
+
+        geo_json_9fd56565932d4adcbc2a7444e13ca44f.bindPopup(popup_81b1f8fa06e74076b06e4a620bbfc783)
+        ;
+
+        
+    
+    
+        function geo_json_332eedb149da4410b2f4febf6e704447_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_332eedb149da4410b2f4febf6e704447_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_332eedb149da4410b2f4febf6e704447 = L.geoJson(null, {
+                onEachFeature: geo_json_332eedb149da4410b2f4febf6e704447_onEachFeature,
+            
+                style: geo_json_332eedb149da4410b2f4febf6e704447_styler,
+        });
+
+        function geo_json_332eedb149da4410b2f4febf6e704447_add (data) {
+            geo_json_332eedb149da4410b2f4febf6e704447
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_332eedb149da4410b2f4febf6e704447_add({"bbox": [11.4475047, 47.13856140013241, 11.4488451, 47.14010460013208], "features": [{"bbox": [11.4475047, 47.13856140013241, 11.4488451, 47.14010460013208], "geometry": {"coordinates": [[[11.4475047, 47.13999700013211], [11.4484078, 47.138755400132375], [11.4488451, 47.13856140013241], [11.4487743, 47.14010460013208], [11.4475047, 47.13999700013211]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_19d01204faf94af49e455dfba4717e3e = L.popup({"maxWidth": "100%"});
+
+        
+            var html_b239f7dd7aad48a1bf3e2dbf19efe2e9 = $(`<div id="html_b239f7dd7aad48a1bf3e2dbf19efe2e9" style="width: 100.0%; height: 100.0%;">Raststation Matrei Ost</div>`)[0];
+            popup_19d01204faf94af49e455dfba4717e3e.setContent(html_b239f7dd7aad48a1bf3e2dbf19efe2e9);
+        
+
+        geo_json_332eedb149da4410b2f4febf6e704447.bindPopup(popup_19d01204faf94af49e455dfba4717e3e)
+        ;
+
+        
+    
+    
+        function geo_json_6cb646f0fcb24913994559878e2aad55_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_6cb646f0fcb24913994559878e2aad55_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_6cb646f0fcb24913994559878e2aad55 = L.geoJson(null, {
+                onEachFeature: geo_json_6cb646f0fcb24913994559878e2aad55_onEachFeature,
+            
+                style: geo_json_6cb646f0fcb24913994559878e2aad55_styler,
+        });
+
+        function geo_json_6cb646f0fcb24913994559878e2aad55_add (data) {
+            geo_json_6cb646f0fcb24913994559878e2aad55
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_6cb646f0fcb24913994559878e2aad55_add({"bbox": [13.1564233, 47.58331540003484, 13.158256599999998, 47.58499990003444], "features": [{"bbox": [13.1564233, 47.58331540003484, 13.158256599999998, 47.58499990003444], "geometry": {"coordinates": [[[13.1564233, 47.58499990003444], [13.157545499999998, 47.58331540003484], [13.158024300000001, 47.583346200034846], [13.158256599999998, 47.5848106000345], [13.1564233, 47.58499990003444]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_5074a2898db84a05addd44a2850deb0b = L.popup({"maxWidth": "100%"});
+
+        
+            var html_411e935087fa428a8875dfd466fe4cf8 = $(`<div id="html_411e935087fa428a8875dfd466fe4cf8" style="width: 100.0%; height: 100.0%;">Raststation Golling Ost</div>`)[0];
+            popup_5074a2898db84a05addd44a2850deb0b.setContent(html_411e935087fa428a8875dfd466fe4cf8);
+        
+
+        geo_json_6cb646f0fcb24913994559878e2aad55.bindPopup(popup_5074a2898db84a05addd44a2850deb0b)
+        ;
+
+        
+    
+    
+        function geo_json_806002c4725c4c14a9660e0b3c6584f3_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_806002c4725c4c14a9660e0b3c6584f3_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_806002c4725c4c14a9660e0b3c6584f3 = L.geoJson(null, {
+                onEachFeature: geo_json_806002c4725c4c14a9660e0b3c6584f3_onEachFeature,
+            
+                style: geo_json_806002c4725c4c14a9660e0b3c6584f3_styler,
+        });
+
+        function geo_json_806002c4725c4c14a9660e0b3c6584f3_add (data) {
+            geo_json_806002c4725c4c14a9660e0b3c6584f3
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_806002c4725c4c14a9660e0b3c6584f3_add({"bbox": [13.1529425, 47.58243800003503, 13.1574413, 47.58480810003449], "features": [{"bbox": [13.1529425, 47.58243800003503, 13.1574413, 47.58480810003449], "geometry": {"coordinates": [[[13.1529425, 47.58334550003484], [13.1556982, 47.58243800003503], [13.1574413, 47.582828600034944], [13.155897099999999, 47.58480810003449], [13.1529425, 47.58334550003484]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_048fb6986b8b4e0fb12b328717362a9e = L.popup({"maxWidth": "100%"});
+
+        
+            var html_a2e25199208042f6a0274ca5905828b8 = $(`<div id="html_a2e25199208042f6a0274ca5905828b8" style="width: 100.0%; height: 100.0%;">Raststation Golling West</div>`)[0];
+            popup_048fb6986b8b4e0fb12b328717362a9e.setContent(html_a2e25199208042f6a0274ca5905828b8);
+        
+
+        geo_json_806002c4725c4c14a9660e0b3c6584f3.bindPopup(popup_048fb6986b8b4e0fb12b328717362a9e)
+        ;
+
+        
+    
+    
+        function geo_json_442fc93103bd4d14a6600e1dd22be036_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_442fc93103bd4d14a6600e1dd22be036_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_442fc93103bd4d14a6600e1dd22be036 = L.geoJson(null, {
+                onEachFeature: geo_json_442fc93103bd4d14a6600e1dd22be036_onEachFeature,
+            
+                style: geo_json_442fc93103bd4d14a6600e1dd22be036_styler,
+        });
+
+        function geo_json_442fc93103bd4d14a6600e1dd22be036_add (data) {
+            geo_json_442fc93103bd4d14a6600e1dd22be036
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_442fc93103bd4d14a6600e1dd22be036_add({"bbox": [12.741946299999999, 47.65692360001803, 12.742992299999997, 47.657656700017874], "features": [{"bbox": [12.741946299999999, 47.65692360001803, 12.742992299999997, 47.657656700017874], "geometry": {"coordinates": [[[12.741946299999999, 47.65695130001804], [12.742631599999998, 47.65692360001803], [12.742992299999997, 47.657656700017874], [12.742553799999998, 47.65762200001786], [12.741946299999999, 47.65695130001804]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_50a41f83f5b64bb8affa931a9c8c5f19 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_2fcb6b0ae090446199b3f7cda2b87385 = $(`<div id="html_2fcb6b0ae090446199b3f7cda2b87385" style="width: 100.0%; height: 100.0%;">Raststation Unken</div>`)[0];
+            popup_50a41f83f5b64bb8affa931a9c8c5f19.setContent(html_2fcb6b0ae090446199b3f7cda2b87385);
+        
+
+        geo_json_442fc93103bd4d14a6600e1dd22be036.bindPopup(popup_50a41f83f5b64bb8affa931a9c8c5f19)
+        ;
+
+        
+    
+    
+        function geo_json_6f09719ba2104abeaedd062364f724e9_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_6f09719ba2104abeaedd062364f724e9_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_6f09719ba2104abeaedd062364f724e9 = L.geoJson(null, {
+                onEachFeature: geo_json_6f09719ba2104abeaedd062364f724e9_onEachFeature,
+            
+                style: geo_json_6f09719ba2104abeaedd062364f724e9_styler,
+        });
+
+        function geo_json_6f09719ba2104abeaedd062364f724e9_add (data) {
+            geo_json_6f09719ba2104abeaedd062364f724e9
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_6f09719ba2104abeaedd062364f724e9_add({"bbox": [13.4241312, 47.24707150010928, 13.4261472, 47.24903380010886], "features": [{"bbox": [13.4241312, 47.24707150010928, 13.4261472, 47.24903380010886], "geometry": {"coordinates": [[[13.4241312, 47.24897780010888], [13.4248173, 47.247127500109265], [13.4261472, 47.24707150010928], [13.4255954, 47.24903380010886], [13.4241312, 47.24897780010888]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_1686296523ee4a0d8a72ae6f932939dd = L.popup({"maxWidth": "100%"});
+
+        
+            var html_be0a46f018ad441aa3bbe9052b00410d = $(`<div id="html_be0a46f018ad441aa3bbe9052b00410d" style="width: 100.0%; height: 100.0%;">Raststation Tauernalm</div>`)[0];
+            popup_1686296523ee4a0d8a72ae6f932939dd.setContent(html_be0a46f018ad441aa3bbe9052b00410d);
+        
+
+        geo_json_6f09719ba2104abeaedd062364f724e9.bindPopup(popup_1686296523ee4a0d8a72ae6f932939dd)
+        ;
+
+        
+    
+    
+        function geo_json_14e3835bfe934ddcaf6f0ecb907f8a53_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_14e3835bfe934ddcaf6f0ecb907f8a53_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_14e3835bfe934ddcaf6f0ecb907f8a53 = L.geoJson(null, {
+                onEachFeature: geo_json_14e3835bfe934ddcaf6f0ecb907f8a53_onEachFeature,
+            
+                style: geo_json_14e3835bfe934ddcaf6f0ecb907f8a53_styler,
+        });
+
+        function geo_json_14e3835bfe934ddcaf6f0ecb907f8a53_add (data) {
+            geo_json_14e3835bfe934ddcaf6f0ecb907f8a53
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_14e3835bfe934ddcaf6f0ecb907f8a53_add({"bbox": [13.547613499999999, 47.129774500134275, 13.551404299999998, 47.132179100133754], "features": [{"bbox": [13.547613499999999, 47.129774500134275, 13.551404299999998, 47.132179100133754], "geometry": {"coordinates": [[[13.547613499999999, 47.131397600133944], [13.5491245, 47.129774500134275], [13.551404299999998, 47.12978660013427], [13.547710699999998, 47.132179100133754], [13.547613499999999, 47.131397600133944]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_61c2dc01cff74745bdeefd2e92d6a107 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_28d9a3a036dc4b62873ce169908cb83e = $(`<div id="html_28d9a3a036dc4b62873ce169908cb83e" style="width: 100.0%; height: 100.0%;">Raststation Lungau</div>`)[0];
+            popup_61c2dc01cff74745bdeefd2e92d6a107.setContent(html_28d9a3a036dc4b62873ce169908cb83e);
+        
+
+        geo_json_14e3835bfe934ddcaf6f0ecb907f8a53.bindPopup(popup_61c2dc01cff74745bdeefd2e92d6a107)
+        ;
+
+        
+    
+    
+        function geo_json_342e64ffb32042c99df5a91d80a3bd84_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_342e64ffb32042c99df5a91d80a3bd84_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_342e64ffb32042c99df5a91d80a3bd84 = L.geoJson(null, {
+                onEachFeature: geo_json_342e64ffb32042c99df5a91d80a3bd84_onEachFeature,
+            
+                style: geo_json_342e64ffb32042c99df5a91d80a3bd84_styler,
+        });
+
+        function geo_json_342e64ffb32042c99df5a91d80a3bd84_add (data) {
+            geo_json_342e64ffb32042c99df5a91d80a3bd84
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_342e64ffb32042c99df5a91d80a3bd84_add({"bbox": [13.448678299999997, 47.30952470009576, 13.449036399999999, 47.310271100095605], "features": [{"bbox": [13.448678299999997, 47.30952470009576, 13.449036399999999, 47.310271100095605], "geometry": {"coordinates": [[[13.448678299999997, 47.309760500095706], [13.4488666, 47.30952470009576], [13.449036399999999, 47.310271100095605], [13.4487805, 47.309975200095664], [13.448678299999997, 47.309760500095706]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_8f4cdcd2eb864528b2bc3190344af959 = L.popup({"maxWidth": "100%"});
+
+        
+
+        geo_json_342e64ffb32042c99df5a91d80a3bd84.bindPopup(popup_8f4cdcd2eb864528b2bc3190344af959)
+        ;
+
+        
+    
+    
+        function geo_json_17b19bb5d1034c0a855556edf51bc372_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_17b19bb5d1034c0a855556edf51bc372_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_17b19bb5d1034c0a855556edf51bc372 = L.geoJson(null, {
+                onEachFeature: geo_json_17b19bb5d1034c0a855556edf51bc372_onEachFeature,
+            
+                style: geo_json_17b19bb5d1034c0a855556edf51bc372_styler,
+        });
+
+        function geo_json_17b19bb5d1034c0a855556edf51bc372_add (data) {
+            geo_json_17b19bb5d1034c0a855556edf51bc372
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_17b19bb5d1034c0a855556edf51bc372_add({"bbox": [14.9103086, 46.958197200169806, 14.9142673, 46.95941620016957], "features": [{"bbox": [14.9103086, 46.958197200169806, 14.9142673, 46.95941620016957], "geometry": {"coordinates": [[[14.9103086, 46.958197200169806], [14.914171899999996, 46.958345400169755], [14.9142673, 46.95901200016964], [14.911740900000002, 46.95941620016957], [14.9103086, 46.958197200169806]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_5890d8bf35134756a80690943b5232f3 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_75002eadb88f4fe79e15ab144a130bd9 = $(`<div id="html_75002eadb88f4fe79e15ab144a130bd9" style="width: 100.0%; height: 100.0%;">Raststation Pack Preitenegg</div>`)[0];
+            popup_5890d8bf35134756a80690943b5232f3.setContent(html_75002eadb88f4fe79e15ab144a130bd9);
+        
+
+        geo_json_17b19bb5d1034c0a855556edf51bc372.bindPopup(popup_5890d8bf35134756a80690943b5232f3)
+        ;
+
+        
+    
+    
+        function geo_json_53959f1c78ac4b199791515a337847a7_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_53959f1c78ac4b199791515a337847a7_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_53959f1c78ac4b199791515a337847a7 = L.geoJson(null, {
+                onEachFeature: geo_json_53959f1c78ac4b199791515a337847a7_onEachFeature,
+            
+                style: geo_json_53959f1c78ac4b199791515a337847a7_styler,
+        });
+
+        function geo_json_53959f1c78ac4b199791515a337847a7_add (data) {
+            geo_json_53959f1c78ac4b199791515a337847a7
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_53959f1c78ac4b199791515a337847a7_add({"bbox": [13.3792711, 47.41930820007165, 13.3845926, 47.42171830007111], "features": [{"bbox": [13.3792711, 47.41930820007165, 13.3845926, 47.42171830007111], "geometry": {"coordinates": [[[13.3792711, 47.42171830007111], [13.3831925, 47.41940990007163], [13.3845926, 47.41930820007165], [13.3838094, 47.420310000071424], [13.3792711, 47.42171830007111]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_931f6ef3288d4825b44e64f8a9cb1442 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_99dad92c8924439fa15c058ad82bc980 = $(`<div id="html_99dad92c8924439fa15c058ad82bc980" style="width: 100.0%; height: 100.0%;">Raststation Eben-Süd</div>`)[0];
+            popup_931f6ef3288d4825b44e64f8a9cb1442.setContent(html_99dad92c8924439fa15c058ad82bc980);
+        
+
+        geo_json_53959f1c78ac4b199791515a337847a7.bindPopup(popup_931f6ef3288d4825b44e64f8a9cb1442)
+        ;
+
+        
+    
+    
+        function geo_json_0c4756ee6e864039879ef09374ac234c_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_0c4756ee6e864039879ef09374ac234c_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_0c4756ee6e864039879ef09374ac234c = L.geoJson(null, {
+                onEachFeature: geo_json_0c4756ee6e864039879ef09374ac234c_onEachFeature,
+            
+                style: geo_json_0c4756ee6e864039879ef09374ac234c_styler,
+        });
+
+        function geo_json_0c4756ee6e864039879ef09374ac234c_add (data) {
+            geo_json_0c4756ee6e864039879ef09374ac234c
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_0c4756ee6e864039879ef09374ac234c_add({"bbox": [13.379692099999998, 47.42025230007144, 13.384769, 47.42237630007098], "features": [{"bbox": [13.379692099999998, 47.42025230007144, 13.384769, 47.42237630007098], "geometry": {"coordinates": [[[13.379692099999998, 47.42197230007105], [13.382771299999998, 47.42103220007127], [13.384769, 47.42025230007144], [13.382312399999998, 47.42237630007098], [13.379692099999998, 47.42197230007105]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_6e3d879d384940679c16cc77766850e5 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_1532e4bcd9f542558c16eb3030e3f82e = $(`<div id="html_1532e4bcd9f542558c16eb3030e3f82e" style="width: 100.0%; height: 100.0%;">Raststation Eben-Nord</div>`)[0];
+            popup_6e3d879d384940679c16cc77766850e5.setContent(html_1532e4bcd9f542558c16eb3030e3f82e);
+        
+
+        geo_json_0c4756ee6e864039879ef09374ac234c.bindPopup(popup_6e3d879d384940679c16cc77766850e5)
+        ;
+
+        
+    
+    
+        function geo_json_3c58b13b47884a56a8c523482c747e17_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_3c58b13b47884a56a8c523482c747e17_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_3c58b13b47884a56a8c523482c747e17 = L.geoJson(null, {
+                onEachFeature: geo_json_3c58b13b47884a56a8c523482c747e17_onEachFeature,
+            
+                style: geo_json_3c58b13b47884a56a8c523482c747e17_styler,
+        });
+
+        function geo_json_3c58b13b47884a56a8c523482c747e17_add (data) {
+            geo_json_3c58b13b47884a56a8c523482c747e17
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_3c58b13b47884a56a8c523482c747e17_add({"bbox": [14.4506568, 46.638783300232454, 14.4514481, 46.63992900023224], "features": [{"bbox": [14.4506568, 46.638783300232454, 14.4514481, 46.63992900023224], "geometry": {"coordinates": [[[14.4506568, 46.63886210023244], [14.4513951, 46.638783300232454], [14.4514481, 46.63979410023228], [14.4507914, 46.63992900023224], [14.4506568, 46.63886210023244]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_dd5e12b3c0be4b80b333c1fa22a0983c = L.popup({"maxWidth": "100%"});
+
+        
+
+        geo_json_3c58b13b47884a56a8c523482c747e17.bindPopup(popup_dd5e12b3c0be4b80b333c1fa22a0983c)
+        ;
+
+        
+    
+    
+        function geo_json_b6c72f8872484bcdb48dd309b160d391_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_b6c72f8872484bcdb48dd309b160d391_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_b6c72f8872484bcdb48dd309b160d391 = L.geoJson(null, {
+                onEachFeature: geo_json_b6c72f8872484bcdb48dd309b160d391_onEachFeature,
+            
+                style: geo_json_b6c72f8872484bcdb48dd309b160d391_styler,
+        });
+
+        function geo_json_b6c72f8872484bcdb48dd309b160d391_add (data) {
+            geo_json_b6c72f8872484bcdb48dd309b160d391
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_b6c72f8872484bcdb48dd309b160d391_add({"bbox": [14.5927066, 46.678803400224865, 14.5974303, 46.680947400224454], "features": [{"bbox": [14.5927066, 46.678803400224865, 14.5974303, 46.680947400224454], "geometry": {"coordinates": [[[14.5927066, 46.680249200224594], [14.595524799999998, 46.678803400224865], [14.5974303, 46.67957830022472], [14.595237599999997, 46.680947400224454], [14.5927066, 46.680249200224594]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_7d5dcf854f864a78acf8758816c372df = L.popup({"maxWidth": "100%"});
+
+        
+            var html_3865c6b891cb475e8984df579b2dcb9c = $(`<div id="html_3865c6b891cb475e8984df579b2dcb9c" style="width: 100.0%; height: 100.0%;">Raststätte Völkermarkt</div>`)[0];
+            popup_7d5dcf854f864a78acf8758816c372df.setContent(html_3865c6b891cb475e8984df579b2dcb9c);
+        
+
+        geo_json_b6c72f8872484bcdb48dd309b160d391.bindPopup(popup_7d5dcf854f864a78acf8758816c372df)
+        ;
+
+        
+    
+    
+        function geo_json_f23a71dabe324f439f27f0c5d07b4912_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_f23a71dabe324f439f27f0c5d07b4912_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_f23a71dabe324f439f27f0c5d07b4912 = L.geoJson(null, {
+                onEachFeature: geo_json_f23a71dabe324f439f27f0c5d07b4912_onEachFeature,
+            
+                style: geo_json_f23a71dabe324f439f27f0c5d07b4912_styler,
+        });
+
+        function geo_json_f23a71dabe324f439f27f0c5d07b4912_add (data) {
+            geo_json_f23a71dabe324f439f27f0c5d07b4912
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_f23a71dabe324f439f27f0c5d07b4912_add({"bbox": [15.339022499999999, 47.45015820006479, 15.341007200000002, 47.45118540006457], "features": [{"bbox": [15.339022499999999, 47.45015820006479, 15.341007200000002, 47.45118540006457], "geometry": {"coordinates": [[[15.339022499999999, 47.45015820006479], [15.341007200000002, 47.450589200064705], [15.340934700000002, 47.45118540006457], [15.340156100000002, 47.45072600006468], [15.339022499999999, 47.45015820006479]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_6796374389024808aec74ee0f70dd2af = L.popup({"maxWidth": "100%"});
+
+        
+            var html_9791aa1e3a0243848a5be1028526b9d7 = $(`<div id="html_9791aa1e3a0243848a5be1028526b9d7" style="width: 100.0%; height: 100.0%;">Raststation Kapfenberg Süd</div>`)[0];
+            popup_6796374389024808aec74ee0f70dd2af.setContent(html_9791aa1e3a0243848a5be1028526b9d7);
+        
+
+        geo_json_f23a71dabe324f439f27f0c5d07b4912.bindPopup(popup_6796374389024808aec74ee0f70dd2af)
+        ;
+
+        
+    
+    
+        function geo_json_c957d6afa332455bb598b0e4218ee22f_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_c957d6afa332455bb598b0e4218ee22f_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_c957d6afa332455bb598b0e4218ee22f = L.geoJson(null, {
+                onEachFeature: geo_json_c957d6afa332455bb598b0e4218ee22f_onEachFeature,
+            
+                style: geo_json_c957d6afa332455bb598b0e4218ee22f_styler,
+        });
+
+        function geo_json_c957d6afa332455bb598b0e4218ee22f_add (data) {
+            geo_json_c957d6afa332455bb598b0e4218ee22f
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_c957d6afa332455bb598b0e4218ee22f_add({"bbox": [14.878815599999996, 47.25285130010804, 14.881298, 47.25393650010779], "features": [{"bbox": [14.878815599999996, 47.25285130010804, 14.881298, 47.25393650010779], "geometry": {"coordinates": [[[14.878815599999996, 47.25324660010795], [14.8795514, 47.25285130010804], [14.881298, 47.25393650010779], [14.878940399999998, 47.25335600010795], [14.878815599999996, 47.25324660010795]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_38cd9278afa540b3b3cf808643ad8375 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_0bfafde471df4bfdafff26010a17583f = $(`<div id="html_0bfafde471df4bfdafff26010a17583f" style="width: 100.0%; height: 100.0%;">Rastplatz St. Marein</div>`)[0];
+            popup_38cd9278afa540b3b3cf808643ad8375.setContent(html_0bfafde471df4bfdafff26010a17583f);
+        
+
+        geo_json_c957d6afa332455bb598b0e4218ee22f.bindPopup(popup_38cd9278afa540b3b3cf808643ad8375)
+        ;
+
+        
+    
+    
+        function geo_json_239c15253888443aaf0614d1cc42afc3_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_239c15253888443aaf0614d1cc42afc3_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_239c15253888443aaf0614d1cc42afc3 = L.geoJson(null, {
+                onEachFeature: geo_json_239c15253888443aaf0614d1cc42afc3_onEachFeature,
+            
+                style: geo_json_239c15253888443aaf0614d1cc42afc3_styler,
+        });
+
+        function geo_json_239c15253888443aaf0614d1cc42afc3_add (data) {
+            geo_json_239c15253888443aaf0614d1cc42afc3
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_239c15253888443aaf0614d1cc42afc3_add({"bbox": [14.8790463, 47.25357410010788, 14.882023400000001, 47.254762200107635], "features": [{"bbox": [14.8790463, 47.25357410010788, 14.882023400000001, 47.254762200107635], "geometry": {"coordinates": [[[14.8790463, 47.25357410010788], [14.882023400000001, 47.254337200107734], [14.8809356, 47.254762200107635], [14.8790463, 47.25357410010788]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_862a716fca94477bb6b1404b8077af83 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_7a084e21251c4fb6acccbfbb9c10106e = $(`<div id="html_7a084e21251c4fb6acccbfbb9c10106e" style="width: 100.0%; height: 100.0%;">Rastplatz St. Marein</div>`)[0];
+            popup_862a716fca94477bb6b1404b8077af83.setContent(html_7a084e21251c4fb6acccbfbb9c10106e);
+        
+
+        geo_json_239c15253888443aaf0614d1cc42afc3.bindPopup(popup_862a716fca94477bb6b1404b8077af83)
+        ;
+
+        
+    
+    
+        function geo_json_38d8e86cfaa24d85acac8746c432bae3_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_38d8e86cfaa24d85acac8746c432bae3_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_38d8e86cfaa24d85acac8746c432bae3 = L.geoJson(null, {
+                onEachFeature: geo_json_38d8e86cfaa24d85acac8746c432bae3_onEachFeature,
+            
+                style: geo_json_38d8e86cfaa24d85acac8746c432bae3_styler,
+        });
+
+        function geo_json_38d8e86cfaa24d85acac8746c432bae3_add (data) {
+            geo_json_38d8e86cfaa24d85acac8746c432bae3
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_38d8e86cfaa24d85acac8746c432bae3_add({"bbox": [15.342106799999996, 47.45287010006419, 15.3435941, 47.45424300006389], "features": [{"bbox": [15.342106799999996, 47.45287010006419, 15.3435941, 47.45424300006389], "geometry": {"coordinates": [[[15.342106799999996, 47.45348860006406], [15.3425145, 47.45287010006419], [15.3435941, 47.45424300006389], [15.3427519, 47.45420130006389], [15.342106799999996, 47.45348860006406]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_b847c2a7ff034ea1a34fa2fcb34fa5bb = L.popup({"maxWidth": "100%"});
+
+        
+            var html_2f4c4036418743e885e99270cd75bbdf = $(`<div id="html_2f4c4036418743e885e99270cd75bbdf" style="width: 100.0%; height: 100.0%;">Raststation Kapfenberg Nord</div>`)[0];
+            popup_b847c2a7ff034ea1a34fa2fcb34fa5bb.setContent(html_2f4c4036418743e885e99270cd75bbdf);
+        
+
+        geo_json_38d8e86cfaa24d85acac8746c432bae3.bindPopup(popup_b847c2a7ff034ea1a34fa2fcb34fa5bb)
+        ;
+
+        
+    
+    
+        function geo_json_9042da02c09b4fd0a9e0a43ab9ded3c1_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_9042da02c09b4fd0a9e0a43ab9ded3c1_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_9042da02c09b4fd0a9e0a43ab9ded3c1 = L.geoJson(null, {
+                onEachFeature: geo_json_9042da02c09b4fd0a9e0a43ab9ded3c1_onEachFeature,
+            
+                style: geo_json_9042da02c09b4fd0a9e0a43ab9ded3c1_styler,
+        });
+
+        function geo_json_9042da02c09b4fd0a9e0a43ab9ded3c1_add (data) {
+            geo_json_9042da02c09b4fd0a9e0a43ab9ded3c1
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_9042da02c09b4fd0a9e0a43ab9ded3c1_add({"bbox": [15.857363899999998, 47.648761200019905, 15.859425100000001, 47.65030730001956], "features": [{"bbox": [15.857363899999998, 47.648761200019905, 15.859425100000001, 47.65030730001956], "geometry": {"coordinates": [[[15.857363899999998, 47.648761200019905], [15.858977299999998, 47.64889890001987], [15.859425100000001, 47.649873000019646], [15.8588376, 47.65030730001956], [15.857363899999998, 47.648761200019905]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_48b443d6967544f5977e6257e08d06d7 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_f25015168c734651b5933f4cf0598a60 = $(`<div id="html_f25015168c734651b5933f4cf0598a60" style="width: 100.0%; height: 100.0%;">Rastplatz Schottwien</div>`)[0];
+            popup_48b443d6967544f5977e6257e08d06d7.setContent(html_f25015168c734651b5933f4cf0598a60);
+        
+
+        geo_json_9042da02c09b4fd0a9e0a43ab9ded3c1.bindPopup(popup_48b443d6967544f5977e6257e08d06d7)
+        ;
+
+        
+    
+    
+        function geo_json_7618da8aed6640e1ba958bb1403a3f27_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_7618da8aed6640e1ba958bb1403a3f27_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_7618da8aed6640e1ba958bb1403a3f27 = L.geoJson(null, {
+                onEachFeature: geo_json_7618da8aed6640e1ba958bb1403a3f27_onEachFeature,
+            
+                style: geo_json_7618da8aed6640e1ba958bb1403a3f27_styler,
+        });
+
+        function geo_json_7618da8aed6640e1ba958bb1403a3f27_add (data) {
+            geo_json_7618da8aed6640e1ba958bb1403a3f27
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_7618da8aed6640e1ba958bb1403a3f27_add({"bbox": [16.0599186, 47.330788300091136, 16.0617205, 47.332781000090705], "features": [{"bbox": [16.0599186, 47.330788300091136, 16.0617205, 47.332781000090705], "geometry": {"coordinates": [[[16.0599186, 47.33246140009076], [16.0604545, 47.33107910009106], [16.061325199999995, 47.330788300091136], [16.0617205, 47.332781000090705], [16.0599186, 47.33246140009076]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_1949bd588d3f4ff7a57e7c6e28fc163b = L.popup({"maxWidth": "100%"});
+
+        
+            var html_b2e34fcf3774400c85ce8978b951a927 = $(`<div id="html_b2e34fcf3774400c85ce8978b951a927" style="width: 100.0%; height: 100.0%;">Raststation Loipersdorf</div>`)[0];
+            popup_1949bd588d3f4ff7a57e7c6e28fc163b.setContent(html_b2e34fcf3774400c85ce8978b951a927);
+        
+
+        geo_json_7618da8aed6640e1ba958bb1403a3f27.bindPopup(popup_1949bd588d3f4ff7a57e7c6e28fc163b)
+        ;
+
+        
+    
+    
+        function geo_json_647bbc2146f646e78267d5c58a3b984c_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_647bbc2146f646e78267d5c58a3b984c_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_647bbc2146f646e78267d5c58a3b984c = L.geoJson(null, {
+                onEachFeature: geo_json_647bbc2146f646e78267d5c58a3b984c_onEachFeature,
+            
+                style: geo_json_647bbc2146f646e78267d5c58a3b984c_styler,
+        });
+
+        function geo_json_647bbc2146f646e78267d5c58a3b984c_add (data) {
+            geo_json_647bbc2146f646e78267d5c58a3b984c
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_647bbc2146f646e78267d5c58a3b984c_add({"bbox": [15.372503200000002, 47.466570800061135, 15.3742206, 47.46707700006102], "features": [{"bbox": [15.372503200000002, 47.466570800061135, 15.3742206, 47.46707700006102], "geometry": {"coordinates": [[[15.372503200000002, 47.466570800061135], [15.374218199999996, 47.46688740006107], [15.3742206, 47.46700370006104], [15.3726689, 47.46707700006102], [15.372503200000002, 47.466570800061135]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_7481a05530e346559ae90ecf44a3f36e = L.popup({"maxWidth": "100%"});
+
+        
+            var html_86e9044a526f45c7ac98f2f62acd237d = $(`<div id="html_86e9044a526f45c7ac98f2f62acd237d" style="width: 100.0%; height: 100.0%;">Raststation St. Marein</div>`)[0];
+            popup_7481a05530e346559ae90ecf44a3f36e.setContent(html_86e9044a526f45c7ac98f2f62acd237d);
+        
+
+        geo_json_647bbc2146f646e78267d5c58a3b984c.bindPopup(popup_7481a05530e346559ae90ecf44a3f36e)
+        ;
+
+        
+    
+    
+        function geo_json_1784868fc98346c5952c4a7daf2eae7a_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_1784868fc98346c5952c4a7daf2eae7a_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_1784868fc98346c5952c4a7daf2eae7a = L.geoJson(null, {
+                onEachFeature: geo_json_1784868fc98346c5952c4a7daf2eae7a_onEachFeature,
+            
+                style: geo_json_1784868fc98346c5952c4a7daf2eae7a_styler,
+        });
+
+        function geo_json_1784868fc98346c5952c4a7daf2eae7a_add (data) {
+            geo_json_1784868fc98346c5952c4a7daf2eae7a
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_1784868fc98346c5952c4a7daf2eae7a_add({"bbox": [15.648723200000001, 46.68478700022374, 15.650356200000001, 46.68638700022343], "features": [{"bbox": [15.648723200000001, 46.68478700022374, 15.650356200000001, 46.68638700022343], "geometry": {"coordinates": [[[15.648723200000001, 46.686342600223426], [15.649039399999998, 46.685061800223686], [15.650356200000001, 46.68478700022374], [15.648975899999998, 46.68638700022343], [15.648723200000001, 46.686342600223426]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_7ed406ed0e8949fdadf079ea0668c733 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_603288948dcc46a9b8e8461cd2a2003e = $(`<div id="html_603288948dcc46a9b8e8461cd2a2003e" style="width: 100.0%; height: 100.0%;">Počivališče Šentilj</div>`)[0];
+            popup_7ed406ed0e8949fdadf079ea0668c733.setContent(html_603288948dcc46a9b8e8461cd2a2003e);
+        
+
+        geo_json_1784868fc98346c5952c4a7daf2eae7a.bindPopup(popup_7ed406ed0e8949fdadf079ea0668c733)
+        ;
+
+        
+    
+    
+        function geo_json_6c6f0ca3e6fb4cdeac2ae8d7bb29fb64_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_6c6f0ca3e6fb4cdeac2ae8d7bb29fb64_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_6c6f0ca3e6fb4cdeac2ae8d7bb29fb64 = L.geoJson(null, {
+                onEachFeature: geo_json_6c6f0ca3e6fb4cdeac2ae8d7bb29fb64_onEachFeature,
+            
+                style: geo_json_6c6f0ca3e6fb4cdeac2ae8d7bb29fb64_styler,
+        });
+
+        function geo_json_6c6f0ca3e6fb4cdeac2ae8d7bb29fb64_add (data) {
+            geo_json_6c6f0ca3e6fb4cdeac2ae8d7bb29fb64
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_6c6f0ca3e6fb4cdeac2ae8d7bb29fb64_add({"bbox": [15.6494842, 46.68476800022373, 15.651046299999997, 46.68639330022342], "features": [{"bbox": [15.6494842, 46.68476800022373, 15.651046299999997, 46.68639330022342], "geometry": {"coordinates": [[[15.6494842, 46.68639330022342], [15.6508091, 46.68476800022373], [15.6509662, 46.68480600022373], [15.651046299999997, 46.68592200022351], [15.6494842, 46.68639330022342]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_164595bac85a483b91c8cb98de2cea79 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_f219061f96a6436fa6077bcb415977af = $(`<div id="html_f219061f96a6436fa6077bcb415977af" style="width: 100.0%; height: 100.0%;">Počivališče Šentilj</div>`)[0];
+            popup_164595bac85a483b91c8cb98de2cea79.setContent(html_f219061f96a6436fa6077bcb415977af);
+        
+
+        geo_json_6c6f0ca3e6fb4cdeac2ae8d7bb29fb64.bindPopup(popup_164595bac85a483b91c8cb98de2cea79)
+        ;
+
+        
+    
+    
+        function geo_json_5a8f609393ff4c2a8e32590c8a2878bb_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_5a8f609393ff4c2a8e32590c8a2878bb_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_5a8f609393ff4c2a8e32590c8a2878bb = L.geoJson(null, {
+                onEachFeature: geo_json_5a8f609393ff4c2a8e32590c8a2878bb_onEachFeature,
+            
+                style: geo_json_5a8f609393ff4c2a8e32590c8a2878bb_styler,
+        });
+
+        function geo_json_5a8f609393ff4c2a8e32590c8a2878bb_add (data) {
+            geo_json_5a8f609393ff4c2a8e32590c8a2878bb
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_5a8f609393ff4c2a8e32590c8a2878bb_add({"bbox": [15.767198, 47.103760200139746, 15.769744899999997, 47.10554320013936], "features": [{"bbox": [15.767198, 47.103760200139746, 15.769744899999997, 47.10554320013936], "geometry": {"coordinates": [[[15.767198, 47.104623700139555], [15.7693575, 47.103760200139746], [15.769744899999997, 47.10516420013944], [15.767391699999997, 47.10554320013936], [15.767198, 47.104623700139555]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_edd4cc1a07de4d44811af6dc07c9566d = L.popup({"maxWidth": "100%"});
+
+        
+            var html_17245a51b11244eb87c015cdbe76b856 = $(`<div id="html_17245a51b11244eb87c015cdbe76b856" style="width: 100.0%; height: 100.0%;">Raststation Arnwiesen</div>`)[0];
+            popup_edd4cc1a07de4d44811af6dc07c9566d.setContent(html_17245a51b11244eb87c015cdbe76b856);
+        
+
+        geo_json_5a8f609393ff4c2a8e32590c8a2878bb.bindPopup(popup_edd4cc1a07de4d44811af6dc07c9566d)
+        ;
+
+        
+    
+    
+        function geo_json_c78071802d07499da2036aa7f5bf7a4d_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_c78071802d07499da2036aa7f5bf7a4d_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_c78071802d07499da2036aa7f5bf7a4d = L.geoJson(null, {
+                onEachFeature: geo_json_c78071802d07499da2036aa7f5bf7a4d_onEachFeature,
+            
+                style: geo_json_c78071802d07499da2036aa7f5bf7a4d_styler,
+        });
+
+        function geo_json_c78071802d07499da2036aa7f5bf7a4d_add (data) {
+            geo_json_c78071802d07499da2036aa7f5bf7a4d
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_c78071802d07499da2036aa7f5bf7a4d_add({"bbox": [15.877792699999999, 47.09184300014225, 15.878666599999997, 47.09214600014217], "features": [{"bbox": [15.877792699999999, 47.09184300014225, 15.878666599999997, 47.09214600014217], "geometry": {"coordinates": [[[15.877792699999999, 47.09185320014224], [15.878657799999997, 47.09184300014225], [15.878666599999997, 47.09214600014217], [15.8777952, 47.09199400014219], [15.877792699999999, 47.09185320014224]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_2fc9166380724237baba600928bcdb4b = L.popup({"maxWidth": "100%"});
+
+        
+
+        geo_json_c78071802d07499da2036aa7f5bf7a4d.bindPopup(popup_2fc9166380724237baba600928bcdb4b)
+        ;
+
+        
+    
+    
+        function geo_json_2cabcc8830a646f28a778dfcaf10f27e_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_2cabcc8830a646f28a778dfcaf10f27e_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_2cabcc8830a646f28a778dfcaf10f27e = L.geoJson(null, {
+                onEachFeature: geo_json_2cabcc8830a646f28a778dfcaf10f27e_onEachFeature,
+            
+                style: geo_json_2cabcc8830a646f28a778dfcaf10f27e_styler,
+        });
+
+        function geo_json_2cabcc8830a646f28a778dfcaf10f27e_add (data) {
+            geo_json_2cabcc8830a646f28a778dfcaf10f27e
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_2cabcc8830a646f28a778dfcaf10f27e_add({"bbox": [16.0581597, 47.11537510013731, 16.0584993, 47.115556500137245], "features": [{"bbox": [16.0581597, 47.11537510013731, 16.0584993, 47.115556500137245], "geometry": {"coordinates": [[[16.0581597, 47.11551520013727], [16.058225499999995, 47.11537510013731], [16.0584993, 47.11547800013727], [16.058460099999998, 47.115556500137245], [16.0581597, 47.11551520013727]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_8cb6ee8f1be1441da591fcc51c69eaa3 = L.popup({"maxWidth": "100%"});
+
+        
+
+        geo_json_2cabcc8830a646f28a778dfcaf10f27e.bindPopup(popup_8cb6ee8f1be1441da591fcc51c69eaa3)
+        ;
+
+        
+    
+    
+        function geo_json_ef3a64d27a714064a8a0d0e5f989bcde_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_ef3a64d27a714064a8a0d0e5f989bcde_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_ef3a64d27a714064a8a0d0e5f989bcde = L.geoJson(null, {
+                onEachFeature: geo_json_ef3a64d27a714064a8a0d0e5f989bcde_onEachFeature,
+            
+                style: geo_json_ef3a64d27a714064a8a0d0e5f989bcde_styler,
+        });
+
+        function geo_json_ef3a64d27a714064a8a0d0e5f989bcde_add (data) {
+            geo_json_ef3a64d27a714064a8a0d0e5f989bcde
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_ef3a64d27a714064a8a0d0e5f989bcde_add({"bbox": [16.115552999999995, 47.5415446000443, 16.1189543, 47.54341160004389], "features": [{"bbox": [16.115552999999995, 47.5415446000443, 16.1189543, 47.54341160004389], "geometry": {"coordinates": [[[16.115552999999995, 47.54178400004425], [16.1157435, 47.5415446000443], [16.1189543, 47.543004400043976], [16.116802499999995, 47.54341160004389], [16.115552999999995, 47.54178400004425]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_e60f1967a7a4424d98a0990a04d019c6 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_7806d4d2451840da9a757e521817ddce = $(`<div id="html_7806d4d2451840da9a757e521817ddce" style="width: 100.0%; height: 100.0%;">Raststation Zöbern</div>`)[0];
+            popup_e60f1967a7a4424d98a0990a04d019c6.setContent(html_7806d4d2451840da9a757e521817ddce);
+        
+
+        geo_json_ef3a64d27a714064a8a0d0e5f989bcde.bindPopup(popup_e60f1967a7a4424d98a0990a04d019c6)
+        ;
+
+        
+    
+    
+        function geo_json_35242a03cdd44de9885d28bffe16ad9d_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_35242a03cdd44de9885d28bffe16ad9d_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_35242a03cdd44de9885d28bffe16ad9d = L.geoJson(null, {
+                onEachFeature: geo_json_35242a03cdd44de9885d28bffe16ad9d_onEachFeature,
+            
+                style: geo_json_35242a03cdd44de9885d28bffe16ad9d_styler,
+        });
+
+        function geo_json_35242a03cdd44de9885d28bffe16ad9d_add (data) {
+            geo_json_35242a03cdd44de9885d28bffe16ad9d
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_35242a03cdd44de9885d28bffe16ad9d_add({"bbox": [16.1017453, 47.70641720000663, 16.1030194, 47.70732450000642], "features": [{"bbox": [16.1017453, 47.70641720000663, 16.1030194, 47.70732450000642], "geometry": {"coordinates": [[[16.1017453, 47.70656050000661], [16.102894, 47.70641720000663], [16.1030194, 47.70732450000642], [16.102256000000004, 47.707263700006436], [16.1017453, 47.70656050000661]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_4d085a87dc8c4c2e92bfd4d7d567401a = L.popup({"maxWidth": "100%"});
+
+        
+            var html_7373cbc3efb942828b6526671c50feaa = $(`<div id="html_7373cbc3efb942828b6526671c50feaa" style="width: 100.0%; height: 100.0%;">Rastplatz Natschbach</div>`)[0];
+            popup_4d085a87dc8c4c2e92bfd4d7d567401a.setContent(html_7373cbc3efb942828b6526671c50feaa);
+        
+
+        geo_json_35242a03cdd44de9885d28bffe16ad9d.bindPopup(popup_4d085a87dc8c4c2e92bfd4d7d567401a)
+        ;
+
+        
+    
+    
+        function geo_json_4e6202c8767b46d8921b19aadc410c34_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_4e6202c8767b46d8921b19aadc410c34_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_4e6202c8767b46d8921b19aadc410c34 = L.geoJson(null, {
+                onEachFeature: geo_json_4e6202c8767b46d8921b19aadc410c34_onEachFeature,
+            
+                style: geo_json_4e6202c8767b46d8921b19aadc410c34_styler,
+        });
+
+        function geo_json_4e6202c8767b46d8921b19aadc410c34_add (data) {
+            geo_json_4e6202c8767b46d8921b19aadc410c34
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_4e6202c8767b46d8921b19aadc410c34_add({"bbox": [16.4431332, 48.181060799894155, 16.4453554, 48.18230919989388], "features": [{"bbox": [16.4431332, 48.181060799894155, 16.4453554, 48.18230919989388], "geometry": {"coordinates": [[[16.4431332, 48.18224719989388], [16.4444872, 48.181060799894155], [16.4453554, 48.18171819989402], [16.4433278, 48.18230919989388], [16.4431332, 48.18224719989388]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_a6580a3245534887bb257638338b73f2 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_8a31d34f30204c87aee5409cfa003b94 = $(`<div id="html_8a31d34f30204c87aee5409cfa003b94" style="width: 100.0%; height: 100.0%;">Raststation Simmering</div>`)[0];
+            popup_a6580a3245534887bb257638338b73f2.setContent(html_8a31d34f30204c87aee5409cfa003b94);
+        
+
+        geo_json_4e6202c8767b46d8921b19aadc410c34.bindPopup(popup_a6580a3245534887bb257638338b73f2)
+        ;
+
+        
+    
+    
+        function geo_json_970b5e0d189d4e51acf5b0db9321bee9_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_970b5e0d189d4e51acf5b0db9321bee9_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_970b5e0d189d4e51acf5b0db9321bee9 = L.geoJson(null, {
+                onEachFeature: geo_json_970b5e0d189d4e51acf5b0db9321bee9_onEachFeature,
+            
+                style: geo_json_970b5e0d189d4e51acf5b0db9321bee9_styler,
+        });
+
+        function geo_json_970b5e0d189d4e51acf5b0db9321bee9_add (data) {
+            geo_json_970b5e0d189d4e51acf5b0db9321bee9
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_970b5e0d189d4e51acf5b0db9321bee9_add({"bbox": [13.424101499999999, 48.390079099843206, 13.426664599999999, 48.39294459984251], "features": [{"bbox": [13.424101499999999, 48.390079099843206, 13.426664599999999, 48.39294459984251], "geometry": {"coordinates": [[[13.424101499999999, 48.3905502998431], [13.4250717, 48.390079099843206], [13.426664599999999, 48.39268819984256], [13.4250621, 48.39294459984251], [13.424101499999999, 48.3905502998431]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_0f943f6826974dceb4a9f4569079f9dc = L.popup({"maxWidth": "100%"});
+
+        
+
+        geo_json_970b5e0d189d4e51acf5b0db9321bee9.bindPopup(popup_0f943f6826974dceb4a9f4569079f9dc)
+        ;
+
+        
+    
+    
+        function geo_json_70c03e841e674b25883e3ca03fb66c92_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_70c03e841e674b25883e3ca03fb66c92_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_70c03e841e674b25883e3ca03fb66c92 = L.geoJson(null, {
+                onEachFeature: geo_json_70c03e841e674b25883e3ca03fb66c92_onEachFeature,
+            
+                style: geo_json_70c03e841e674b25883e3ca03fb66c92_styler,
+        });
+
+        function geo_json_70c03e841e674b25883e3ca03fb66c92_add (data) {
+            geo_json_70c03e841e674b25883e3ca03fb66c92
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_70c03e841e674b25883e3ca03fb66c92_add({"bbox": [13.425300999999997, 48.39299019984249, 13.4282739, 48.394447699842154], "features": [{"bbox": [13.425300999999997, 48.39299019984249, 13.4282739, 48.394447699842154], "geometry": {"coordinates": [[[13.425300999999997, 48.39377689984231], [13.4271784, 48.39299019984249], [13.4282739, 48.394428599842136], [13.4266564, 48.394447699842154], [13.425300999999997, 48.39377689984231]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_7cd582bfa6fd49fa853f6c13db2c4551 = L.popup({"maxWidth": "100%"});
+
+        
+
+        geo_json_70c03e841e674b25883e3ca03fb66c92.bindPopup(popup_7cd582bfa6fd49fa853f6c13db2c4551)
+        ;
+
+        
+    
+    
+        function geo_json_ca6d251b966c49a2aa31094c2db105c4_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_ca6d251b966c49a2aa31094c2db105c4_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_ca6d251b966c49a2aa31094c2db105c4 = L.geoJson(null, {
+                onEachFeature: geo_json_ca6d251b966c49a2aa31094c2db105c4_onEachFeature,
+            
+                style: geo_json_ca6d251b966c49a2aa31094c2db105c4_styler,
+        });
+
+        function geo_json_ca6d251b966c49a2aa31094c2db105c4_add (data) {
+            geo_json_ca6d251b966c49a2aa31094c2db105c4
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_ca6d251b966c49a2aa31094c2db105c4_add({"bbox": [13.7443459, 48.17825419989486, 13.748081299999999, 48.179508699894534], "features": [{"bbox": [13.7443459, 48.17825419989486, 13.748081299999999, 48.179508699894534], "geometry": {"coordinates": [[[13.7443459, 48.17850079989478], [13.7445817, 48.17825419989486], [13.748081299999999, 48.17858519989477], [13.746257, 48.179508699894534], [13.7443459, 48.17850079989478]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_8cb1c836ca9a4265bfbcdca877456c08 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_156b6c62d41c4050b546cd89c565dc59 = $(`<div id="html_156b6c62d41c4050b546cd89c565dc59" style="width: 100.0%; height: 100.0%;">Raststation Aistersheim</div>`)[0];
+            popup_8cb1c836ca9a4265bfbcdca877456c08.setContent(html_156b6c62d41c4050b546cd89c565dc59);
+        
+
+        geo_json_ca6d251b966c49a2aa31094c2db105c4.bindPopup(popup_8cb1c836ca9a4265bfbcdca877456c08)
+        ;
+
+        
+    
+    
+        function geo_json_9c497d01901d4f0b8a0ed3f100a55eeb_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_9c497d01901d4f0b8a0ed3f100a55eeb_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_9c497d01901d4f0b8a0ed3f100a55eeb = L.geoJson(null, {
+                onEachFeature: geo_json_9c497d01901d4f0b8a0ed3f100a55eeb_onEachFeature,
+            
+                style: geo_json_9c497d01901d4f0b8a0ed3f100a55eeb_styler,
+        });
+
+        function geo_json_9c497d01901d4f0b8a0ed3f100a55eeb_add (data) {
+            geo_json_9c497d01901d4f0b8a0ed3f100a55eeb
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_9c497d01901d4f0b8a0ed3f100a55eeb_add({"bbox": [16.181138399999995, 47.83234979997734, 16.1826646, 47.83465129997679], "features": [{"bbox": [16.181138399999995, 47.83234979997734, 16.1826646, 47.83465129997679], "geometry": {"coordinates": [[[16.181138399999995, 47.83329989997713], [16.181434, 47.83279759997724], [16.1826646, 47.83234979997734], [16.1820687, 47.83465129997679], [16.181138399999995, 47.83329989997713]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_e764e73fcb184a978e630021c7aba717 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_44534c5b1c724a7db080730d7770d2a2 = $(`<div id="html_44534c5b1c724a7db080730d7770d2a2" style="width: 100.0%; height: 100.0%;">Raststation Bad Fischau</div>`)[0];
+            popup_e764e73fcb184a978e630021c7aba717.setContent(html_44534c5b1c724a7db080730d7770d2a2);
+        
+
+        geo_json_9c497d01901d4f0b8a0ed3f100a55eeb.bindPopup(popup_e764e73fcb184a978e630021c7aba717)
+        ;
+
+        
+    
+    
+        function geo_json_c16d377282d442d08db520a88f042786_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_c16d377282d442d08db520a88f042786_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_c16d377282d442d08db520a88f042786 = L.geoJson(null, {
+                onEachFeature: geo_json_c16d377282d442d08db520a88f042786_onEachFeature,
+            
+                style: geo_json_c16d377282d442d08db520a88f042786_styler,
+        });
+
+        function geo_json_c16d377282d442d08db520a88f042786_add (data) {
+            geo_json_c16d377282d442d08db520a88f042786
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_c16d377282d442d08db520a88f042786_add({"bbox": [16.181937599999998, 47.847696399973714, 16.1843228, 47.85014719997316], "features": [{"bbox": [16.181937599999998, 47.847696399973714, 16.1843228, 47.85014719997316], "geometry": {"coordinates": [[[16.181937599999998, 47.847696399973714], [16.1833995, 47.84807829997364], [16.1843228, 47.85014719997316], [16.183000499999995, 47.849671199973294], [16.181937599999998, 47.847696399973714]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_6e37f8e551544d43a0781683c835218a = L.popup({"maxWidth": "100%"});
+
+        
+            var html_a13b5b54528e40cba95ecc920bf199b4 = $(`<div id="html_a13b5b54528e40cba95ecc920bf199b4" style="width: 100.0%; height: 100.0%;">Raststation Föhrenberg</div>`)[0];
+            popup_6e37f8e551544d43a0781683c835218a.setContent(html_a13b5b54528e40cba95ecc920bf199b4);
+        
+
+        geo_json_c16d377282d442d08db520a88f042786.bindPopup(popup_6e37f8e551544d43a0781683c835218a)
+        ;
+
+        
+    
+    
+        function geo_json_fe683a934eca41aeb41f7071afc21d5a_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_fe683a934eca41aeb41f7071afc21d5a_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_fe683a934eca41aeb41f7071afc21d5a = L.geoJson(null, {
+                onEachFeature: geo_json_fe683a934eca41aeb41f7071afc21d5a_onEachFeature,
+            
+                style: geo_json_fe683a934eca41aeb41f7071afc21d5a_styler,
+        });
+
+        function geo_json_fe683a934eca41aeb41f7071afc21d5a_add (data) {
+            geo_json_fe683a934eca41aeb41f7071afc21d5a
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_fe683a934eca41aeb41f7071afc21d5a_add({"bbox": [16.2029793, 48.38051129984556, 16.2051398, 48.38097089984544], "features": [{"bbox": [16.2029793, 48.38051129984556, 16.2051398, 48.38097089984544], "geometry": {"coordinates": [[[16.2029793, 48.38084089984549], [16.2044746, 48.38051129984556], [16.2051398, 48.38097089984544], [16.2030227, 48.380912899845455], [16.2029793, 48.38084089984549]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_42063cf4fa294f3a9d533c129026250c = L.popup({"maxWidth": "100%"});
+
+        
+            var html_d9930f895c60404eabb8922ce9eb9bdc = $(`<div id="html_d9930f895c60404eabb8922ce9eb9bdc" style="width: 100.0%; height: 100.0%;">Raststation Stockerau</div>`)[0];
+            popup_42063cf4fa294f3a9d533c129026250c.setContent(html_d9930f895c60404eabb8922ce9eb9bdc);
+        
+
+        geo_json_fe683a934eca41aeb41f7071afc21d5a.bindPopup(popup_42063cf4fa294f3a9d533c129026250c)
+        ;
+
+        
+    
+    
+        function geo_json_81ebb813934e43b096cd0bbe8d51e446_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_81ebb813934e43b096cd0bbe8d51e446_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_81ebb813934e43b096cd0bbe8d51e446 = L.geoJson(null, {
+                onEachFeature: geo_json_81ebb813934e43b096cd0bbe8d51e446_onEachFeature,
+            
+                style: geo_json_81ebb813934e43b096cd0bbe8d51e446_styler,
+        });
+
+        function geo_json_81ebb813934e43b096cd0bbe8d51e446_add (data) {
+            geo_json_81ebb813934e43b096cd0bbe8d51e446
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_81ebb813934e43b096cd0bbe8d51e446_add({"bbox": [16.3186144, 48.34665239985385, 16.320418, 48.34899209985327], "features": [{"bbox": [16.3186144, 48.34665239985385, 16.320418, 48.34899209985327], "geometry": {"coordinates": [[[16.3186144, 48.34899209985327], [16.3190066, 48.346879199853795], [16.320418, 48.34665239985385], [16.3202033, 48.34865439985336], [16.3186144, 48.34899209985327]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_2651edd99c8c4ac38979c65f638ac88c = L.popup({"maxWidth": "100%"});
+
+        
+            var html_493ac47a908942b1a552136cf631839c = $(`<div id="html_493ac47a908942b1a552136cf631839c" style="width: 100.0%; height: 100.0%;">Raststation Korneuburg</div>`)[0];
+            popup_2651edd99c8c4ac38979c65f638ac88c.setContent(html_493ac47a908942b1a552136cf631839c);
+        
+
+        geo_json_81ebb813934e43b096cd0bbe8d51e446.bindPopup(popup_2651edd99c8c4ac38979c65f638ac88c)
+        ;
+
+        
+    
+    
+        function geo_json_09d9c8c5d5f245c4a0a330ff119b7070_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_09d9c8c5d5f245c4a0a330ff119b7070_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_09d9c8c5d5f245c4a0a330ff119b7070 = L.geoJson(null, {
+                onEachFeature: geo_json_09d9c8c5d5f245c4a0a330ff119b7070_onEachFeature,
+            
+                style: geo_json_09d9c8c5d5f245c4a0a330ff119b7070_styler,
+        });
+
+        function geo_json_09d9c8c5d5f245c4a0a330ff119b7070_add (data) {
+            geo_json_09d9c8c5d5f245c4a0a330ff119b7070
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_09d9c8c5d5f245c4a0a330ff119b7070_add({"bbox": [16.547329, 48.42462449983474, 16.5503181, 48.42768269983397], "features": [{"bbox": [16.547329, 48.42462449983474, 16.5503181, 48.42768269983397], "geometry": {"coordinates": [[[16.547329, 48.42522749983457], [16.5485155, 48.42462449983474], [16.5503181, 48.42740919983406], [16.5489042, 48.42768269983397], [16.547329, 48.42522749983457]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_091e5f73822d4fe2a33e66f494f84728 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_fd907e5490a64cb398b14e5268b9ee19 = $(`<div id="html_fd907e5490a64cb398b14e5268b9ee19" style="width: 100.0%; height: 100.0%;">Raststation Hochleithen</div>`)[0];
+            popup_091e5f73822d4fe2a33e66f494f84728.setContent(html_fd907e5490a64cb398b14e5268b9ee19);
+        
+
+        geo_json_09d9c8c5d5f245c4a0a330ff119b7070.bindPopup(popup_091e5f73822d4fe2a33e66f494f84728)
+        ;
+
+        
+    
+    
+        function geo_json_2a5707e7bdff4715892ec090bec4e17d_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_2a5707e7bdff4715892ec090bec4e17d_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_2a5707e7bdff4715892ec090bec4e17d = L.geoJson(null, {
+                onEachFeature: geo_json_2a5707e7bdff4715892ec090bec4e17d_onEachFeature,
+            
+                style: geo_json_2a5707e7bdff4715892ec090bec4e17d_styler,
+        });
+
+        function geo_json_2a5707e7bdff4715892ec090bec4e17d_add (data) {
+            geo_json_2a5707e7bdff4715892ec090bec4e17d
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_2a5707e7bdff4715892ec090bec4e17d_add({"bbox": [17.1004802, 47.92809509995478, 17.1036437, 47.92983489995435], "features": [{"bbox": [17.1004802, 47.92809509995478, 17.1036437, 47.92983489995435], "geometry": {"coordinates": [[[17.1004802, 47.92935539995447], [17.1014689, 47.92809509995478], [17.1036437, 47.928241699954754], [17.100745099999997, 47.92983489995435], [17.1004802, 47.92935539995447]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_7b51585bac094a97893c3a3a2c343782 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_62d970ae63a24ba98a905a90004617e3 = $(`<div id="html_62d970ae63a24ba98a905a90004617e3" style="width: 100.0%; height: 100.0%;">Raststation Nickelsdorf Nord</div>`)[0];
+            popup_7b51585bac094a97893c3a3a2c343782.setContent(html_62d970ae63a24ba98a905a90004617e3);
+        
+
+        geo_json_2a5707e7bdff4715892ec090bec4e17d.bindPopup(popup_7b51585bac094a97893c3a3a2c343782)
+        ;
+
+        
+    
+    
+        function geo_json_e571b4ecb8c74814b1dd98c97612d34f_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_e571b4ecb8c74814b1dd98c97612d34f_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_e571b4ecb8c74814b1dd98c97612d34f = L.geoJson(null, {
+                onEachFeature: geo_json_e571b4ecb8c74814b1dd98c97612d34f_onEachFeature,
+            
+                style: geo_json_e571b4ecb8c74814b1dd98c97612d34f_styler,
+        });
+
+        function geo_json_e571b4ecb8c74814b1dd98c97612d34f_add (data) {
+            geo_json_e571b4ecb8c74814b1dd98c97612d34f
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_e571b4ecb8c74814b1dd98c97612d34f_add({"bbox": [17.1022721, 47.91629939995759, 17.1250045, 47.928750699954634], "features": [{"bbox": [17.1022721, 47.91629939995759, 17.1250045, 47.928750699954634], "geometry": {"coordinates": [[[17.1022721, 47.926039499955266], [17.1113681, 47.92386929995576], [17.114629699999995, 47.9204012999566], [17.123754200000004, 47.91629939995759], [17.1250045, 47.91769079995724], [17.1216437, 47.923781099955804], [17.1173743, 47.921808199956274], [17.118920599999996, 47.92322049995591], [17.1162615, 47.924005499955754], [17.1158158, 47.92673749995511], [17.1137205, 47.92827709995474], [17.109668, 47.927374699954946], [17.103916799999997, 47.928750699954634], [17.1022721, 47.926039499955266]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_0185e7736b684a7baace6ee2ffda9169 = L.popup({"maxWidth": "100%"});
+
+        
+
+        geo_json_e571b4ecb8c74814b1dd98c97612d34f.bindPopup(popup_0185e7736b684a7baace6ee2ffda9169)
+        ;
+
+        
+    
+    
+        function geo_json_360a32258fd44d13a4a72e3e715a4b6b_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_360a32258fd44d13a4a72e3e715a4b6b_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_360a32258fd44d13a4a72e3e715a4b6b = L.geoJson(null, {
+                onEachFeature: geo_json_360a32258fd44d13a4a72e3e715a4b6b_onEachFeature,
+            
+                style: geo_json_360a32258fd44d13a4a72e3e715a4b6b_styler,
+        });
+
+        function geo_json_360a32258fd44d13a4a72e3e715a4b6b_add (data) {
+            geo_json_360a32258fd44d13a4a72e3e715a4b6b
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_360a32258fd44d13a4a72e3e715a4b6b_add({"bbox": [17.0953672, 47.92599649995527, 17.099457899999997, 47.928126599954766], "features": [{"bbox": [17.0953672, 47.92599649995527, 17.099457899999997, 47.928126599954766], "geometry": {"coordinates": [[[17.0953672, 47.927184299955], [17.0985987, 47.92599649995527], [17.099457899999997, 47.92735329995497], [17.0967914, 47.928126599954766], [17.0953672, 47.927184299955]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_9728f79fb8c844fbaf0b6597a7b3e7d2 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_b99f7d822ed442998b2b6ade63f3ea36 = $(`<div id="html_b99f7d822ed442998b2b6ade63f3ea36" style="width: 100.0%; height: 100.0%;">Raststation Nickelsdorf Süd</div>`)[0];
+            popup_9728f79fb8c844fbaf0b6597a7b3e7d2.setContent(html_b99f7d822ed442998b2b6ade63f3ea36);
+        
+
+        geo_json_360a32258fd44d13a4a72e3e715a4b6b.bindPopup(popup_9728f79fb8c844fbaf0b6597a7b3e7d2)
+        ;
+
+        
+    
+    
+        function geo_json_2b80963bc2614a25b763544044ebe68b_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillColor": "orange"};
+            }
+        }
+
+        function geo_json_2b80963bc2614a25b763544044ebe68b_onEachFeature(feature, layer) {
+            layer.on({
+            });
+        };
+        var geo_json_2b80963bc2614a25b763544044ebe68b = L.geoJson(null, {
+                onEachFeature: geo_json_2b80963bc2614a25b763544044ebe68b_onEachFeature,
+            
+                style: geo_json_2b80963bc2614a25b763544044ebe68b_styler,
+        });
+
+        function geo_json_2b80963bc2614a25b763544044ebe68b_add (data) {
+            geo_json_2b80963bc2614a25b763544044ebe68b
+                .addData(data)
+                .addTo(map_b10203af36b740a0ac456d1b539a8c32);
+        }
+            geo_json_2b80963bc2614a25b763544044ebe68b_add({"bbox": [16.9598989, 48.031287099930225, 16.9643649, 48.03385609992961], "features": [{"bbox": [16.9598989, 48.031287099930225, 16.9643649, 48.03385609992961], "geometry": {"coordinates": [[[16.9598989, 48.03200609993005], [16.9607299, 48.031287099930225], [16.9643649, 48.03277719992987], [16.9628076, 48.03385609992961], [16.9598989, 48.03200609993005]]], "type": "Polygon"}, "id": "0", "properties": {}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+        var popup_3bfd6015aa674e7383f59106831fb705 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_98ab867c153a450493e3a0bf44b69cb7 = $(`<div id="html_98ab867c153a450493e3a0bf44b69cb7" style="width: 100.0%; height: 100.0%;">Rastplatz Potzneusiedl</div>`)[0];
+            popup_3bfd6015aa674e7383f59106831fb705.setContent(html_98ab867c153a450493e3a0bf44b69cb7);
+        
+
+        geo_json_2b80963bc2614a25b763544044ebe68b.bindPopup(popup_3bfd6015aa674e7383f59106831fb705)
+        ;
+
+        
+    
+</script>
