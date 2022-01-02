@@ -2,7 +2,7 @@ import numpy as np
 
 from utils import *
 from pyomo.environ import *
-from optimization_parameters_2 import *
+# from optimization_parameters import *
 
 # was wäre, wenn ich für jeden möglichen Weg eine neure Matrixspalte erstellen würde
 # dann müsste ich zuerst einmal ein DF erstellen, in dem ich da
@@ -1085,7 +1085,8 @@ def constraint_Y_i(model, pois_df_0, pois_df_1):
     :param pois_df_1:
     :return:
     """
-
+    n0 = len(pois_df_0)
+    n1 = len(pois_df_1)
     Y_0 = np.zeros([n0, 1])
     Y_1 = np.zeros([n1, 1])
     # constraint first pY_dir_0,
@@ -1886,7 +1887,7 @@ def add_ratios_to_io_rels(filtered_ios, pois_0, pois_1):
     return extended_information_rels
 
 
-def create_mask_enum(model, pois_df_0, pois_df_1, links_gdf, segments_gdf, dmax):
+def create_mask_enum(model, pois_df, pois_df_0, pois_df_1, links_gdf, segments_gdf, dmax):
 
     model.constraint_io = ConstraintList()
     n0 = len(pois_df_0)

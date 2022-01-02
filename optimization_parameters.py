@@ -121,6 +121,8 @@ Definition of parameters for charging station allocation
 import numpy as np
 import pandas as pd
 from utils import clean_segments, filter_segments, split_by_dir, pd2gpd
+from optimization import *
+from variable_definitions import *
 
 # read pois_df and reindex
 
@@ -169,21 +171,8 @@ pois_df, segments_gdf, links_gdf = clean_segments(links_gdf, segments_gdf, pois_
 
 pois_0, pois_1 = split_by_dir(pois_df, "dir")
 
-col_energy_demand = (
-    "energy_demand"  # specification of column name for energy demand per day
-)
-col_directions = "dir"  # specification of column name for directions: 0 = 'normal'; 1 = 'inverse'; 2 = both directions
-col_rest_area_name = "name"  # specification of column nameholding names of rest areas
-col_traffic_flow = "traffic_flow"
-col_type = "pois_type"
-# col_position = "asfinag_position"
-col_highway = "highway"
-col_has_cs = "has_charging_station"
-col_distance = "dist_along_segment"
-col_segment_id = "segment_id"
 input_existing_infrastructure = True
-col_type_ID = "type_ID"
-col_POI_ID = "POI_ID"
+
 pois_0[col_energy_demand] = pois_0["demand_0"]
 pois_0[col_traffic_flow] = pois_0["tc_0"]
 pois_1[col_energy_demand] = pois_1["demand_1"]
@@ -222,17 +211,13 @@ ec = 0.25  # (€/kWh) charging price for EV driver
 e_tax = 0.15  # (€/kWh) total taxes and other charges
 cfix = 7000  # (€) total installation costs of charging station installation
 cvar = 17750  # (€) total installation costs of charging pole installation
-c_non_covered_demand = 900000000000
 eta = 0.05  # share of electric vehicles of car fleet
 mu = 0.18  # share of cars travelling long-distance
 gamma_h = 0.125   # share of cars travelling during peak hour
-energy_demand_0 = dir_0[
-    col_energy_demand
-].to_list()  # (kWh/d) energy demand at each rest area per day
-energy_demand_1 = dir_1[col_energy_demand].to_list()
+
 directions_0 = dir_0[col_directions].to_list()
 directions_1 = dir_1[col_directions].to_list()
-dmax = 160000
+dmax = 50000
 introduce_existing_infrastructure = False
 no_new_infrastructure = False
 
@@ -244,12 +229,6 @@ l0 = dir_0[col_segment_id].to_list()
 l_ext = l0
 l_ext.extend(l1)
 highway_names = list(set(l_ext))
-
-energy_demand_matrix_0 = np.append(
-    np.diag(energy_demand_0) * eta * mu * gamma_h * specific_demand, np.zeros([n0, n1]), axis=1
-)
-energy_demand_matrix_1 = np.append(
-    np.diag(energy_demand_1) * eta * mu * gamma_h * specific_demand, np.zeros([n1, n0]), axis=1)
 
 maximum_dist_between_charging_stations = dmax
 
@@ -272,3 +251,28 @@ if introduce_existing_infrastructure:
 
     existing_infr_0 = pd.merge(rest_areas_0, ex_infr_0, on=[col_highway, 'name', 'direction'])
     existing_infr_1 = pd.merge(rest_areas_1, ex_infr_1, on=[col_highway, 'name', 'direction'])
+
+else:
+    existing_infr_0 = pd.DataFrame()
+    existing_infr_1 = pd.DataFrame()
+
+optimization(
+    pois_df,
+    dir_0,
+    dir_1,
+    segments_gdf,
+    links_gdf,
+    cfix,
+    cvar,
+    dmax,
+    eta,
+    acc,
+    mu,
+    gamma_h,
+    charging_capacity,
+    specific_demand,
+    introduce_existing_infrastructure,
+    no_new_infrastructure,
+    existing_infr_0,
+    existing_infr_1,
+)

@@ -3,22 +3,21 @@ import geopandas as gpd
 import glob
 import os
 from shapely import wkt
-from optimization_parameters import *
+# from optimization_parameters import *
+from variable_definitions import *
 import contextily as ctx
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
-
+from utils import pd2gpd
 
 def visualize_results(
     filename,
-    maximum_dist_between_charging_stations=dmax,
-    eta=eta,
-    ec=ec,
-    acc=acc,
-    charging_capacity=charging_capacity,
-    energy=energy,
-    specific_demand=specific_demand,
+    dist_max,
+    eta,
+    charging_capacity,
+    energy,
+    specific_demand,
 ):
     # reference coordinate system for all visualisation
     reference_coord_sys = "EPSG:31287"
@@ -124,7 +123,7 @@ def visualize_results(
     plt.savefig(
         "results/" + latest_file.split("\\")[-1].split("_")[0] + "_visualization.png"
     )
-    # plt.show()
+    plt.show()
 
 
 if __name__ == "__main__":

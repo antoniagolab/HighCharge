@@ -795,23 +795,36 @@ warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
 import pandas as pd
 import numpy as np
 from pyomo.environ import *
-from optimization_parameters_2 import *
-from optimization_additional_functions import *
-from integrating_exxisting_infrastructure import *
+# from optimization_parameters import *
+# from optimization_additional_functions import *
+# from integrating_exxisting_infrastructure import *
 import time
 from visualize_results import *
 from termcolor import colored
-from optimization_utils_2 import *
+from optimization_utils import *
 
 
 def optimization(
-    dmax=dmax,
-    eta=eta,
-    ec=ec,
-    acc=acc,
-    charging_capacity=charging_capacity,
-    specific_demand=specific_demand,
-    introduce_existing_infrastructure=introduce_existing_infrastructure
+    pois_df,
+    dir_0,
+    dir_1,
+    segments_gdf,
+    links_gdf,
+    cfix,
+    cvar,
+    dmax,
+    eta,
+    acc,
+    mu,
+    gamma_h,
+    charging_capacity,
+    specific_demand,
+    introduce_existing_infrastructure,
+    no_new_infrastructure,
+    existing_infr_0,
+    existing_infr_1,
+
+
 ):
     """
     Constraint and objective function definition + solution of optimization using parameters defined in
@@ -821,6 +834,22 @@ def optimization(
     if no_new_infrastructure:
         introduce_existing_infrastructure = True
 
+    n0 = len(dir_0)
+    n1 = len(dir_1)
+    n3 = len(pois_df)
+
+    energy_demand_0 = dir_0[
+        col_energy_demand
+    ].to_list()  # (kWh/d) energy demand at each rest area per day
+    energy_demand_1 = dir_1[col_energy_demand].to_list()
+
+    energy_demand_matrix_0 = np.append(
+        np.diag(energy_demand_0) * eta * mu * gamma_h * specific_demand, np.zeros([n0, n1]), axis=1
+    )
+    energy_demand_matrix_1 = np.append(
+        np.diag(energy_demand_1) * eta * mu * gamma_h * specific_demand, np.zeros([n1, n0]), axis=1)
+
+    g = 1000
     start = time.time()
     # ------------------------------------------ printing input parameters -------------------------------------------
     print("------------------------------------------")
@@ -894,7 +923,6 @@ def optimization(
 
     energy = charging_capacity  # (kWh) charging energy per day by one charging pole
 
-
     # ------------------------------------------------- constraints -------------------------------------------------
     print("------------------------------------------")
     print("Adding constraints ...")
@@ -911,7 +939,7 @@ def optimization(
         mask_0,
         mask_1,
         path_directory,
-    ) = create_mask_enum(model, dir_0, dir_1, links_gdf, segments_gdf, dmax)
+    ) = create_mask_enum(model, pois_df, dir_0, dir_1, links_gdf, segments_gdf, dmax)
     print("... took ", str(time.time() - t0), " sec")
 
     print(
@@ -1057,10 +1085,10 @@ def optimization(
     model.c_profitable_stations = ConstraintList()
     model.c12 = ConstraintList()
     model.installed_infrastructure = ConstraintList()
-    dir_names = dir[col_POI_ID].to_list()
-    dir_directions = dir[col_directions].to_list()
-    dir_highways = dir[col_segment_id].to_list()
-    dir_type_ids = dir[col_type_ID].to_list()
+    dir_names = pois_df[col_POI_ID].to_list()
+    dir_directions = pois_df[col_directions].to_list()
+    dir_highways = pois_df[col_segment_id].to_list()
+    dir_type_ids = pois_df[col_type_ID].to_list()
     installed_stations = 0
     installed_poles = 0
 
@@ -1514,10 +1542,6 @@ def optimization(
         + str(model.obj.value())
         + ";  acc="
         + str(acc)
-        + ";  ec="
-        + str(ec)
-        + ";  e_tax="
-        + str(e_tax)
         + ";  cfix="
         + str(cfix)
         + ";  cvar="
@@ -1540,7 +1564,7 @@ def optimization(
 
     visualize_results(
         filename=output_filename[:-4] + "_all_info.txt",
-        dist_max=maximum_dist_between_charging_stations,
+        dist_max=dmax,
         eta=eta,
         charging_capacity=charging_capacity,
         energy=energy,
@@ -1550,6 +1574,6 @@ def optimization(
 
     return sum(pXi), sum(pYi_dir_0) + sum(pYi_dir_1), model.obj.value() * 365
 
-
-if __name__ == "__main__":
-    optimization(introduce_existing_infrastructure=introduce_existing_infrastructure)
+#
+# if __name__ == "__main__":
+#     optimization(introduce_existing_infrastructure=introduce_existing_infrastructure)
