@@ -6,7 +6,7 @@ This script is to validate the model by means of
 
 """
 from parameter_calculations import *
-from optimization import optimization
+from optimization import *
 from file_import import *
 from utils import pd2gpd
 
@@ -46,7 +46,7 @@ specific_demand = 25    # (kWh/100km)
 acc = 50    # kW
 
 # (1) ---------------------------------------------------------------------------------------------------------------
-#
+
 number_charging_poles_1, number_charging_stations_1, _, _ = optimization(
     pois_df,
     dir_0,
@@ -66,6 +66,7 @@ number_charging_poles_1, number_charging_stations_1, _, _ = optimization(
     no_new_infrastructure_1,
     existing_infr_0,
     existing_infr_1,
+
 )
 
 # (2) ---------------------------------------------------------------------------------------------------------------
@@ -90,3 +91,5 @@ _, _, _, non_covered_energy = optimization(
     existing_infr_0,
     existing_infr_1,
 )
+
+# TODO: printing results of validation

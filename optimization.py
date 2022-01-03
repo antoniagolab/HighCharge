@@ -50,6 +50,9 @@ def optimization(
     """
     if no_new_infrastructure:
         introduce_existing_infrastructure = True
+        c_non_covered_demand = 900000000
+    else:
+        c_non_covered_demand = 90000000000000
 
     n0 = len(dir_0)
     n1 = len(dir_1)
