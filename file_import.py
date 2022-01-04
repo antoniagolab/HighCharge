@@ -44,3 +44,22 @@ n1 = len(dir_1)
 k = len(dir)
 n3 = k
 
+
+ex_infr_0 = pd.read_csv("data/rest_areas_0_charging_stations.csv")
+ex_infr_1 = pd.read_csv("data/rest_areas_1_charging_stations.csv")
+
+# join this with rest areas
+rest_areas = pd2gpd(
+    pd.read_csv("data/projected_ras.csv"), geom_col_name="centroid"
+).sort_values(by=["on_segment", "dist_along_highway"])
+rest_areas["segment_id"] = rest_areas["on_segment"]
+rest_areas[col_type_ID] = rest_areas["nb"]
+rest_areas[col_directions] = rest_areas["evaluated_dir"]
+
+rest_areas_0, rest_areas_1 = split_by_dir(rest_areas, col_directions, reindex=True)
+
+existing_infr_0 = pd.merge(rest_areas_0, ex_infr_0, on=[col_highway, 'name', 'direction'])
+existing_infr_1 = pd.merge(rest_areas_1, ex_infr_1, on=[col_highway, 'name', 'direction'])
+existing_infr_0['installed_infrastructure'] = existing_infr_0['cs_below_50kwh'] + existing_infr_0['cs_above_50kwh']
+existing_infr_1['installed_infrastructure'] = existing_infr_1['cs_below_50kwh'] + existing_infr_1['cs_above_50kwh']
+

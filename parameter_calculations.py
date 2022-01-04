@@ -9,7 +9,7 @@ def calculate_dist_max(av_driving_range):
     :param av_driving_range: (km) average driving range
     :return:
     """
-    return av_driving_range * (2/3) * 1000
+    return av_driving_range * (2/3) * (1/2) * 1000
 
 
 def create_frequency_df(df):
@@ -63,19 +63,23 @@ def calculate_max_util_params(dist_max):
     # extracting all trips C(t)
     c_t = car_drivers_data[car_drivers_data[column_trip_distance] >= (dist_max/1000)]
 
-
     h_t = h_t[~(h_t[column_starttime] == ' ')]
     c_t = c_t[~(c_t[column_starttime] == ' ')]
 
     # goal: for each time step of the day: maximum
     h_t_counts = create_frequency_df(h_t)
     c_t_counts = create_frequency_df(c_t)
+    h_t_counts['routes passing highway'] = h_t_counts['frequency']
+    c_t_counts['long_distance routes'] = c_t_counts['frequency']
+    # plot_counts = h_t_counts[['routes passing highway']].join(c_t_counts[['long_distance routes']])
 
-
+    plot_h = h_t_counts.drop(columns=['frequency'])
+    plot_c = c_t_counts.drop(columns=['frequency'])
     # plot
     fig, ax = plt.subplots()
-    h_t_counts.plot(ax=ax)
-    c_t_counts.plot(ax=ax)
+    plot_h.plot(ax=ax)
+    plot_c.plot(ax=ax)
+
 
     # find peak hour by sliding a window over time
 

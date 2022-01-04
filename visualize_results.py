@@ -19,6 +19,8 @@ def visualize_results(
     charging_capacity,
     energy,
     specific_demand,
+    optimization_result,
+    scenario_name
 ):
     # reference coordinate system for all visualisation
     reference_coord_sys = "EPSG:31287"
@@ -87,10 +89,23 @@ def visualize_results(
     # scale marker sizes
     max_size = 300
     max_val = plot_results_and_geom_df["total_charging_pole_number"].max()
-    fact = max_size/max_val
+    fact = int(max_size/max_val)
 
+    scatter2 = plt.scatter(
+        plot_results_and_geom_df["x"].to_list(),
+        plot_results_and_geom_df["y"].to_list(),
+        s=np.array(plot_results_and_geom_df["total_charging_pole_number"].to_list()),
+        label="Charging station",
+        edgecolors='black',
+        zorder=10,
+    )
+    plt.close()
+
+    print(results)
     # figure 1
     fig, ax = plt.subplots(figsize=(15, 7))
+    plt.rcParams["font.family"] = "serif"
+    plt.rcParams["font.size"] = 12
     plot_highway_geometries.plot(ax=ax, label="Austrian highway network", color='grey', zorder=0)
     scatter = plt.scatter(
         plot_results_and_geom_df["x"].to_list(),
@@ -108,23 +123,38 @@ def visualize_results(
         plot_results_and_geom_df["total_charging_pole_number"].min(),
         plot_results_and_geom_df["total_charging_pole_number"].max() + 1,
     )
+
+    handles2, labs2 = scatter2.legend_elements(prop='sizes', num=6, alpha=0.6)
+    handles, labs = scatter.legend_elements(prop='sizes', num=6, alpha=0.6)
+
     labels = []
+    n = len(labs)
     for l in ls:
         labels.append("$\\mathdefault{" + str(int(l)) + "}$")
 
-    handles, _ = scatter.legend_elements(prop="sizes", alpha=0.6)
     legend = ax.legend(
-        handles, labels, loc="upper left", title="Nb. of 50 kW charging poles"
+        handles, labs2, loc="upper left", title="Nb. of charging poles"
     )
     ax.add_artist(legend)
 
     ax.legend(loc="lower left")
     ax.set_xlabel("X (EPSG:3857)")
     ax.set_ylabel("Y (EPSG:3857)")
+    plt.axis('off')
+    plt.text(1.28e6, 6.2e6, 'Nb. charging stations: ' + str(int(optimization_result[0]))
+            + '\nNb. charging poles: ' + str(int(optimization_result[1])) + '\n\u0394D: '
+             + str(round(optimization_result[3], 2)) + 'kWh (' + str(optimization_result[4]) + '%)')
+    plt.title('Optimization result: ' + scenario_name, fontdict={'family': "serif"})
     plt.savefig(
-        "results/" + latest_file.split("\\")[-1].split("_")[0] + "_visualization.png"
+        "results/" + latest_file.split("\\")[-1].split("_")[0] + '_' + scenario_name + "_visualization.png"
     )
-    plt.show()
+    plt.savefig(
+        "results/" + latest_file.split("\\")[-1].split("_")[0] + '_' + scenario_name + "_visualization.svg"
+    )
+    plt.savefig(
+        "results/" + latest_file.split("\\")[-1].split("_")[0] + '_' + scenario_name + "_visualization.pdf"
+    )
+    # plt.show()
 
 
 if __name__ == "__main__":

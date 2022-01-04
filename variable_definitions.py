@@ -13,5 +13,24 @@ col_distance = "dist_along_segment"
 col_segment_id = "segment_id"
 col_type_ID = "type_ID"
 col_POI_ID = "POI_ID"
-# c_non_covered_demand = 900000000
-# c_non_covered_demand = 90000000000000
+
+# default input values
+
+default_specific_demand = 25  # (kWh/100km) average specific energy usage for 100km
+
+default_acc = (
+    default_specific_demand * 100
+)  # (kWh) charged energy by a car during one charging for 100km
+default_charging_capacity = 110  # (kW)
+default_energy = default_charging_capacity # (kWh/h)
+default_ec = 0.25  # (€/kWh) charging price for EV driver
+default_e_tax = 0.15  # (€/kWh) total taxes and other charges
+default_cx = 7000  # (€) total installation costs of charging station installation
+default_cy = 17750  # (€) total installation costs of charging pole installation
+default_eta = 0.33  # share of electric vehicles of car fleet
+default_mu = 0.18  # share of cars travelling long-distance
+default_gamma_h = 0.125   # share of cars travelling during peak hour
+default_a = 0.69
+
+# dmax = 50000
+default_dmax = 50000

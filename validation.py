@@ -15,39 +15,21 @@ no_new_infrastructure_2 = True
 introduce_existing_infrastructure_1 = False
 introduce_existing_infrastructure_2 = True
 
-# reading existing infrastructure
-
-ex_infr_0 = pd.read_csv("data/rest_areas_0_charging_stations.csv")
-ex_infr_1 = pd.read_csv("data/rest_areas_1_charging_stations.csv")
-
-# join this with rest areas
-rest_areas = pd2gpd(
-    pd.read_csv("data/projected_ras.csv"), geom_col_name="centroid"
-).sort_values(by=["on_segment", "dist_along_highway"])
-rest_areas["segment_id"] = rest_areas["on_segment"]
-rest_areas[col_type_ID] = rest_areas["nb"]
-rest_areas[col_directions] = rest_areas["evaluated_dir"]
-
-rest_areas_0, rest_areas_1 = split_by_dir(rest_areas, col_directions, reindex=True)
-
-existing_infr_0 = pd.merge(rest_areas_0, ex_infr_0, on=[col_highway, 'name', 'direction'])
-existing_infr_1 = pd.merge(rest_areas_1, ex_infr_1, on=[col_highway, 'name', 'direction'])
-
 # parameters status quo
 cx = 7000
 cy = 17750
 eta = 0.01
-average_driving_distance = 250  # (km)
+average_driving_distance = 200  # (km)
 long_dist = 100000  # (m)
 dist_max = calculate_dist_max(average_driving_distance)
 mu, gamma_h = calculate_max_util_params(long_dist)
-charging_capacity = 50  # (kWh)
+charging_capacity = 50 * (4/5)# (kWh)
 specific_demand = 25    # (kWh/100km)
-acc = 50    # kW
-
+acc = 50 * (4/6)    # kW
+a = 1
 # (1) ---------------------------------------------------------------------------------------------------------------
 
-number_charging_poles_1, number_charging_stations_1, _, _ = optimization(
+number_charging_poles_1, number_charging_stations_1, _, _, _ = optimization(
     pois_df,
     dir_0,
     dir_1,
@@ -60,18 +42,19 @@ number_charging_poles_1, number_charging_stations_1, _, _ = optimization(
     acc,
     mu,
     gamma_h,
+    a,
     charging_capacity,
     specific_demand,
     introduce_existing_infrastructure_1,
     no_new_infrastructure_1,
     existing_infr_0,
     existing_infr_1,
-
+    scenario_name="validation 1"
 )
 
 # (2) ---------------------------------------------------------------------------------------------------------------
 
-_, _, _, non_covered_energy = optimization(
+_, _, _, non_covered_energy, perc_not_charged = optimization(
     dir,
     dir_0,
     dir_1,
@@ -84,12 +67,28 @@ _, _, _, non_covered_energy = optimization(
     acc,
     mu,
     gamma_h,
+    a,
     charging_capacity,
     specific_demand,
     introduce_existing_infrastructure_2,
     no_new_infrastructure_2,
     existing_infr_0,
     existing_infr_1,
+    scenario_name="validation 2"
 )
 
 # TODO: printing results of validation
+
+# existing infrastructure
+existing_cs = 27
+existing_cp = 160
+
+print('-----------------------------------------------------------------------------------')
+print('(1) modelled infrastructure')
+print('existing:', str(existing_cs), ' stations;', existing_cp, 'poles')
+print('estimated:', str(int(number_charging_poles_1)), 'stations; ', int(number_charging_stations_1), 'poles')
+
+print('-----------------------------------------------------------------------------------')
+print('(2) not covered demand')
+print('not covered:', round(perc_not_charged, 2))
+print('-----------------------------------------------------------------------------------')

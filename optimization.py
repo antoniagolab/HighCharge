@@ -36,12 +36,14 @@ def optimization(
     acc,
     mu,
     gamma_h,
+    a,
     charging_capacity,
     specific_demand,
     introduce_existing_infrastructure,
     no_new_infrastructure,
     existing_infr_0,
     existing_infr_1,
+    scenario_name=''
 ):
     """
     Constraint and objective function definition + solution of optimization using parameters defined in
@@ -64,12 +66,12 @@ def optimization(
     energy_demand_1 = dir_1[col_energy_demand].to_list()
 
     energy_demand_matrix_0 = np.append(
-        np.diag(energy_demand_0) * eta * mu * gamma_h * specific_demand, np.zeros([n0, n1]), axis=1
+        np.diag(energy_demand_0) * eta * mu * gamma_h * specific_demand * a, np.zeros([n0, n1]), axis=1
     )
     energy_demand_matrix_1 = np.append(
-        np.diag(energy_demand_1) * eta * mu * gamma_h * specific_demand, np.zeros([n1, n0]), axis=1)
+        np.diag(energy_demand_1) * eta * mu * gamma_h * specific_demand * a, np.zeros([n1, n0]), axis=1)
 
-    g = 1000
+    g = 100000
     start = time.time()
     # ------------------------------------------ printing input parameters -------------------------------------------
     print("------------------------------------------")
@@ -97,6 +99,8 @@ def optimization(
         "; mu=",
         str(mu),
         "; gamma_h=",
+        str(a),
+        "; a=",
         str(gamma_h),
         "; dist_max=",
         dist_max,
@@ -337,7 +341,7 @@ def optimization(
                     (existing_infr_0[col_type_ID] == type_id)
                     & (existing_infr_0[col_directions] == direc)
                     & (existing_infr_0[col_segment_id] == highway)
-                    & (existing_infr_0["cs_below_50kwh"] > 0)
+                    & (existing_infr_0["installed_infrastructure"] > 0)
                 )
             ].index.to_list()
 
@@ -346,7 +350,7 @@ def optimization(
                     (existing_infr_1[col_type_ID] == type_id)
                     & (existing_infr_1[col_directions] == direc)
                     & (existing_infr_1[col_segment_id] == highway)
-                    & (existing_infr_1["cs_below_50kwh"] > 0)
+                    & (existing_infr_1["installed_infrastructure"] > 0)
                 )
             ].index.to_list()
 
@@ -391,16 +395,16 @@ def optimization(
                         model.pYi_dir_0[model.IDX_0[ind_0]]
                         + model.pYi_dir_1[model.IDX_1[ind_1]]
                         >= max(
-                            existing_infr_0.at[infr_0, "cs_below_50kwh"],
-                            existing_infr_1.at[infr_1, "cs_below_50kwh"],
+                            existing_infr_0.at[infr_0, "installed_infrastructure"],
+                            existing_infr_1.at[infr_1, "installed_infrastructure"],
                         )
                     )
                     model.c12.add(model.pXi[ij] == 1)
                     installed_stations = installed_stations + 1
                     installed_poles = (
                         max(
-                            existing_infr_0.at[infr_0, "cs_below_50kwh"],
-                            existing_infr_1.at[infr_1, "cs_below_50kwh"],
+                            existing_infr_0.at[infr_0, "installed_infrastructure"],
+                            existing_infr_1.at[infr_1, "installed_infrastructure"],
                         )
                         + installed_poles
                     )
@@ -409,8 +413,8 @@ def optimization(
                             model.pYi_dir_0[model.IDX_0[ind_0]]
                             + model.pYi_dir_1[model.IDX_1[ind_1]]
                             == max(
-                                existing_infr_0.at[infr_0, "cs_below_50kwh"],
-                                existing_infr_1.at[infr_1, "cs_below_50kwh"],
+                                existing_infr_0.at[infr_0, "installed_infrastructure"],
+                                existing_infr_1.at[infr_1, "installed_infrastructure"],
                             )
                         )
                 elif no_new_infrastructure:
@@ -442,17 +446,17 @@ def optimization(
 
                     model.c12.add(
                         model.pYi_dir_0[model.IDX_0[ind_0]]
-                        >= existing_infr_0.at[infr_0, "cs_below_50kwh"]
+                        >= existing_infr_0.at[infr_0, "installed_infrastructure"]
                     )
                     model.c12.add(model.pXi[ij] == 1)
                     installed_stations = installed_stations + 1
                     installed_poles = (
-                        existing_infr_0.at[infr_0, "cs_below_50kwh"] + installed_poles
+                        existing_infr_0.at[infr_0, "installed_infrastructure"] + installed_poles
                     )
                     if no_new_infrastructure:
                         model.c12.add(
                             model.pYi_dir_0[model.IDX_0[ind_0]]
-                            == existing_infr_0.at[infr_0, "cs_below_50kwh"]
+                            == existing_infr_0.at[infr_0, "installed_infrastructure"]
                         )
                 elif no_new_infrastructure:
                     model.c12.add(
@@ -481,17 +485,17 @@ def optimization(
                     infr_1 = ex_infr_1[0]
                     model.c12.add(
                         model.pYi_dir_1[model.IDX_1[ind_1]]
-                        >= existing_infr_1.at[infr_1, "cs_below_50kwh"]
+                        >= existing_infr_1.at[infr_1, "installed_infrastructure"]
                     )
                     model.c12.add(model.pXi[ij] == 1)
                     installed_stations = installed_stations + 1
                     installed_poles = (
-                        existing_infr_1.at[infr_1, "cs_below_50kwh"] + installed_poles
+                        existing_infr_1.at[infr_1, "installed_infrastructure"] + installed_poles
                     )
                     if no_new_infrastructure:
                         model.c12.add(
                             model.pYi_dir_1[model.IDX_1[ind_1]]
-                            == existing_infr_1.at[infr_1, "cs_below_50kwh"]
+                            == existing_infr_1.at[infr_1, "installed_infrastructure"]
                         )
                 elif no_new_infrastructure:
                     model.c12.add(
@@ -781,7 +785,8 @@ def optimization(
         f.write(additional_info)
         f.write(data)
         f.close()
-
+    perc_not_charged = (not_charged_energy + not_charged_2) / (sum(sum(energy_demand_matrix_0))
+                + sum(sum(energy_demand_matrix_1)))
     visualize_results(
         filename=output_filename[:-4] + "_all_info.txt",
         dist_max=dist_max,
@@ -789,7 +794,9 @@ def optimization(
         charging_capacity=charging_capacity,
         energy=energy,
         specific_demand=specific_demand,
+        optimization_result=[sum(pXi), sum(pYi_dir_0) + sum(pYi_dir_1), installation_costs, (not_charged_energy + not_charged_2), round(perc_not_charged * 100,2)],
+        scenario_name=scenario_name
     )
     print("Total amount of computation: ", str(time.time() - start), " sec")
 
-    return sum(pXi), sum(pYi_dir_0) + sum(pYi_dir_1), installation_costs, (not_charged_energy + not_charged_2)
+    return sum(pXi), sum(pYi_dir_0) + sum(pYi_dir_1), installation_costs, (not_charged_energy + not_charged_2), perc_not_charged

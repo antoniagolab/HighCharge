@@ -90,22 +90,23 @@ specific_demand = 25  # (kWh/100km) average specific energy usage for 100km
 acc = (
     specific_demand * 100
 )  # (kWh) charged energy by a car during one charging for 100km
-charging_capacity = 50  # (kW)
-energy = charging_capacity * 0.95  # (kWh/h)
+charging_capacity = 41 * (4/6)  # (kW)
+energy = charging_capacity # (kWh/h)
 ec = 0.25  # (€/kWh) charging price for EV driver
 e_tax = 0.15  # (€/kWh) total taxes and other charges
 cx = 7000  # (€) total installation costs of charging station installation
 cy = 17750  # (€) total installation costs of charging pole installation
-eta = 0.01  # share of electric vehicles of car fleet
+eta = 0.33  # share of electric vehicles of car fleet
 mu = 0.18  # share of cars travelling long-distance
 gamma_h = 0.125   # share of cars travelling during peak hour
+a = 0.69
 
 directions_0 = dir_0[col_directions].to_list()
 directions_1 = dir_1[col_directions].to_list()
 # dmax = 50000
-dmax = 166666
+dmax = 50000 * (2/3) * (1/2)
 
-introduce_existing_infrastructure = False
+introduce_existing_infrastructure = True
 no_new_infrastructure = True
 
 # extracting all highway names to create two additional columns: "first" and "last" to indicate whether resting areas
@@ -137,7 +138,8 @@ rest_areas_0, rest_areas_1 = split_by_dir(rest_areas, col_directions, reindex=Tr
 
 existing_infr_0 = pd.merge(rest_areas_0, ex_infr_0, on=[col_highway, 'name', 'direction'])
 existing_infr_1 = pd.merge(rest_areas_1, ex_infr_1, on=[col_highway, 'name', 'direction'])
-
+existing_infr_0['installed_infrastructure'] = existing_infr_0['cs_below_50kwh'] + existing_infr_0['cs_above_50kwh']
+existing_infr_1['installed_infrastructure'] = existing_infr_1['cs_below_50kwh'] + existing_infr_1['cs_above_50kwh']
 
 dir = pois_df
 optimization(
@@ -153,10 +155,12 @@ optimization(
     acc,
     mu,
     gamma_h,
+    a,
     charging_capacity,
     specific_demand,
     introduce_existing_infrastructure,
     no_new_infrastructure,
     existing_infr_0,
     existing_infr_1,
+    scenario_name="Existing infrastructure"
 )
