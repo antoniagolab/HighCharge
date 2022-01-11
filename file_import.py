@@ -12,6 +12,8 @@ pois_df["POI_ID"] = range(0, len(pois_df))
 segments_gdf = pd2gpd(pd.read_csv("data/highway_segments.csv"))
 links_gdf = pd2gpd(pd.read_csv("data/highway_intersections.csv"))
 links_gdf = links_gdf[~(links_gdf.index == 19)]
+# pois_df, segments_gdf, links_gdf = filter_segments(pois_df, segments_gdf, links_gdf,
+# [ind for ind in segments_gdf.ID.to_list() if ind not in [34,44,0,1,2]])
 pois_df, segments_gdf, links_gdf = clean_segments(links_gdf, segments_gdf, pois_df)
 
 pois_0, pois_1 = split_by_dir(pois_df, "dir")
@@ -45,8 +47,9 @@ k = len(dir)
 n3 = k
 
 
-ex_infr_0 = pd.read_csv("data/rest_areas_0_charging_stations.csv")
-ex_infr_1 = pd.read_csv("data/rest_areas_1_charging_stations.csv")
+ex_infr_0 = pd.read_csv("data/rest_areas_0_charging_stations_old.csv")
+ex_infr_1 = pd.read_csv("data/rest_areas_1_charging_stations_old.csv")
+
 
 # join this with rest areas
 rest_areas = pd2gpd(
@@ -60,6 +63,10 @@ rest_areas_0, rest_areas_1 = split_by_dir(rest_areas, col_directions, reindex=Tr
 
 existing_infr_0 = pd.merge(rest_areas_0, ex_infr_0, on=[col_highway, 'name', 'direction'])
 existing_infr_1 = pd.merge(rest_areas_1, ex_infr_1, on=[col_highway, 'name', 'direction'])
-existing_infr_0['installed_infrastructure'] = existing_infr_0['cs_below_50kwh'] + existing_infr_0['cs_above_50kwh']
-existing_infr_1['installed_infrastructure'] = existing_infr_1['cs_below_50kwh'] + existing_infr_1['cs_above_50kwh']
+
+existing_infr = existing_infr_0.append(existing_infr_1)
+existing_infr = existing_infr.drop_duplicates(subset=['highway', 'name', 'asfinag_position'])
+existing_infr = existing_infr.sort_values(by=['highway', 'name'])
+
+installed_cap = existing_infr['50kW'] * 50 + existing_infr['75kW'] * 75 + existing_infr['150kW'] * 150 + existing_infr['350kW'] * 350
 

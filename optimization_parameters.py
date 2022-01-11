@@ -7,6 +7,7 @@ import pandas as pd
 from utils import clean_segments, filter_segments, split_by_dir, pd2gpd
 from optimization import *
 from variable_definitions import *
+from file_import import *
 
 # read pois_df and reindex
 
@@ -85,18 +86,18 @@ k = len(dir)
 n3 = k
 # 50 kW annehmen -> + 20h durchgehende Besetzung
 g = 100000  # Maximum number of charging poles at one charging station
-specific_demand = 25  # (kWh/100km) average specific energy usage for 100km
+specific_demand = 20  # (kWh/100km) average specific energy usage for 100km
 
 acc = (
     specific_demand * 100
 )  # (kWh) charged energy by a car during one charging for 100km
-charging_capacity = 41 * (4/6)  # (kW)
+charging_capacity = 80.85 # (kW)
 energy = charging_capacity # (kWh/h)
 ec = 0.25  # (€/kWh) charging price for EV driver
 e_tax = 0.15  # (€/kWh) total taxes and other charges
-cx = 7000  # (€) total installation costs of charging station installation
+cx = 7000 * 3 # (€) total installation costs of charging station installation
 cy = 17750  # (€) total installation costs of charging pole installation
-eta = 0.33  # share of electric vehicles of car fleet
+eta = 0.9  # share of electric vehicles of car fleet
 mu = 0.18  # share of cars travelling long-distance
 gamma_h = 0.125   # share of cars travelling during peak hour
 a = 0.69
@@ -104,10 +105,10 @@ a = 0.69
 directions_0 = dir_0[col_directions].to_list()
 directions_1 = dir_1[col_directions].to_list()
 # dmax = 50000
-dmax = 50000 * (2/3) * (1/2)
+dmax = 500000 * (2/3) * 0.7
 
 introduce_existing_infrastructure = True
-no_new_infrastructure = True
+no_new_infrastructure = False
 
 # extracting all highway names to create two additional columns: "first" and "last" to indicate whether resting areas
 # are first resting areas along a singular highway in "normal" direction
@@ -122,24 +123,6 @@ maximum_dist_between_charging_stations = dmax
 
 # read existing infrastructure
 
-
-ex_infr_0 = pd.read_csv("data/rest_areas_0_charging_stations.csv")
-ex_infr_1 = pd.read_csv("data/rest_areas_1_charging_stations.csv")
-
-# join this with rest areas
-rest_areas = pd2gpd(
-    pd.read_csv("data/projected_ras.csv"), geom_col_name="centroid"
-).sort_values(by=["on_segment", "dist_along_highway"])
-rest_areas["segment_id"] = rest_areas["on_segment"]
-rest_areas[col_type_ID] = rest_areas["nb"]
-rest_areas[col_directions] = rest_areas["evaluated_dir"]
-
-rest_areas_0, rest_areas_1 = split_by_dir(rest_areas, col_directions, reindex=True)
-
-existing_infr_0 = pd.merge(rest_areas_0, ex_infr_0, on=[col_highway, 'name', 'direction'])
-existing_infr_1 = pd.merge(rest_areas_1, ex_infr_1, on=[col_highway, 'name', 'direction'])
-existing_infr_0['installed_infrastructure'] = existing_infr_0['cs_below_50kwh'] + existing_infr_0['cs_above_50kwh']
-existing_infr_1['installed_infrastructure'] = existing_infr_1['cs_below_50kwh'] + existing_infr_1['cs_above_50kwh']
 
 dir = pois_df
 optimization(

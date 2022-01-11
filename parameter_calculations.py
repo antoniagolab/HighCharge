@@ -9,7 +9,7 @@ def calculate_dist_max(av_driving_range):
     :param av_driving_range: (km) average driving range
     :return:
     """
-    return av_driving_range * (2/3) * (1/2) * 1000
+    return av_driving_range * (2/3) * 0.7 * 1000
 
 
 def create_frequency_df(df):

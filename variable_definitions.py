@@ -3,7 +3,7 @@ col_energy_demand = (
     "energy_demand"  # specification of column name for energy demand per day
 )
 col_directions = "dir"  # specification of column name for directions: 0 = 'normal'; 1 = 'inverse'; 2 = both directions
-col_rest_area_name = "name"  # specification of column nameholding names of rest areas
+col_rest_area_name = "name"  # specification of column name holding names of rest areas
 col_traffic_flow = "traffic_flow"
 col_type = "pois_type"
 # col_position = "asfinag_position"
@@ -22,7 +22,7 @@ default_acc = (
     default_specific_demand * 100
 )  # (kWh) charged energy by a car during one charging for 100km
 default_charging_capacity = 110  # (kW)
-default_energy = default_charging_capacity # (kWh/h)
+default_energy = default_charging_capacity  # (kWh/h)
 default_ec = 0.25  # (€/kWh) charging price for EV driver
 default_e_tax = 0.15  # (€/kWh) total taxes and other charges
 default_cx = 7000  # (€) total installation costs of charging station installation

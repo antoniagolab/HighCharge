@@ -106,7 +106,7 @@ def visualize_results(
     fig, ax = plt.subplots(figsize=(15, 7))
     plt.rcParams["font.family"] = "serif"
     plt.rcParams["font.size"] = 12
-    plot_highway_geometries.plot(ax=ax, label="Austrian highway network", color='grey', zorder=0)
+    plot_highway_geometries.plot(ax=ax, label="Austrian highway network", color='black', zorder=0)
     scatter = plt.scatter(
         plot_results_and_geom_df["x"].to_list(),
         plot_results_and_geom_df["y"].to_list(),

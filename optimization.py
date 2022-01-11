@@ -71,7 +71,7 @@ def optimization(
     energy_demand_matrix_1 = np.append(
         np.diag(energy_demand_1) * eta * mu * gamma_h * specific_demand * a, np.zeros([n1, n0]), axis=1)
 
-    g = 100000
+    g = 40
     start = time.time()
     # ------------------------------------------ printing input parameters -------------------------------------------
     print("------------------------------------------")
@@ -315,6 +315,7 @@ def optimization(
     dir_type_ids = pois_df[col_type_ID].to_list()
     installed_stations = 0
     installed_poles = 0
+    model.size_limitation = ConstraintList()
 
     for ij in model.IDX_2:
         name = dir_names[ij]
@@ -391,7 +392,7 @@ def optimization(
                 if len(ex_infr_0) > 0 and len(ex_infr_1) > 0:
                     infr_0 = ex_infr_0[0]
                     infr_1 = ex_infr_1[0]
-                    model.c12.add(
+                    model.installed_infrastructure.add(
                         model.pYi_dir_0[model.IDX_0[ind_0]]
                         + model.pYi_dir_1[model.IDX_1[ind_1]]
                         >= max(
@@ -399,7 +400,7 @@ def optimization(
                             existing_infr_1.at[infr_1, "installed_infrastructure"],
                         )
                     )
-                    model.c12.add(model.pXi[ij] == 1)
+                    model.installed_infrastructure.add(model.pXi[ij] == 1)
                     installed_stations = installed_stations + 1
                     installed_poles = (
                         max(
@@ -409,7 +410,7 @@ def optimization(
                         + installed_poles
                     )
                     if no_new_infrastructure:
-                        model.c12.add(
+                        model.installed_infrastructure.add(
                             model.pYi_dir_0[model.IDX_0[ind_0]]
                             + model.pYi_dir_1[model.IDX_1[ind_1]]
                             == max(
@@ -512,6 +513,8 @@ def optimization(
     print("... took ", str(time.time() - t5), " sec")
     print("------------------------------------------")
 
+    print('installed_stations', installed_stations)
+    print('installed_poles', installed_poles)
     # ------------------------------------------------- objective -------------------------------------------------
     # minimization of installation costs
     print("Adding objective function ...")
@@ -545,6 +548,9 @@ def optimization(
     time_of_optimization = time.strftime("%Y%m%d-%H%M%S")
     print("... model solved in ", str(time.time() - t6), " sec")
     # -------------------------------------------------- results --------------------------------------------------
+    # _file = open("Math-Equations.txt", "w", encoding="utf-8")
+    # model.pprint(ostream=_file, verbose=False, prefix='')
+    # _file.close()
 
     pYi_dir_0 = np.array([model.pYi_dir_0[n].value for n in model.IDX_0])
 
@@ -631,6 +637,9 @@ def optimization(
             + "%)",
             "red",
         ),
+    )
+    print(
+        colored("Specific installation costs: €/kWh " + str(installation_costs/(sum(pE_charged_0) + sum(pE_charged_1))), "green")
     )
     print("------------------------------------------")
 

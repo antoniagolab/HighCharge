@@ -50,19 +50,21 @@ y_pred = k * x_pred + d
 x_pred_2 = np.array(range(2022, 2031))
 y_pred_2 = k2 * x_pred_2 + d2
 
- # plt.rcParams['font.sans-serif'] = ['Tahoma']
 
 fig, ax = plt.subplots()
-plt.rcParams['font.family'] = 'sans-serif'
-
-plt.plot(x[:-1], y[:-1], 'o', label='past pre')
+ax.set_facecolor('#EBEBEB')
+ax.grid(which='major', color='white',)
+plt.rcParams['font.family'] = 'serif'
+plt.plot(x[:-1], y[:-1], 'o', label='past new registration values')
 plt.plot(x_pred, y_pred, 'o', color='green', label='predicted new registrations of BEVs (optimal)')
 plt.plot(x_pred_2, y_pred_2, 'o', color='red', label='predicted new registrations of BEVs (less optimal)')
-plt.plot(x[len(x)-1], y[len(y)-1], 'o', color='orange', label='2040 goal')
+plt.plot(x[len(x)-1], y[len(y)-1], 'o', color='orange', label='2030 goal')
 plt.xlabel('year')
-plt.ylabel('share of BEV new registrations')
-plt.grid()
+plt.ylabel('share of BEV new registrations (%)')
+plt.grid(which='major', color='white')
 plt.legend()
+plt.show()
+
 
 # projection of the new registration onto car fleet
 # overall number of passenger cars in Austrian car fleet
@@ -99,6 +101,9 @@ ev_shares_2 = np.array(registered_bevs_total_2021 + registered_electric_vehicles
 
 # display of development of share of BEVs
 fig, ax = plt.subplots()
+ax.set_facecolor('#EBEBEB')
+ax.grid(which='major', color='white',)
+
 plt.rcParams["font.family"] = "serif"
 # plt.fill_between(list(range(2018, 2031)), [100] * len(list(range(2018, 2031))), label='registered passenger vehicles')
 plt.fill_between(list(range(2018, 2031)), ev_shares,
@@ -108,11 +113,10 @@ plt.fill_between(list(range(2018, 2031)), ev_shares_2,
 plt.text(2030.5, ev_shares[-1], str(round(ev_shares[-1], 2)) + '%', multialignment='left', family="serif")
 plt.text(2030.5, ev_shares_2[-1], str(round(ev_shares_2[-1], 2)) + '%', multialignment='left', family="serif")
 plt.legend(loc='upper left')
-plt.grid()
 plt.xlabel('year')
 plt.ylabel('share of vehicles in Austrian car fleet (%)')
 plt.xlim(2018, 2032)
-
+plt.show()
 
 # (2) ---------------------------------------------------------------------------------------------------------------
 # a ... share of ways
@@ -124,13 +128,47 @@ annual_reduction = total_red_until_2040/(2040-2018)
 red_until_2030 = (2030-2018) * annual_reduction
 road_transport_2030 = 1 - red_until_2030
 
-# (3) ---------------------------------------------------------------------------------------------------------------
-# specific demand
+# (5) ---------------------------------------------------------------------------------------------------------------
+# charging capacity
+# https://www.kleinezeitung.at/auto/elektroauto/5479610/Zulassungen-Jaenner-bis-November2021_Das-sind-die-meistverkauften#image-Tesla-Model_3-2018-1600-06_155290619725024_v0_h
+maximum_capacities_today = [120, 64, 30, 216, 67, 41, 103, 103, 85, 110]
+av_cap = np.average(maximum_capacities_today)
+
+p_av_goal_opt = 400
+p_av_goal_pess = 350
+
+
+kc1 = (p_av_goal_opt - av_cap)/(2030-2020)
+dc1 = p_av_goal_opt - kc1 * 2030
+
+kc2 = (p_av_goal_pess - av_cap)/(2030-2020)
+dc2 = p_av_goal_pess - kc2 * 2030
+
+optimistic_estimation = np.array(range(2020, 2031)) * kc1 + dc1
+pessimistic_estimation = np.array(range(2020, 2031)) * kc2 + dc2
+
+av_charg_cap_opt = np.average(optimistic_estimation, weights=ev_shares[2:])
+av_charg_cap_pess = np.average(pessimistic_estimation, weights=ev_shares[2:])
 
 
 # (4) ---------------------------------------------------------------------------------------------------------------
 # driving range
 # source: https://www.kfz-betrieb.vogel.de/die-zehn-beliebtesten-autos-in-oesterreich-gal-993852/?p=1#gallerydetail
-range_top_cars = [295, 190, 300, 235, 190, 190, 665, 680]
-av_range_2020 = np.average(range_top_cars)
+range_top_cars = [595, 455, 565, 355, 615, 600, 520, 795]
+av_range_2021 = np.average(range_top_cars)
+optimistic_goal = 800
+pessimistic_goal = 500
+
+kr1 = (optimistic_goal - av_range_2021)/(2030-2020)
+dr1 = optimistic_goal - kr1 * 2030
+
+kr2 = (pessimistic_goal - av_range_2021)/(2030-2020)
+dr2 = pessimistic_goal - kr2 * 2030
+
+optimistic_estimation = np.array(range(2020, 2031)) * kr1 + dr1
+pessimistic_estimation = np.array(range(2020, 2031)) * kr2 + dr2
+
+av_range_opt = np.average(optimistic_estimation, weights=ev_shares[2:])
+av_range_pess = np.average(pessimistic_estimation, weights=ev_shares[2:])
+
 
