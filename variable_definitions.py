@@ -16,7 +16,7 @@ col_POI_ID = "POI_ID"
 
 # default input values
 
-default_specific_demand = 25  # (kWh/100km) average specific energy usage for 100km
+default_specific_demand = 24  # (kWh/100km) average specific energy usage for 100km
 
 default_acc = (
     default_specific_demand * 100
@@ -25,8 +25,8 @@ default_charging_capacity = 110  # (kW)
 default_energy = default_charging_capacity  # (kWh/h)
 default_ec = 0.25  # (€/kWh) charging price for EV driver
 default_e_tax = 0.15  # (€/kWh) total taxes and other charges
-default_cx = 7000  # (€) total installation costs of charging station installation
-default_cy = 17750  # (€) total installation costs of charging pole installation
+default_cx = 3700  # (€) total installation costs of charging station installation
+default_cy = 110000  # (€) total installation costs of charging pole installation
 default_eta = 0.33  # share of electric vehicles of car fleet
 default_mu = 0.18  # share of cars travelling long-distance
 default_gamma_h = 0.125   # share of cars travelling during peak hour

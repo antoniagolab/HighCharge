@@ -71,7 +71,7 @@ def optimization(
     energy_demand_matrix_1 = np.append(
         np.diag(energy_demand_1) * eta * mu * gamma_h * specific_demand * a, np.zeros([n1, n0]), axis=1)
 
-    g = 40
+    g = 30
     start = time.time()
     # ------------------------------------------ printing input parameters -------------------------------------------
     print("------------------------------------------")
@@ -548,6 +548,7 @@ def optimization(
     time_of_optimization = time.strftime("%Y%m%d-%H%M%S")
     print("... model solved in ", str(time.time() - t6), " sec")
     # -------------------------------------------------- results --------------------------------------------------
+
     # _file = open("Math-Equations.txt", "w", encoding="utf-8")
     # model.pprint(ostream=_file, verbose=False, prefix='')
     # _file.close()
@@ -639,7 +640,7 @@ def optimization(
         ),
     )
     print(
-        colored("Specific installation costs: €/kWh " + str(installation_costs/(sum(pE_charged_0) + sum(pE_charged_1))), "green")
+        colored("Specific installation costs: €/kW " + str(installation_costs/((sum(pYi_dir_0) + sum(pYi_dir_1)) * 350)), "green")
     )
     print("------------------------------------------")
 
@@ -803,7 +804,7 @@ def optimization(
         charging_capacity=charging_capacity,
         energy=energy,
         specific_demand=specific_demand,
-        optimization_result=[sum(pXi), sum(pYi_dir_0) + sum(pYi_dir_1), installation_costs, (not_charged_energy + not_charged_2), round(perc_not_charged * 100,2)],
+        optimization_result=[sum(pXi), sum(pYi_dir_0) + sum(pYi_dir_1), installation_costs, (not_charged_energy + not_charged_2), round(perc_not_charged * 100, 2)],
         scenario_name=scenario_name
     )
     print("Total amount of computation: ", str(time.time() - start), " sec")

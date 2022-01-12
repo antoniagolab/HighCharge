@@ -86,7 +86,7 @@ k = len(dir)
 n3 = k
 # 50 kW annehmen -> + 20h durchgehende Besetzung
 g = 100000  # Maximum number of charging poles at one charging station
-specific_demand = 20  # (kWh/100km) average specific energy usage for 100km
+specific_demand = 25  # (kWh/100km) average specific energy usage for 100km
 
 acc = (
     specific_demand * 100
@@ -105,7 +105,7 @@ a = 0.69
 directions_0 = dir_0[col_directions].to_list()
 directions_1 = dir_1[col_directions].to_list()
 # dmax = 50000
-dmax = 500000 * (2/3) * 0.7
+dmax = 500000
 
 introduce_existing_infrastructure = True
 no_new_infrastructure = False

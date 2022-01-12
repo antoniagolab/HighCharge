@@ -132,7 +132,7 @@ road_transport_2030 = 1 - red_until_2030
 # charging capacity
 # https://www.kleinezeitung.at/auto/elektroauto/5479610/Zulassungen-Jaenner-bis-November2021_Das-sind-die-meistverkauften#image-Tesla-Model_3-2018-1600-06_155290619725024_v0_h
 maximum_capacities_today = [120, 64, 30, 216, 67, 41, 103, 103, 85, 110]
-av_cap = np.average(maximum_capacities_today)
+av_cap = 80.45
 
 p_av_goal_opt = 400
 p_av_goal_pess = 350
@@ -155,9 +155,9 @@ av_charg_cap_pess = np.average(pessimistic_estimation, weights=ev_shares[2:])
 # driving range
 # source: https://www.kfz-betrieb.vogel.de/die-zehn-beliebtesten-autos-in-oesterreich-gal-993852/?p=1#gallerydetail
 range_top_cars = [595, 455, 565, 355, 615, 600, 520, 795]
-av_range_2021 = np.average(range_top_cars)
-optimistic_goal = 800
-pessimistic_goal = 500
+av_range_2021 = 555
+optimistic_goal = 900
+pessimistic_goal = 700
 
 kr1 = (optimistic_goal - av_range_2021)/(2030-2020)
 dr1 = optimistic_goal - kr1 * 2030
@@ -169,6 +169,6 @@ optimistic_estimation = np.array(range(2020, 2031)) * kr1 + dr1
 pessimistic_estimation = np.array(range(2020, 2031)) * kr2 + dr2
 
 av_range_opt = np.average(optimistic_estimation, weights=ev_shares[2:])
-av_range_pess = np.average(pessimistic_estimation, weights=ev_shares[2:])
+av_range_pess = np.average(pessimistic_estimation, weights=ev_shares_2[2:])
 
 

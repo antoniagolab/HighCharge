@@ -1,5 +1,5 @@
 scenario name,eta,mu,gamma_h,a,specific_demand,cx,cy,dist_range,p_max_bev
-Societal Commitment,33.49,,,0.69,18,,,350000,41
-Techno-Friendly,33.59,,,0.83,20,,,400000,63.3333333333333
-Directed Transition,23.07,,,0.83,20,,,400000,63.3333333333333
-Gradual Development,23.07,,,1,18,,,350000,41
+Societal Commitment,33.49,,,0.69,,,,661500,283.2
+Techno-Friendly,33.59,,,0.83,,,,814400,320.8
+Directed Transition,23.07,,,0.83,,,,814400,320.8
+Gradual Development,23.07,,,1,,,,661500,283.2

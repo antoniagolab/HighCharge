@@ -31,32 +31,57 @@ acc = 41 * (4 / 6)  # kW
 a = 1
 # (1) ---------------------------------------------------------------------------------------------------------------
 #
-number_charging_poles_1, number_charging_stations_1, _, _, _ = optimization(
-    pois_df,
-    dir_0,
-    dir_1,
-    segments_gdf,
-    links_gdf,
-    cx,
-    cy,
-    dist_max,
-    eta,
-    acc,
-    mu,
-    gamma_h,
-    a,
-    charging_capacity,
-    specific_demand,
-    introduce_existing_infrastructure_1,
-    no_new_infrastructure_1,
-    existing_infr_0,
-    existing_infr_1,
-    scenario_name="validation 1",
-)
+# number_charging_poles_1, number_charging_stations_1, _, _, _, = optimization(
+#     pois_df,
+#     dir_0,
+#     dir_1,
+#     segments_gdf,
+#     links_gdf,
+#     cx,
+#     cy,
+#     dist_max,
+#     eta,
+#     acc,
+#     mu,
+#     gamma_h,
+#     a,
+#     charging_capacity,
+#     specific_demand,
+#     introduce_existing_infrastructure_1,
+#     no_new_infrastructure_1,
+#     existing_infr_0,
+#     existing_infr_1,
+#     scenario_name="validation 1",
+# )
+#
+# # (2) ---------------------------------------------------------------------------------------------------------------
+#
+# _, _, _, non_covered_energy, perc_not_charged = optimization(
+#     dir,
+#     dir_0,
+#     dir_1,
+#     segments_gdf,
+#     links_gdf,
+#     cx,
+#     cy,
+#     dist_max,
+#     eta,
+#     acc,
+#     mu,
+#     gamma_h,
+#     a,
+#     charging_capacity,
+#     specific_demand,
+#     introduce_existing_infrastructure_2,
+#     no_new_infrastructure_2,
+#     existing_infr_0,
+#     existing_infr_1,
+#     scenario_name="validation 2",
+# )
 
-# (2) ---------------------------------------------------------------------------------------------------------------
+# (3) ---------------------------------------------------------------------------------------------------------------
 
-_, _, _, non_covered_energy, perc_not_charged = optimization(
+_, _, _, _, _ = optimization(
     dir,
     dir_0,
     dir_1,
@@ -72,12 +97,13 @@ _, _, _, non_covered_energy, perc_not_charged = optimization(
     a,
     charging_capacity,
     specific_demand,
-    introduce_existing_infrastructure_2,
-    no_new_infrastructure_2,
+    True,
+    False,
     existing_infr_0,
     existing_infr_1,
-    scenario_name="validation 2",
+    scenario_name="validation 3",
 )
+
 
 # TODO: printing results of validation
 
