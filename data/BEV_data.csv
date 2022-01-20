@@ -1,0 +1,20 @@
+model;Sales_2019;Sales_2020;Sales_2021;Max_driving_range;charging_cap (max 150kW);energy_cons
+Tesla Model 3;2342;2892;3304;795;110;23.2
+Renault Zoe;944;2071;1778;475;41;22
+Kia Niro;1125;421;924;550;77;24
+Hyundai Kona;897;861;;595;64;28
+Audi e-Tron;364;782;1192;405;114;28.8
+BMW i3;1191;697;;360;47;23
+VW e-Golf;805;401;;280;39;23.7
+VW Up!;;376;;320;30;22.3
+Mazda MX-30;;370;;255;34;25
+Peugeot 208;;355;;430;78;22.5
+Hyundai Ioniq;361;;;365;36;2.19
+Nissan Leaf;557;;;355;40;23.1
+Tesla Model S;389;;;795;110;23.2
+VW ID3;;;2361;520;85;23.2
+VW ID4;;;2361;580;103;27
+Skoda Enyaq;;;2208;615;103;25.7
+Fiat 500;;;1356;355;67;22.6
+Seat Mii;;;936;320;30;22.3
+Tesla Model Y;;;921;595;108;23.7

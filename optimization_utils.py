@@ -1,5 +1,6 @@
 import numpy as np
 
+import pickle
 from utils import *
 from pyomo.environ import *
 # from optimization_parameters import *
@@ -282,7 +283,9 @@ def constraint_input_ouput_relations_for_pois_on_segm(
     links_df,
     segments_gdf,
     dmax,
+    path_directory
 ):
+    # print(segment_id, direction)
     """
     :param direction: integer = 0/1
     :param segment_id:
@@ -297,19 +300,20 @@ def constraint_input_ouput_relations_for_pois_on_segm(
 
     name = str(segment_id) + "_" + str(direction) + "_0"
     segm_tree = {name: Node((segment_id, direction))}
-    unfiltered_path = get_children_from_seg(
-        segment_id,
-        name,
-        direction,
-        segments_gdf,
-        links_df,
-        pois_df,
-        segm_tree,
-        0,
-        dmax,
-        stop_then=False,
-    )
-    path = filter_path(unfiltered_path, segments_gdf, name)
+    # unfiltered_path = get_children_from_seg(
+    #     segment_id,
+    #     name,
+    #     direction,
+    #     segments_gdf,
+    #     links_df,
+    #     pois_df,
+    #     segm_tree,
+    #     0,
+    #     dmax + 10000,
+    #     stop_then=False,
+    # )
+    # path = filter_path(unfiltered_path, segments_gdf, name)
+    path = path_directory[str(segment_id) + "_" + str(direction)]
     # collect pois of segment
     if direction == 0:
         pois_df = pois_df_0
@@ -1882,12 +1886,18 @@ def add_ratios_to_io_rels(filtered_ios, pois_0, pois_1):
         trafficflow_numbers = [get_traffic_count(segs[ij], same_o[ij][1], pois_0, pois_1) for ij in range(0, len(segs))]
 
         #if len(same_o) > 1:
-        extended_information_rels.append((s + (trafficflow_numbers[0]/sum(trafficflow_numbers),)))
+        extended_information_rels.append((s + (round(trafficflow_numbers[0]/sum(trafficflow_numbers), 2),)))
 
     return extended_information_rels
 
 
 def create_mask_enum(model, pois_df, pois_df_0, pois_df_1, links_gdf, segments_gdf, dmax):
+    IO_rels_out = []
+    a_file = open("data/path_data.pkl", "rb")
+    path_directory_0 = pickle.load(a_file)
+
+    a_file = open("data/path_data_2.pkl", "rb")
+    path_directory_1 = pickle.load(a_file)
 
     model.constraint_io = ConstraintList()
     n0 = len(pois_df_0)
@@ -1928,11 +1938,13 @@ def create_mask_enum(model, pois_df, pois_df_0, pois_df_1, links_gdf, segments_g
                 links_gdf,
                 segments_gdf,
                 dmax,
+                path_directory_0
             )
 
             path_directory[str(seg_id) + '_' + str(direction)] = path
             io_rels = output[0]
             io_rels = complement_rels(io_rels, pois_df_0, pois_df_1, links_gdf, path)
+            IO_rels_out = IO_rels_out + io_rels
 
         filtered_rels = add_ratios_to_io_rels([io[1] for io in io_rels if io[0] == (ind, direction)], pois_df_0, pois_df_1)
         out_rels = [io[0] for io in filtered_rels]
@@ -1992,10 +2004,13 @@ def create_mask_enum(model, pois_df, pois_df_0, pois_df_1, links_gdf, segments_g
                 links_gdf,
                 segments_gdf,
                 dmax,
+                path_directory_1
             )
             path_directory[str(seg_id) + '_' + str(direction)] = path
             io_rels = output[0]
             io_rels = complement_rels(io_rels, pois_df_0, pois_df_1, links_gdf, path)
+            IO_rels_out = IO_rels_out + io_rels
+
         filtered_rels = add_ratios_to_io_rels([io[1] for io in io_rels if io[0] == (ind, direction)], pois_df_0, pois_df_1)
         out_rels = [io[0] for io in filtered_rels]
         in_rels = [io[1] for io in filtered_rels]
@@ -2032,7 +2047,7 @@ def create_mask_enum(model, pois_df, pois_df_0, pois_df_1, links_gdf, segments_g
             else:
                 output_1[ind_mat, n1 + prev_ind] = 1
                 input_1[ind_mat, next_ind] = 1
-                model.constraint_io.add(model.pE_output_1[ind_mat, n1 + prev_ind] * ratio== model.pE_input_1[ind_mat, next_ind])
+                model.constraint_io.add(model.pE_output_1[ind_mat, n1 + prev_ind] * ratio == model.pE_input_1[ind_mat, next_ind])
         prev_seg = seg_id
 
     for ij in range(0, n0):
@@ -2072,6 +2087,6 @@ def create_mask_enum(model, pois_df, pois_df_0, pois_df_1, links_gdf, segments_g
             if input_1[ij, kl] == 1 or output_1[ij, kl] == 1 or const_input_1[ij, kl] == 1 or const_output_1[ij, kl] == 1:
                 mask_1[ij, kl] = 1
 
-    return const_input_0, const_input_1, const_output_0, const_output_1, mask_0, mask_1, path_directory
+    return const_input_0, const_input_1, const_output_0, const_output_1, mask_0, mask_1, path_directory, IO_rels_out
 
 

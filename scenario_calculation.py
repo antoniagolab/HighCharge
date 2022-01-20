@@ -24,7 +24,7 @@ cxs = scenario_file['cx']
 cys = scenario_file['cy']
 dist_ranges = scenario_file['dist_range']
 p_max_bevs = scenario_file['p_max_bev']
-
+pole_peak_cap = 350
 output_file = pd.DataFrame()
 
 for ij in range(0, l):
@@ -89,6 +89,7 @@ for ij in range(0, l):
         gamma_h,
         a,
         p_max_bev,
+        pole_peak_cap,
         specific_demand,
         True,
         False,

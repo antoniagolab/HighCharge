@@ -92,22 +92,22 @@ acc = (
     specific_demand * 100
 )  # (kWh) charged energy by a car during one charging for 100km
 charging_capacity = 80.85 # (kW)
+pole_peak_cap = 150 # (kW)
 energy = charging_capacity # (kWh/h)
 ec = 0.25  # (€/kWh) charging price for EV driver
 e_tax = 0.15  # (€/kWh) total taxes and other charges
 cx = 7000 * 3 # (€) total installation costs of charging station installation
 cy = 17750  # (€) total installation costs of charging pole installation
-eta = 0.9  # share of electric vehicles of car fleet
+eta = 0.01  # share of electric vehicles of car fleet
 mu = 0.18  # share of cars travelling long-distance
 gamma_h = 0.125   # share of cars travelling during peak hour
 a = 0.69
 
 directions_0 = dir_0[col_directions].to_list()
 directions_1 = dir_1[col_directions].to_list()
-# dmax = 50000
-dmax = 500000
+dmax = 50000
 
-introduce_existing_infrastructure = True
+introduce_existing_infrastructure = False
 no_new_infrastructure = False
 
 # extracting all highway names to create two additional columns: "first" and "last" to indicate whether resting areas
@@ -140,6 +140,7 @@ optimization(
     gamma_h,
     a,
     charging_capacity,
+    pole_peak_cap,
     specific_demand,
     introduce_existing_infrastructure,
     no_new_infrastructure,

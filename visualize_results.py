@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 from utils import pd2gpd
+from matplotlib import rc
 
 
 def visualize_results(
@@ -20,8 +21,13 @@ def visualize_results(
     energy,
     specific_demand,
     optimization_result,
-    scenario_name
+    scenario_name,
+    pole_peak_cap
 ):
+    # colors
+    colors = ['#5f0f40', '#9a031e', '#E9C46A', '#e36414', '#0f4c5c']
+    colors.reverse()
+
     # reference coordinate system for all visualisation
     reference_coord_sys = "EPSG:31287"
 
@@ -106,26 +112,37 @@ def visualize_results(
     plot_results_and_geom_df_2["y"] = plot_results_and_geom_df_2.geometry.y
 
     # scale marker sizes
-    max_size = 300
+    max_size = 350
     max_val = plot_results_and_geom_df["total_charging_pole_number"].max()
     fact = int(max_size/max_val)
+
+    # classify here after 5 categories
+    # lower lims + upper lims
+    # low_lim = [0]
+
+    bounds = np.linspace(0, max_val * pole_peak_cap, 6)
 
     print(results)
     # figure 1
     fig, ax = plt.subplots(figsize=(15, 7))
-    plt.rcParams["font.family"] = "serif"
-    plt.rcParams["font.size"] = 16
+    # rc('text', usetex=True)
+    plt.rcParams["font.family"] = "Franklin Gothic Book"
+    plt.rcParams["font.size"] = 14
     plot_highway_geometries.plot(ax=ax, label="Austrian highway network", color='black', zorder=0)
-    scatter = plt.scatter(
-        plot_results_and_geom_df["x"].to_list(),
-        plot_results_and_geom_df["y"].to_list(),
-        s=np.array(plot_results_and_geom_df["total_charging_pole_number"].to_list())
-        * fact,
-        c=np.array(plot_results_and_geom_df["total_charging_pole_number"].to_list()) * 350, cmap='viridis_r',
-        label="Charging station",
-        edgecolors='black',
-        zorder=10,
-    )
+    for ij in range(0, len(bounds)-1):
+        cat = plot_results_and_geom_df[plot_results_and_geom_df["total_charging_pole_number"].isin(np.arange(bounds[ij]+pole_peak_cap, bounds[ij+1] + pole_peak_cap) / pole_peak_cap)]
+        plt.scatter(
+            cat["x"].to_list(),
+            cat["y"].to_list(),
+            s=np.array(cat["total_charging_pole_number"].to_list())
+            * fact,
+            color=colors[ij],
+            label=str(int(bounds[ij])+ pole_peak_cap) + ' - ' + str(int(bounds[ij+1])) + ' kW',
+            # edgecolors='black',
+            zorder=10,
+        )
+        print(ij, len(cat), np.array(cat["total_charging_pole_number"].to_list())
+            * fact, colors[ij])
 
     plot_austrian_border.plot(ax=ax, color='grey')
 
@@ -146,15 +163,16 @@ def visualize_results(
     #     handles, labs2, loc="upper left", title="Nb. of charging poles"
     # )
     # ax.add_artist(legend)
-    cbar = plt.colorbar(scatter)
-    cbar.set_label('Local peak capacities (kW)', rotation=270)
-    # ax.legend(loc="lower left")
+    # cbar = plt.colorbar(scatter)
+    # cbar.set_label('Local peak capacities (kW)', rotation=270)
+    ax.legend()
+    plt.ylim([5.75e6, 6.3e6])
     ax.set_xlabel("X (EPSG:3857)")
     ax.set_ylabel("Y (EPSG:3857)")
     plt.axis('off')
-    plt.text(1.21e6, 6.2e6, 'Nb. charging stations: ' + str(int(optimization_result[0]))
-            + '\nNb. charging poles: ' + str(int(optimization_result[1]))+ '\nTotal infrastructure capacity (kW): ' + str(int(optimization_result[1])*350), fontsize=16 )
-    plt.title('Optimization result: ' + scenario_name, fontdict={'family': "serif"})
+    plt.text(1.1e6, 5.8e6, 'Nb. charging stations: '+ str(int(optimization_result[0]))
+            + '\nNb. charging poles: ' + str(int(optimization_result[1]))+ '\nTotal infrastructure capacity (kW): ' + str(int(optimization_result[1])*pole_peak_cap), fontsize=14)
+    plt.title(scenario_name, fontsize = 16)
     plt.savefig(
         "results/" + latest_file.split("\\")[-1].split("_")[0] + '_' + scenario_name + "_visualization.png"
     )
@@ -164,6 +182,8 @@ def visualize_results(
     plt.savefig(
         "results/" + latest_file.split("\\")[-1].split("_")[0] + '_' + scenario_name + "_visualization.pdf"
     )
+
+
     # plt.show()
 
     # TODO: write a function to create geometry for node type 2 and sum up the values of not covered energy

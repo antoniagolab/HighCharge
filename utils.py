@@ -158,12 +158,11 @@ def calculate_integral(neural_network, lb, ub, res=0.05):
     return integral
 
 
-def calculate_demand(pois_df, tc_df, sp_demand, col_tc_dir_0, col_tc_dir_1, std=5000):
+def calculate_demand(pois_df, tc_df, col_tc_dir_0, col_tc_dir_1, std=5000):
     """
     calculating demand for each poi along a segment
     :param pois_df: pandas.DataFrame; pois with their distances along a segment
     :param tc_df: pandas.DataFrame
-    :param sp_demand: average specific energy demand of an electric vehicle (kWh/100km)
     :param col_tc_dir_0: column in tc_df indicating the traffic counts
     :param col_tc_dir_1: column in tc_df indicating the traffic counts
     :param std
@@ -212,7 +211,7 @@ def calculate_demand(pois_df, tc_df, sp_demand, col_tc_dir_0, col_tc_dir_1, std=
             for kl in range(1, len(poi_extract_dir_0)):
                 ub_x = dists_0[kl]
                 integral = calculate_integral(fun0, lb_x, ub_x)
-                demand_dir_0.append(integral * (1 / 100000) * sp_demand)
+                demand_dir_0.append(integral * (1 / 100000))
                 lb_x = ub_x
 
             ub_x = dists_1[-1]
@@ -221,7 +220,7 @@ def calculate_demand(pois_df, tc_df, sp_demand, col_tc_dir_0, col_tc_dir_1, std=
             for kl in range(len(poi_extract_dir_1) - 2, -1, -1):
                 lb_x = dists_1[kl]
                 integral = calculate_integral(fun1, lb_x, ub_x)
-                demand_dir_1.append(integral * (1 / 100000) * sp_demand)
+                demand_dir_1.append(integral * (1 / 100000) )
                 ub_x = lb_x
             demand_dir_1.append(0)
 
@@ -443,13 +442,37 @@ def filter_path(path, segments_gdf, origin_name):
     :return: filtered path
     """
     path = path.copy()
+    # print_tree(path[origin_name])
     name_list = []
     for k in path.keys():
         name_list.append(path[k].name[0])
 
     name_list = list(set(name_list))
-
+    # print('name_list', name_list)
+    shortest_lengths = []
     for name in name_list:
+        keys_with_this_name = []
+        for k in path.keys():
+            if name == path[k].name[0] and path[origin_name] in path[k].ancestors:
+                keys_with_this_name.append(k)
+            if int(origin_name.split('_')[0]) == name:
+                keys_with_this_name.append(k)
+        lengths = []
+        for k in keys_with_this_name:
+            ancestors = path[k].ancestors
+            seg_ids = []
+            for a in ancestors:
+                seg_id_dir = a.name[0]
+                seg_ids.append(seg_id_dir)
+
+            extract_segs = segments_gdf[segments_gdf.ID.isin(seg_ids)]
+            lengths.append(extract_segs.length.sum())
+        shortest_lengths.append(min(lengths))
+
+    # sort names after shortest_lengths
+    sorted_names = [x for _, x in sorted(zip(shortest_lengths, name_list))]
+    # sorted_names = name_list
+    for name in sorted_names:
         keys_with_this_name = []
         for k in path.keys():
             if name == path[k].name[0] and path[origin_name] in path[k].ancestors:
@@ -876,7 +899,7 @@ def are_ras_along_the_way(ij, seg_id, direction, path, pois_df_0, pois_df_1, kl,
                     trafficflow_numbers = [get_traffic_count(filtered_siblings[ij][0], filtered_siblings[ij][1], pois_df_0, pois_df_1) for ij in
                                            range(0, len(filtered_siblings))]
                     #if len(a.children) > 0:
-                    factor = factor * (trafficflow_numbers[0]/sum(trafficflow_numbers))
+                    factor = factor * round((trafficflow_numbers[0]/sum(trafficflow_numbers)),2)
 
         # check ending segment
         prev_seg = end_node.parent.name[0]
@@ -911,7 +934,7 @@ def are_ras_along_the_way(ij, seg_id, direction, path, pois_df_0, pois_df_1, kl,
             get_traffic_count(filtered_siblings[ij][0], filtered_siblings[ij][1], pois_df_0, pois_df_1) for ij in
             range(0, len(filtered_siblings))]
         # if len(a.children) > 0:
-        factor = factor * (trafficflow_numbers[0] / sum(trafficflow_numbers))
+        factor = factor * round((trafficflow_numbers[0] / sum(trafficflow_numbers)),2)
 
     if True in ras_appears:
         return True, factor
@@ -932,3 +955,15 @@ def get_traffic_count(seg_id, direction, pois_0, pois_1):
         return pois_0[pois_0.segment_id == seg_id]['traffic_flow'].to_list()[0]
     else:
         return pois_1[pois_1.segment_id == seg_id]['traffic_flow'].to_list()[0]
+
+
+def plot_segments(segments_gdf):
+    geoms = segments_gdf.geometry.to_list()
+    IDs = segments_gdf.ID.to_list()
+    plt.subplots()
+    for ij in range(0, len(IDs)):
+        g = geoms[ij]
+        c = g.centroid
+        plt.plot(*g.xy)
+        plt.text(c.x, c.y, str(IDs[ij]))
+
