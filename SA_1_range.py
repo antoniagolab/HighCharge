@@ -20,7 +20,7 @@ range_min = 200
 step_size = 100
 
 cy = 60000
-eta = 30
+eta = 70
 charging_cap = 110
 peak_pole = 150
 output_file = pd.DataFrame()

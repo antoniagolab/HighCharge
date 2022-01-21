@@ -349,7 +349,7 @@ def optimization(
                     (existing_infr_0[col_type_ID] == type_id)
                     & (existing_infr_0[col_directions] == direc)
                     & (existing_infr_0[col_segment_id] == highway)
-                    & (existing_infr_0["installed_infrastructure"] > 0)
+                    & (existing_infr_0["has_charging_station"] ==True)
                 )
             ].index.to_list()
 
@@ -358,7 +358,7 @@ def optimization(
                     (existing_infr_1[col_type_ID] == type_id)
                     & (existing_infr_1[col_directions] == direc)
                     & (existing_infr_1[col_segment_id] == highway)
-                    & (existing_infr_1["installed_infrastructure"] > 0)
+                    & (existing_infr_1["has_charging_station"] ==True)
                 )
             ].index.to_list()
 
@@ -565,11 +565,11 @@ def optimization(
     print("Model solution ...")
     t6 = time.time()
     opt = SolverFactory("gurobi")
-    opt.options["MIPGapAbs"] = cx + cy
+    opt.options["MIPGapAbs"] = cy+ cx
     # opt.options["MIPGap"] = 0.0017
     # opt.options['timelimit'] = 600
     opt.options['MIPFocus'] = 2
-    opt_success = opt.solve(model, logfile=scenario_name + "_log.txt", report_timing=True, tee=True)
+    opt_success = opt.solve(model, logfile='log/' + scenario_name + "_log.txt", report_timing=True, tee=True)
     print(opt_success)
 
     time_of_optimization = time.strftime("%Y%m%d-%H%M%S")
@@ -792,7 +792,7 @@ def optimization(
     output_dataframe["pXi"] = np.where((output_dataframe.pYi_dir > 0), 1, 0)
     output_dataframe = output_dataframe.fillna(0.0)
     output_filename = (
-        "results/" + time_of_optimization + "_optimization_result_charging_stations.csv"
+        "results/" + time_of_optimization + '_' + scenario_name + "_optimization_result_charging_stations.csv"
     )
     output_dataframe = output_dataframe.sort_values(by=[col_segment_id, col_distance])
     output_dataframe.to_csv(output_filename, index=False)

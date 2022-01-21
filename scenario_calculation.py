@@ -22,11 +22,12 @@ a_s = scenario_file['a'].to_list()
 specific_demands = scenario_file['specific_demand']
 cxs = scenario_file['cx']
 cys = scenario_file['cy']
-dist_ranges = scenario_file['dist_range']
+dist_ranges = scenario_file['dist_range'] *(2/3) * 0.7
 p_max_bevs = scenario_file['p_max_bev']
 pole_peak_cap = 350
 output_file = pd.DataFrame()
-
+existing_infr['installed_infrastructure'] =existing_infr['350kW']
+existing_infr_0, existing_infr_1 = split_by_dir(existing_infr, 'dir', reindex=True)
 for ij in range(0, l):
     scenario_name = names[ij]
     if not etas[ij] >= 0:
@@ -95,6 +96,7 @@ for ij in range(0, l):
         False,
         existing_infr_0,
         existing_infr_1,
+        0,
         scenario_name
     )
     output_file = output_file.append({'nb_cs': nb_cs, 'nb_poles': nb_poles, 'costs': costs, 'non_covered_energy': non_covered_energy, 'perc_not_charged': perc_not_charged, 'datetime_of_calculation': datetime.datetime.now()}, ignore_index=True)

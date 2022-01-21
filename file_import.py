@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import geopandas as gpd
 from utils import clean_segments, filter_segments, split_by_dir, pd2gpd
@@ -74,6 +75,8 @@ existing_infr = pd.merge(rest_areas, ex_infr, on=[col_highway, 'name', 'directio
 existing_infr = existing_infr.drop_duplicates(subset=['highway', 'name', 'asfinag_position'])
 existing_infr = existing_infr.sort_values(by=['highway', 'name'])
 existing_infr = existing_infr[existing_infr.has_charging_station == True]
+existing_infr = existing_infr.replace(np.NAN, 0)
+# existing_infr['installed_infrastructure'] =existing_infr['350kW']
 existing_infr_0, existing_infr_1 = split_by_dir(existing_infr, 'dir', reindex=True)
 
 installed_cap = existing_infr['50kW'] * 50 + existing_infr['75kW'] * 75 + existing_infr['150kW'] * 150 + existing_infr['350kW'] * 350
