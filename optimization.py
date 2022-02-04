@@ -14,6 +14,7 @@ warnings.simplefilter(action="ignore", category=SettingWithCopyWarning)
 import pandas as pd
 import numpy as np
 from pyomo.environ import *
+
 # from optimization_parameters import *
 # from optimization_additional_functions import *
 # from integrating_exxisting_infrastructure import *
@@ -45,8 +46,7 @@ def optimization(
     existing_infr_0,
     existing_infr_1,
     s,
-    scenario_name='',
-
+    scenario_name="",
 ):
     """
     Constraint and objective function definition + solution of optimization using parameters defined in
@@ -57,7 +57,7 @@ def optimization(
         introduce_existing_infrastructure = True
         c_non_covered_demand = 900000000
     else:
-        c_non_covered_demand = 900000000000
+        c_non_covered_demand = 90000000000
 
     n0 = len(dir_0)
     n1 = len(dir_1)
@@ -68,13 +68,25 @@ def optimization(
     ].to_list()  # (kWh/d) energy demand at each rest area per day
     energy_demand_1 = dir_1[col_energy_demand].to_list()
 
-    energy_demand_matrix_0 = np.append(
-        np.diag(energy_demand_0) * eta * mu * gamma_h * specific_demand * a, np.zeros([n0, n1]), axis=1
+    energy_demand_matrix_0 = np.round(
+        np.append(
+            np.diag(energy_demand_0) * eta * mu * gamma_h * specific_demand * a,
+            np.zeros([n0, n1]),
+            axis=1,
+        ),
+        3,
     )
-    energy_demand_matrix_1 = np.append(
-        np.diag(energy_demand_1) * eta * mu * gamma_h * specific_demand * a, np.zeros([n1, n0]), axis=1)
-
-    g = int(10000/pole_peak_cap)
+    energy_demand_matrix_1 = np.round(
+        np.append(
+            np.diag(energy_demand_1) * eta * mu * gamma_h * specific_demand * a,
+            np.zeros([n1, n0]),
+            axis=1,
+        ),
+        3,
+    )
+    g = int(12000/pole_peak_cap)
+    # g = 60
+    # g = 25
     start = time.time()
     # ------------------------------------------ printing input parameters -------------------------------------------
     print("------------------------------------------")
@@ -112,7 +124,7 @@ def optimization(
         "; no_new_infrastructure=",
         str(no_new_infrastructure),
         "; charging pole peak capacity=",
-        str(pole_peak_cap)
+        str(pole_peak_cap),
     )
     print("------------------------------------------")
 
@@ -168,8 +180,10 @@ def optimization(
         mask_0,
         mask_1,
         path_directory,
-        IO_rels_out
-    ) = create_mask_enum(model, pois_df, dir_0, dir_1, links_gdf, segments_gdf, dist_max)
+        IO_rels_out,
+    ) = create_mask_enum(
+        model, pois_df, dir_0, dir_1, links_gdf, segments_gdf, dist_max
+    )
     print("... took ", str(time.time() - t0), " sec")
 
     print(
@@ -290,13 +304,25 @@ def optimization(
                         segments_gdf,
                     )[1]
                     print(ij, kl, energy_demand_matrix_0[ij, ij] * factor, factor)
-                    model.c1.add(
-                        model.pE_output_1[ij, kl]
-                        <= energy_demand_matrix_1[ij, ij] * factor
-                    )
-                    not_charged_energy = (
-                        not_charged_energy + energy_demand_matrix_0[ij, ij] * factor
-                    )
+                    if ij == 162 and kl == 160:
+
+                        model.c1.add(
+                            model.pE_output_1[ij, kl]
+                            <= energy_demand_matrix_1[ij, ij] * factor
+                            # + 63.7914
+                        )
+                        not_charged_energy = (
+                            not_charged_energy + energy_demand_matrix_0[ij, ij] * factor
+                            # + 63.7914
+                        )
+                    else:
+                        model.c1.add(
+                            model.pE_output_1[ij, kl]
+                            <= energy_demand_matrix_1[ij, ij] * factor
+                        )
+                        not_charged_energy = (
+                            not_charged_energy + energy_demand_matrix_0[ij, ij] * factor
+                        )
                 else:
                     model.c1.add(model.pE_output_1[ij, kl] == 0)
     print("... took ", str(time.time() - t2), " sec")
@@ -349,7 +375,7 @@ def optimization(
                     (existing_infr_0[col_type_ID] == type_id)
                     & (existing_infr_0[col_directions] == direc)
                     & (existing_infr_0[col_segment_id] == highway)
-                    & (existing_infr_0["has_charging_station"] ==True)
+                    & (existing_infr_0["has_charging_station"] == True)
                 )
             ].index.to_list()
 
@@ -358,7 +384,7 @@ def optimization(
                     (existing_infr_1[col_type_ID] == type_id)
                     & (existing_infr_1[col_directions] == direc)
                     & (existing_infr_1[col_segment_id] == highway)
-                    & (existing_infr_1["has_charging_station"] ==True)
+                    & (existing_infr_1["has_charging_station"] == True)
                 )
             ].index.to_list()
 
@@ -396,7 +422,7 @@ def optimization(
                     ]
                 )
             )
-            if introduce_existing_infrastructure and dir_types[ij] == 'ra':
+            if introduce_existing_infrastructure and dir_types[ij] == "ra":
                 if len(ex_infr_0) > 0 and len(ex_infr_1) > 0:
                     infr_0 = ex_infr_0[0]
                     infr_1 = ex_infr_1[0]
@@ -408,13 +434,17 @@ def optimization(
                     )
                     model.installed_infrastructure.add(model.pXi[ij] == 1)
                     installed_stations = installed_stations + 1
-                    installed_poles = existing_infr_0.at[infr_0, "installed_infrastructure"] + installed_poles
+                    installed_poles = (
+                        existing_infr_0.at[infr_0, "installed_infrastructure"]
+                        + installed_poles
+                    )
 
                     if no_new_infrastructure:
                         model.installed_infrastructure.add(
                             model.pYi_dir_0[model.IDX_0[ind_0]]
                             + model.pYi_dir_1[model.IDX_1[ind_1]]
-                            == existing_infr_0.at[infr_0, "installed_infrastructure"])
+                            == existing_infr_0.at[infr_0, "installed_infrastructure"]
+                        )
 
                 elif no_new_infrastructure:
                     model.c12.add(
@@ -439,7 +469,7 @@ def optimization(
                     ]
                 )
             )
-            if introduce_existing_infrastructure and dir_types[ij] == 'ra':
+            if introduce_existing_infrastructure and dir_types[ij] == "ra":
                 if len(ex_infr_0) > 0:
                     infr_0 = ex_infr_0[0]
 
@@ -450,7 +480,8 @@ def optimization(
                     model.installed_infrastructure.add(model.pXi[ij] == 1)
                     installed_stations = installed_stations + 1
                     installed_poles = (
-                        existing_infr_0.at[infr_0, "installed_infrastructure"] + installed_poles
+                        existing_infr_0.at[infr_0, "installed_infrastructure"]
+                        + installed_poles
                     )
                     if no_new_infrastructure:
                         model.installed_infrastructure.add(
@@ -458,10 +489,7 @@ def optimization(
                             == existing_infr_0.at[infr_0, "installed_infrastructure"]
                         )
                 elif no_new_infrastructure:
-                    model.c12.add(
-                        model.pYi_dir_0[model.IDX_0[ind_0]]
-                        == 0
-                    )
+                    model.c12.add(model.pYi_dir_0[model.IDX_0[ind_0]] == 0)
 
         elif len(extract_dir_1) > 0:
 
@@ -479,7 +507,7 @@ def optimization(
                     ]
                 )
             )
-            if introduce_existing_infrastructure and dir_types[ij] == 'ra':
+            if introduce_existing_infrastructure and dir_types[ij] == "ra":
                 if len(ex_infr_1) > 0:
                     infr_1 = ex_infr_1[0]
 
@@ -490,7 +518,8 @@ def optimization(
                     model.installed_infrastructure.add(model.pXi[ij] == 1)
                     installed_stations = installed_stations + 1
                     installed_poles = (
-                        existing_infr_1.at[infr_1, "installed_infrastructure"] + installed_poles
+                        existing_infr_1.at[infr_1, "installed_infrastructure"]
+                        + installed_poles
                     )
                     if no_new_infrastructure:
                         model.c12.add(
@@ -498,10 +527,7 @@ def optimization(
                             == existing_infr_1.at[infr_1, "installed_infrastructure"]
                         )
                 elif no_new_infrastructure:
-                    model.c12.add(
-                        model.pYi_dir_1[model.IDX_1[ind_1]]
-                        == 0
-                    )
+                    model.c12.add(model.pYi_dir_1[model.IDX_1[ind_1]] == 0)
 
     print("... took ", str(time.time() - t4), " sec")
 
@@ -517,7 +543,7 @@ def optimization(
     max_output = g * charging_capacity
     types_0 = dir_0[col_type].to_list() + dir_1[col_type].to_list()
     types_1 = dir_1[col_type].to_list() + dir_0[col_type].to_list()
-
+    #
     if not no_new_infrastructure:
         for ij in model.IDX_0:
             for kl in model.IDX_3:
@@ -529,11 +555,28 @@ def optimization(
                 if types_1[kl] == 'ra':
                     model.output_shift.add(model.pE_output_1[ij, kl] <= max_output)
 
+    # if not no_new_infrastructure:
+    # for ij in model.IDX_0:
+    #     for kl in model.IDX_3:
+    #         model.output_shift.add(model.test_var_0[ij, kl] == 0)
+    #
+    # for ij in model.IDX_1:
+    #     for kl in model.IDX_3:
+    #         # if not( ij== 162 and kl == 160):
+    #         model.output_shift.add(model.test_var_1[ij, kl] == 0)
+
     print(installed_stations)
     print(installed_poles)
 
     # model.output_shift.add(sum(model.test_var_0[ij, kl] for ij in model.IDX_0 for kl in model.IDX_3) + sum(model.test_var_1[ij, kl] for ij in model.IDX_1 for kl in model.IDX_3) <= 1.024e-7 * sum([sum(sum(energy_demand_matrix_0)), sum(sum(energy_demand_matrix_1))]))
-    model.output_shift.add(sum(model.test_var_0[ij, kl] for ij in model.IDX_0 for kl in model.IDX_3) + sum(model.test_var_1[ij, kl] for ij in model.IDX_1 for kl in model.IDX_3) <= 0)
+    #
+    model.output_shift.add(
+        sum(model.test_var_0[ij, kl] for ij in model.IDX_0 for kl in model.IDX_3)
+        + sum(model.test_var_1[ij, kl] for ij in model.IDX_1 for kl in model.IDX_3)
+        == 0
+
+    )
+    # model.output_shift.add(model.test_var_1[162, 160] == 67.7082)
 
     # ------------------------------------------------- objective -------------------------------------------------
     # minimization of installation costs
@@ -542,20 +585,19 @@ def optimization(
         expr=(
             (
                 (
-                        (sum(model.pXi[n] for n in model.IDX_2) - installed_stations) * cx
-                        +
-                    (
+                    (sum(model.pXi[n] for n in model.IDX_2) - installed_stations) * (cx)
+                    + (
                         sum(model.pYi_dir_0[n] for n in model.IDX_0)
                         + sum(model.pYi_dir_1[n] for n in model.IDX_1)
                         - installed_poles
                     )
-                        * cy
+                    * (cy)
                 )
+            )
                 # + sum(model.test_var_0[m, n] for n in model.IDX_3 for m in model.IDX_0)
                 # * c_non_covered_demand
                 # + sum(model.test_var_1[m, n] for n in model.IDX_3 for m in model.IDX_1)
                 # * c_non_covered_demand
-            )
         ),
         sense=minimize,
     )
@@ -565,11 +607,17 @@ def optimization(
     print("Model solution ...")
     t6 = time.time()
     opt = SolverFactory("gurobi")
-    opt.options["MIPGapAbs"] = cy+ cx
+    # opt.options["MIPGapAbs"] = cx
+
+    opt.options["MIPGapAbs"] = cy + cx
+
+    # opt.options["Heuristics"] = 1
     # opt.options["MIPGap"] = 0.0017
-    # opt.options['timelimit'] = 600
-    opt.options['MIPFocus'] = 2
-    opt_success = opt.solve(model, logfile='log/' + scenario_name + "_log.txt", report_timing=True, tee=True)
+    opt.options['timelimit'] = 3000
+    opt.options["MIPFocus"] = 0 # 2
+    opt_success = opt.solve(
+        model, logfile="log/" + scenario_name + "_log.txt", report_timing=True, tee=True
+    )
     print(opt_success)
 
     time_of_optimization = time.strftime("%Y%m%d-%H%M%S")
@@ -624,12 +672,19 @@ def optimization(
     pE_output_1 = np.sum(pE_output_1_m, axis=0)
 
     objective_value = model.obj.value()
-    installation_costs = (
-        objective_value
-    )
+    installation_costs = objective_value
     not_charged_2 = sum(sum(test_var_0_m)) + sum(sum(test_var_1_m))
     # installation_costs = objective_value
     # not_charged_2 = 0
+    i_0 = np.where(test_var_0_m > 1e-4)
+    i_1 = np.where(test_var_1_m > 1e-4)
+    print(i_0)
+    print(i_1)
+    for ij in range(0, len(i_0[0])):
+        print(0, test_var_0_m[i_0[0][ij], i_0[1][ij]] )
+
+    for ij in range(0, len(i_1[0])):
+        print(1, test_var_1_m[i_1[0][ij], i_1[1][ij]] )
     print("------------------------------------------")
     print(scenario_name)
     print(
@@ -661,17 +716,23 @@ def optimization(
             + str(not_charged_2)
             + ", "
             + str(
-                (not_charged_energy + not_charged_2) / (sum(sum(energy_demand_matrix_0))
-                + sum(sum(energy_demand_matrix_1)))
+                (not_charged_energy + not_charged_2)
+                / (sum(sum(energy_demand_matrix_0)) + sum(sum(energy_demand_matrix_1)))
             )
             + "%)",
             "red",
         ),
     )
     print(
-        colored("Specific installation costs: €/kW " + str(installation_costs/((sum(pYi_dir_0) + sum(pYi_dir_1)) * pole_peak_cap)), "green")
+        colored(
+            "Specific installation costs: €/kW "
+            + str(
+                installation_costs / ((sum(pYi_dir_0) + sum(pYi_dir_1)) * pole_peak_cap)
+            ),
+            "green",
+        )
     )
-    print('Nb. available nodes: ', sum(sum(mask_0)) + sum(sum(mask_1)))
+    print("Nb. available nodes: ", sum(sum(mask_0)) + sum(sum(mask_1)))
     print("------------------------------------------")
 
     # creating output file
@@ -792,7 +853,11 @@ def optimization(
     output_dataframe["pXi"] = np.where((output_dataframe.pYi_dir > 0), 1, 0)
     output_dataframe = output_dataframe.fillna(0.0)
     output_filename = (
-        "results/" + time_of_optimization + '_' + scenario_name + "_optimization_result_charging_stations.csv"
+        "results/"
+        + time_of_optimization
+        + "_"
+        + scenario_name
+        + "_optimization_result_charging_stations.csv"
     )
     output_dataframe = output_dataframe.sort_values(by=[col_segment_id, col_distance])
     output_dataframe.to_csv(output_filename, index=False)
@@ -825,8 +890,9 @@ def optimization(
         f.write(additional_info)
         f.write(data)
         f.close()
-    perc_not_charged = (not_charged_energy + not_charged_2) / (sum(sum(energy_demand_matrix_0))
-                + sum(sum(energy_demand_matrix_1)))
+    perc_not_charged = (not_charged_energy + not_charged_2) / (
+        sum(sum(energy_demand_matrix_0)) + sum(sum(energy_demand_matrix_1))
+    )
     visualize_results(
         filename=output_filename[:-4] + "_all_info.txt",
         dist_max=dist_max,
@@ -834,10 +900,22 @@ def optimization(
         charging_capacity=charging_capacity,
         energy=energy,
         specific_demand=specific_demand,
-        optimization_result=[sum(pXi), sum(pYi_dir_0) + sum(pYi_dir_1), installation_costs, (not_charged_energy + not_charged_2), round(perc_not_charged * 100, 2)],
+        optimization_result=[
+            sum(pXi),
+            sum(pYi_dir_0) + sum(pYi_dir_1),
+            installation_costs,
+            (not_charged_energy + not_charged_2),
+            round(perc_not_charged * 100, 2),
+        ],
         scenario_name=scenario_name,
         pole_peak_cap=pole_peak_cap,
     )
     print("Total amount of computation: ", str(time.time() - start), " sec")
 
-    return sum(pXi), sum(pYi_dir_0) + sum(pYi_dir_1), installation_costs, (not_charged_energy + not_charged_2), perc_not_charged
+    return (
+        sum(pXi),
+        sum(pYi_dir_0) + sum(pYi_dir_1),
+        installation_costs,
+        (not_charged_energy + not_charged_2),
+        perc_not_charged,
+    )

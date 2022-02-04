@@ -1,0 +1,80 @@
+Solver command line: ['C:\\gurobi912\\win64\\bin\\gurobi.bat']
+
+Academic license - for non-commercial use only - expires 2022-08-01
+Using license file c:\gurobi912\gurobi.lic
+Read LP format model from file C:\Users\golab\AppData\Local\Temp\tmpey14mr5a.pyomo.lp
+Reading time = 6.39 seconds
+x666102: 1328607 rows, 663253 columns, 2196750 nonzeros
+Changed value of parameter MIPGapAbs to 167000.0
+   Prev: 1e-10  Min: 0.0  Max: inf  Default: 1e-10
+Changed value of parameter timelimit to 3000.0
+   Prev: inf  Min: 0.0  Max: inf  Default: inf
+Parameter MIPFocus unchanged
+   Value: 0  Min: 0  Max: 3  Default: 0
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (win64)
+Thread count: 8 physical cores, 16 logical processors, using up to 16 threads
+Optimize a model with 1328607 rows, 663253 columns and 2196750 nonzeros
+Model fingerprint: 0x17cc4581
+Variable types: 662597 continuous, 656 integer (249 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 2e+02]
+  Objective range  [4e+04, 6e+06]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e-02, 8e+03]
+Presolve removed 1327568 rows and 658799 columns
+Presolve time: 3.57s
+Presolved: 1039 rows, 4454 columns, 9870 nonzeros
+Variable types: 4234 continuous, 220 integer (87 binary)
+
+Root relaxation: objective 3.507440e+07, 1221 iterations, 0.01 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 3.5074e+07    0   43          - 3.5074e+07      -     -    4s
+H    0     0                    3.851200e+07 3.5074e+07  8.93%     -    4s
+H    0     0                    3.736900e+07 3.5074e+07  6.14%     -    4s
+H    0     0                    3.686100e+07 3.5074e+07  4.85%     -    4s
+H    0     0                    3.660700e+07 3.5074e+07  4.19%     -    4s
+     0     0 3.5133e+07    0   38 3.6607e+07 3.5133e+07  4.03%     -    4s
+     0     0 3.5133e+07    0   38 3.6607e+07 3.5133e+07  4.03%     -    4s
+H    0     0                    3.639300e+07 3.5133e+07  3.46%     -    4s
+     0     0 3.5135e+07    0   36 3.6393e+07 3.5135e+07  3.46%     -    4s
+     0     0 3.5135e+07    0   36 3.6393e+07 3.5135e+07  3.46%     -    4s
+     0     0 3.5135e+07    0   29 3.6393e+07 3.5135e+07  3.46%     -    4s
+     0     0 3.5135e+07    0   30 3.6393e+07 3.5135e+07  3.46%     -    4s
+H    0     0                    3.635300e+07 3.5135e+07  3.35%     -    4s
+H    0     0                    3.622600e+07 3.5135e+07  3.01%     -    4s
+H    0     0                    3.609900e+07 3.5135e+07  2.67%     -    4s
+     0     0 3.5135e+07    0   29 3.6099e+07 3.5135e+07  2.67%     -    4s
+H    0     0                    3.597200e+07 3.5135e+07  2.33%     -    4s
+H    0     0                    3.584500e+07 3.5135e+07  1.98%     -    4s
+H    0     0                    3.571800e+07 3.5135e+07  1.63%     -    4s
+H    0     0                    3.559100e+07 3.5135e+07  1.28%     -    4s
+H    0     0                    3.546400e+07 3.5135e+07  0.93%     -    4s
+     0     0 3.5135e+07    0   33 3.5464e+07 3.5135e+07  0.93%     -    4s
+     0     0 3.5135e+07    0   31 3.5464e+07 3.5135e+07  0.93%     -    4s
+     0     0 3.5135e+07    0   30 3.5464e+07 3.5135e+07  0.93%     -    4s
+     0     0 3.5135e+07    0   26 3.5464e+07 3.5135e+07  0.93%     -    4s
+     0     0 3.5135e+07    0   29 3.5464e+07 3.5135e+07  0.93%     -    4s
+     0     0 3.5135e+07    0   27 3.5464e+07 3.5135e+07  0.93%     -    4s
+     0     0 3.5135e+07    0   26 3.5464e+07 3.5135e+07  0.93%     -    4s
+H    0     0                    3.533700e+07 3.5135e+07  0.57%     -    5s
+
+Cutting planes:
+  Gomory: 8
+  Implied bound: 8
+  Clique: 1
+  MIR: 25
+  StrongCG: 3
+  Inf proof: 2
+  Relax-and-lift: 1
+
+Explored 2460 nodes (40191 simplex iterations) in 9.92 seconds
+Thread count was 16 (of 16 available processors)
+
+Solution count 10: 3.5337e+07 3.5464e+07 3.5591e+07 ... 3.6393e+07
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 3.533700000000e+07, best bound 3.517200000000e+07, gap 0.4669%
+

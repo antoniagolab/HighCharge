@@ -1,0 +1,60 @@
+Solver command line: ['C:\\gurobi912\\win64\\bin\\gurobi.bat']
+
+Academic license - for non-commercial use only - expires 2022-08-01
+Using license file c:\gurobi912\gurobi.lic
+Read LP format model from file C:\Users\golab\AppData\Local\Temp\tmp9dbmslhx.pyomo.lp
+Reading time = 6.14 seconds
+x666102: 1247110 rows, 663253 columns, 2118126 nonzeros
+Changed value of parameter MIPGapAbs to 167000.0
+   Prev: 1e-10  Min: 0.0  Max: inf  Default: 1e-10
+Changed value of parameter MIPFocus to 2
+   Prev: 0  Min: 0  Max: 3  Default: 0
+Gurobi Optimizer version 9.1.2 build v9.1.2rc0 (win64)
+Thread count: 8 physical cores, 16 logical processors, using up to 16 threads
+Optimize a model with 1247110 rows, 663253 columns and 2118126 nonzeros
+Model fingerprint: 0x8d70c437
+Variable types: 662597 continuous, 656 integer (249 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 3e+02]
+  Objective range  [4e+04, 2e+07]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [2e-02, 1e+03]
+Presolve removed 1246145 rows and 659059 columns
+Presolve time: 1.30s
+Presolved: 965 rows, 4194 columns, 9433 nonzeros
+Variable types: 4015 continuous, 179 integer (73 binary)
+Presolve removed 211 rows and 1585 columns
+Presolved: 754 rows, 2609 columns, 5193 nonzeros
+
+
+Root relaxation: objective 1.842518e+07, 555 iterations, 0.01 seconds
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1.8425e+07    0   24          - 1.8425e+07      -     -    1s
+H    0     0                    2.174800e+07 1.8425e+07  15.3%     -    1s
+H    0     0                    1.997000e+07 1.8425e+07  7.74%     -    1s
+H    0     0                    1.984300e+07 1.8425e+07  7.15%     -    1s
+H    0     0                    1.971600e+07 1.8425e+07  6.55%     -    1s
+H    0     0                    1.882700e+07 1.8425e+07  2.13%     -    1s
+H    0     0                    1.870000e+07 1.8425e+07  1.47%     -    1s
+     0     0 1.8672e+07    0   23 1.8700e+07 1.8672e+07  0.15%     -    1s
+
+Cutting planes:
+  Gomory: 18
+  Implied bound: 2
+  Clique: 1
+  MIR: 46
+  StrongCG: 1
+  Flow cover: 1
+  Relax-and-lift: 2
+
+Explored 1 nodes (692 simplex iterations) in 1.90 seconds
+Thread count was 16 (of 16 available processors)
+
+Solution count 6: 1.87e+07 1.8827e+07 1.9716e+07 ... 2.1748e+07
+
+Optimal solution found (tolerance 1.00e-04)
+Best objective 1.870000000000e+07, best bound 1.867200000000e+07, gap 0.1497%
+
