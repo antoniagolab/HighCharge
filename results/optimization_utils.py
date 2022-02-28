@@ -1,6 +1,6 @@
 import numpy as np
 
-from utils import *
+from _utils import *
 from pyomo.environ import *
 from optimization_parameters import *
 
@@ -48,7 +48,6 @@ def append_first_input_output_by_poi_for_seg(
     segments_gdf,
     current_dists,
     dmax,
-
 ):
     """
     TODO: enforce coverage in first link at least, even though distance is limited
@@ -139,7 +138,7 @@ def append_first_input_output_by_poi_for_seg(
                 dmax,
                 segment_id,
                 path_endings,
-                force_first
+                force_first,
             )
         return input_output_relations, path_endings
 
@@ -159,7 +158,7 @@ def append_input_output_by_poi_for_seg(
     dmax,
     last_seg_id,
     path_endings,
-    force_first
+    force_first,
 ):
     """
     :param input_output_relations:
@@ -208,7 +207,7 @@ def append_input_output_by_poi_for_seg(
         #     dist_after = upcoming_dists + ranges[kl + 1]
 
         for ij in range(0, len(poi_indices)):
-            if force_first and ij == len(poi_indices)-1  and kl == 0:
+            if force_first and ij == len(poi_indices) - 1 and kl == 0:
                 input_output_relations.append(
                     (
                         (poi_indices[ij], init_direction),
@@ -267,7 +266,7 @@ def append_input_output_by_poi_for_seg(
                 dmax,
                 segment_id,
                 path_endings,
-                force_first
+                force_first,
             )
 
         return input_output_relations, path_endings
@@ -1421,7 +1420,9 @@ def constraint_equal_nodes_links(model, poi_dir_0, poi_dir_1, links_gdf):
                     )
 
 
-def constraint_coverage_of_energy_demand(model, energy_demand_matrix_0, energy_demand_matrix_1):
+def constraint_coverage_of_energy_demand(
+    model, energy_demand_matrix_0, energy_demand_matrix_1
+):
     model.constraint_coverage_of_energy_demand = ConstraintList()
 
     # dir = 0
@@ -1429,7 +1430,9 @@ def constraint_coverage_of_energy_demand(model, energy_demand_matrix_0, energy_d
         model.constraint_coverage_of_energy_demand.add(
             sum([model.pE_charged_0[ij, kl] for kl in model.IDX_0])
             == sum(
-                energy_demand_matrix_0[ij, ]
+                energy_demand_matrix_0[
+                    ij,
+                ]
             )
         )
 
@@ -1445,7 +1448,14 @@ def constraint_coverage_of_energy_demand(model, energy_demand_matrix_0, energy_d
         )
 
 
-def constraint_rel_dem_i_o_charge(model, energy_demand_matrix_0, energy_demand_matrix_1, pois_df_0, pois_df_1, links_gdf):
+def constraint_rel_dem_i_o_charge(
+    model,
+    energy_demand_matrix_0,
+    energy_demand_matrix_1,
+    pois_df_0,
+    pois_df_1,
+    links_gdf,
+):
     model.constraint_i_o_charge = ConstraintList()
 
     link_directory, link_nodes = equal_linkages_points(pois_df_0, pois_df_1, links_gdf)
@@ -1598,16 +1608,16 @@ def constraint_input_output(model, pois_df_0, pois_df_1, links_gdf, segments_gdf
     poi_indices_0 = pois_df_0.index.to_list()
     poi_indices_1 = pois_df_1.index.to_list()
     direction = 0
-    input_0 = np.zeros([n0, n0+n1])
-    input_1 = np.zeros([n1, n0+n1])
-    output_0 = np.zeros([n0, n0+n1])
-    output_1 = np.zeros([n1, n0+n1])
+    input_0 = np.zeros([n0, n0 + n1])
+    input_1 = np.zeros([n1, n0 + n1])
+    output_0 = np.zeros([n0, n0 + n1])
+    output_1 = np.zeros([n1, n0 + n1])
 
-    const_input_0 = np.zeros([n0, n0+n1])
-    const_output_0 = np.zeros([n0, n0+n1])
+    const_input_0 = np.zeros([n0, n0 + n1])
+    const_output_0 = np.zeros([n0, n0 + n1])
 
-    const_input_1 = np.zeros([n1, n0+n1])
-    const_output_1 = np.zeros([n1, n0+n1])
+    const_input_1 = np.zeros([n1, n0 + n1])
+    const_output_1 = np.zeros([n1, n0 + n1])
 
     no_io_indices_0 = []
     no_io_indices_1 = []
@@ -1646,13 +1656,17 @@ def constraint_input_output(model, pois_df_0, pois_df_1, links_gdf, segments_gdf
                 next_ind = poi_indices_1.index(rel[1][0])
 
             if prev_dir == 0 and next_dir == 0:
-                model.constraint_input_output.add(model.pE_output_0[ind_mat, prev_ind] == model.pE_input_0[ind_mat,
-                                                                                                          next_ind])
+                model.constraint_input_output.add(
+                    model.pE_output_0[ind_mat, prev_ind]
+                    == model.pE_input_0[ind_mat, next_ind]
+                )
                 output_0[ind_mat, prev_ind] = 1
                 input_0[ind_mat, next_ind] = 1
             elif prev_dir == 1 and next_dir == 1:
-                model.constraint_input_output.add(model.pE_output_0[ind_mat, n0 + prev_ind] == model.pE_input_0[ind_mat,
-                                                                                                           n0 + next_ind])
+                model.constraint_input_output.add(
+                    model.pE_output_0[ind_mat, n0 + prev_ind]
+                    == model.pE_input_0[ind_mat, n0 + next_ind]
+                )
                 output_0[ind_mat, n0 + prev_ind] = 1
                 input_0[ind_mat, n0 + next_ind] = 1
     direction = 1
@@ -1690,13 +1704,17 @@ def constraint_input_output(model, pois_df_0, pois_df_1, links_gdf, segments_gdf
                 next_ind = poi_indices_1.index(rel[1][0])
 
             if prev_dir == 0 and next_dir == 0:
-                model.constraint_input_output.add(model.pE_output_1[ind_mat, n1 + prev_ind] == model.pE_input_1[ind_mat,
-                                                                                                           n1 + next_ind])
-                output_0[ind_mat, n1 +prev_ind] = 1
+                model.constraint_input_output.add(
+                    model.pE_output_1[ind_mat, n1 + prev_ind]
+                    == model.pE_input_1[ind_mat, n1 + next_ind]
+                )
+                output_0[ind_mat, n1 + prev_ind] = 1
                 input_0[ind_mat, n1 + next_ind] = 1
             elif prev_dir == 1 and next_dir == 1:
-                model.constraint_input_output.add(model.pE_output_1[ind_mat, prev_ind] == model.pE_input_1[ind_mat,
-                                                                                                           next_ind])
+                model.constraint_input_output.add(
+                    model.pE_output_1[ind_mat, prev_ind]
+                    == model.pE_input_1[ind_mat, next_ind]
+                )
                 output_1[ind_mat, prev_ind] = 1
                 input_1[ind_mat, next_ind] = 1
 
@@ -1744,13 +1762,12 @@ def constraint_output(model, pois_df_0, pois_df_1):
 
     direction_0 = 0
     direction_1 = 1
-    output_00 = np.zeros([n0, n0+n1])
-    output_11 = np.zeros([n1, n0+n1])
+    output_00 = np.zeros([n0, n0 + n1])
+    output_11 = np.zeros([n1, n0 + n1])
     for kl in model.IDX_0:
         output, path = constraint_input_ouput_relations_for_pois_on_segm(
             seg_ids_0[kl],
             direction_0,
-
             pois_df,
             pois_df_0,
             pois_df_1,
@@ -1759,7 +1776,9 @@ def constraint_output(model, pois_df_0, pois_df_1):
             dmax,
         )
         ending_nodes = output[1]
-        filter_end_node = [io for io in ending_nodes if io[0] == (pois_indices_0[kl], direction_0)]
+        filter_end_node = [
+            io for io in ending_nodes if io[0] == (pois_indices_0[kl], direction_0)
+        ]
 
         if len(filter_end_node) == 0:
             model.constraint_output.add(model.pE_output_0[kl, kl] == 0)
@@ -1767,10 +1786,14 @@ def constraint_output(model, pois_df_0, pois_df_1):
         else:
             for f in filter_end_node:
                 if f[1][3] == 0:
-                    model.constraint_output.add(model.pE_output_0[kl, pois_indices_0.index(f[1][2])] == 0)
+                    model.constraint_output.add(
+                        model.pE_output_0[kl, pois_indices_0.index(f[1][2])] == 0
+                    )
                     output_00[kl, pois_indices_0.index(f[1][2])] = 1
                 else:
-                    model.constraint_output.add(model.pE_output_0[kl, n0 + pois_indices_1.index(f[1][2])] == 0)
+                    model.constraint_output.add(
+                        model.pE_output_0[kl, n0 + pois_indices_1.index(f[1][2])] == 0
+                    )
                     output_00[kl, n0 + pois_indices_1.index(f[1][2])] = 1
 
     for kl in model.IDX_1:
@@ -1786,7 +1809,9 @@ def constraint_output(model, pois_df_0, pois_df_1):
             dmax,
         )
         ending_nodes = output[1]
-        filter_end_node = [io for io in ending_nodes if io[0] == (pois_indices_1[kl], direction_1)]
+        filter_end_node = [
+            io for io in ending_nodes if io[0] == (pois_indices_1[kl], direction_1)
+        ]
 
         if len(filter_end_node) == 0:
             model.constraint_output.add(model.pE_output_1[kl, kl] == 0)
@@ -1795,10 +1820,14 @@ def constraint_output(model, pois_df_0, pois_df_1):
         else:
             for f in filter_end_node:
                 if f[1][3] == 0:
-                    model.constraint_output.add(model.pE_output_1[kl, n1 + pois_indices_0.index(f[1][2])] == 0)
+                    model.constraint_output.add(
+                        model.pE_output_1[kl, n1 + pois_indices_0.index(f[1][2])] == 0
+                    )
                     output_11[kl, n1 + pois_indices_0.index(f[1][2])] = 1
                 else:
-                    model.constraint_output.add(model.pE_output_1[kl, pois_indices_1.index(f[1][2])] == 0)
+                    model.constraint_output.add(
+                        model.pE_output_1[kl, pois_indices_1.index(f[1][2])] == 0
+                    )
                     output_11[kl, pois_indices_1.index(f[1][2])] = 1
 
 
@@ -1834,7 +1863,7 @@ def complement_rels(io_relations, pois_0, pois_1, links_gdf, path):
         in_rels = [io[1] for io in filtered_rels]
         for n in in_rels:
             if n[1] == 0:
-                prev_seg = pois_0[pois_0.index==n[0]].segment_id.to_list()[0]
+                prev_seg = pois_0[pois_0.index == n[0]].segment_id.to_list()[0]
             else:
                 prev_seg = pois_1[pois_1.index == n[0]].segment_id.to_list()[0]
             # finding key in path
@@ -1859,7 +1888,10 @@ def complement_rels(io_relations, pois_0, pois_1, links_gdf, path):
                             next_seg_key = k
                             break
 
-                    if mn in out_rels and path[next_seg_key] in path[prev_seg_key].children:
+                    if (
+                        mn in out_rels
+                        and path[next_seg_key] in path[prev_seg_key].children
+                    ):
                         new_rels.append((sn, (n, mn)))
 
         if is_linkage(sn, pois_0, pois_1, links_gdf)[0]:
@@ -1876,13 +1908,23 @@ def add_ratios_to_io_rels(filtered_ios, pois_0, pois_1):
     singular_io_rels = list(set(filtered_ios))
     extended_information_rels = []
     for s in singular_io_rels:
-        same_o = [s[1]] + [io[1] for io in singular_io_rels if io[0] == s[0] and not io == s]
+        same_o = [s[1]] + [
+            io[1] for io in singular_io_rels if io[0] == s[0] and not io == s
+        ]
         # collect all traffic_flow numbers for each same_o
-        segs = [get_segment(same_o[ij][0], same_o[ij][1], pois_0, pois_1) for ij in range(0, len(same_o))]
-        trafficflow_numbers = [get_traffic_count(segs[ij], same_o[ij][1], pois_0, pois_1) for ij in range(0, len(segs))]
+        segs = [
+            get_segment(same_o[ij][0], same_o[ij][1], pois_0, pois_1)
+            for ij in range(0, len(same_o))
+        ]
+        trafficflow_numbers = [
+            get_traffic_count(segs[ij], same_o[ij][1], pois_0, pois_1)
+            for ij in range(0, len(segs))
+        ]
 
-        #if len(same_o) > 1:
-        extended_information_rels.append((s + (trafficflow_numbers[0]/sum(trafficflow_numbers),)))
+        # if len(same_o) > 1:
+        extended_information_rels.append(
+            (s + (trafficflow_numbers[0] / sum(trafficflow_numbers),))
+        )
 
     return extended_information_rels
 
@@ -1930,11 +1972,13 @@ def create_mask_enum(model, pois_df_0, pois_df_1, links_gdf, segments_gdf, dmax)
                 dmax,
             )
 
-            path_directory[str(seg_id) + '_' + str(direction)] = path
+            path_directory[str(seg_id) + "_" + str(direction)] = path
             io_rels = output[0]
             io_rels = complement_rels(io_rels, pois_df_0, pois_df_1, links_gdf, path)
 
-        filtered_rels = add_ratios_to_io_rels([io[1] for io in io_rels if io[0] == (ind, direction)], pois_df_0, pois_df_1)
+        filtered_rels = add_ratios_to_io_rels(
+            [io[1] for io in io_rels if io[0] == (ind, direction)], pois_df_0, pois_df_1
+        )
         out_rels = [io[0] for io in filtered_rels]
         in_rels = [io[1] for io in filtered_rels]
 
@@ -1957,23 +2001,32 @@ def create_mask_enum(model, pois_df_0, pois_df_1, links_gdf, segments_gdf, dmax)
             if prev_dir == 0 and next_dir == 0:
                 output_0[ind_mat, prev_ind] = 1
                 input_0[ind_mat, next_ind] = 1
-                model.constraint_io.add(model.pE_output_0[ind_mat, prev_ind] * ratio == model.pE_input_0[ind_mat, next_ind])
+                model.constraint_io.add(
+                    model.pE_output_0[ind_mat, prev_ind] * ratio
+                    == model.pE_input_0[ind_mat, next_ind]
+                )
 
             elif prev_dir == 1 and next_dir == 1:
                 output_0[ind_mat, n0 + prev_ind] = 1
                 input_0[ind_mat, n0 + next_ind] = 1
                 model.constraint_io.add(
-                    model.pE_output_0[ind_mat, n0 + prev_ind] * ratio == model.pE_input_0[ind_mat, n0 + next_ind])
+                    model.pE_output_0[ind_mat, n0 + prev_ind] * ratio
+                    == model.pE_input_0[ind_mat, n0 + next_ind]
+                )
             elif prev_dir == 0 and next_dir == 1:
                 output_0[ind_mat, prev_ind] = 1
                 input_0[ind_mat, n0 + next_ind] = 1
                 model.constraint_io.add(
-                    model.pE_output_0[ind_mat, prev_ind] * ratio == model.pE_input_0[ind_mat, n0 + next_ind])
+                    model.pE_output_0[ind_mat, prev_ind] * ratio
+                    == model.pE_input_0[ind_mat, n0 + next_ind]
+                )
             else:
                 output_0[ind_mat, n0 + prev_ind] = 1
                 input_0[ind_mat, next_ind] = 1
                 model.constraint_io.add(
-                    model.pE_output_0[ind_mat, n0 + prev_ind] * ratio == model.pE_input_0[ind_mat, next_ind])
+                    model.pE_output_0[ind_mat, n0 + prev_ind] * ratio
+                    == model.pE_input_0[ind_mat, next_ind]
+                )
         prev_seg = seg_id
 
     prev_seg = None
@@ -1993,10 +2046,12 @@ def create_mask_enum(model, pois_df_0, pois_df_1, links_gdf, segments_gdf, dmax)
                 segments_gdf,
                 dmax,
             )
-            path_directory[str(seg_id) + '_' + str(direction)] = path
+            path_directory[str(seg_id) + "_" + str(direction)] = path
             io_rels = output[0]
             io_rels = complement_rels(io_rels, pois_df_0, pois_df_1, links_gdf, path)
-        filtered_rels = add_ratios_to_io_rels([io[1] for io in io_rels if io[0] == (ind, direction)], pois_df_0, pois_df_1)
+        filtered_rels = add_ratios_to_io_rels(
+            [io[1] for io in io_rels if io[0] == (ind, direction)], pois_df_0, pois_df_1
+        )
         out_rels = [io[0] for io in filtered_rels]
         in_rels = [io[1] for io in filtered_rels]
         if len(filtered_rels) == 0:
@@ -2017,28 +2072,39 @@ def create_mask_enum(model, pois_df_0, pois_df_1, links_gdf, segments_gdf, dmax)
             ratio = rel[2]
             if prev_dir == 0 and next_dir == 0:
                 model.constraint_io.add(
-                    model.pE_output_1[ind_mat, n1 + prev_ind] * ratio == model.pE_input_1[ind_mat, n1 + next_ind])
+                    model.pE_output_1[ind_mat, n1 + prev_ind] * ratio
+                    == model.pE_input_1[ind_mat, n1 + next_ind]
+                )
                 output_1[ind_mat, n1 + prev_ind] = 1
                 input_1[ind_mat, n1 + next_ind] = 1
 
             elif prev_dir == 1 and next_dir == 1:
                 output_1[ind_mat, prev_ind] = 1
                 input_1[ind_mat, next_ind] = 1
-                model.constraint_io.add(model.pE_output_1[ind_mat, prev_ind] * ratio == model.pE_input_1[ind_mat, next_ind])
+                model.constraint_io.add(
+                    model.pE_output_1[ind_mat, prev_ind] * ratio
+                    == model.pE_input_1[ind_mat, next_ind]
+                )
             elif prev_dir == 1 and next_dir == 0:
                 output_1[ind_mat, prev_ind] = 1
                 input_1[ind_mat, n1 + next_ind] = 1
-                model.constraint_io.add(model.pE_output_1[ind_mat, prev_ind] * ratio == model.pE_input_1[ind_mat, n1 + next_ind])
+                model.constraint_io.add(
+                    model.pE_output_1[ind_mat, prev_ind] * ratio
+                    == model.pE_input_1[ind_mat, n1 + next_ind]
+                )
             else:
                 output_1[ind_mat, n1 + prev_ind] = 1
                 input_1[ind_mat, next_ind] = 1
-                model.constraint_io.add(model.pE_output_1[ind_mat, n1 + prev_ind] * ratio== model.pE_input_1[ind_mat, next_ind])
+                model.constraint_io.add(
+                    model.pE_output_1[ind_mat, n1 + prev_ind] * ratio
+                    == model.pE_input_1[ind_mat, next_ind]
+                )
         prev_seg = seg_id
 
     for ij in range(0, n0):
         if ij in no_io_indices_0:
             const_output_0[ij, ij] = 1
-        for kl in range(0, n0+n1):
+        for kl in range(0, n0 + n1):
             if input_0[ij, kl] == 0 and output_0[ij, kl] == 1:
                 const_input_0[ij, kl] = 1
             elif input_0[ij, kl] == 1 and output_0[ij, kl] == 0:
@@ -2052,7 +2118,7 @@ def create_mask_enum(model, pois_df_0, pois_df_1, links_gdf, segments_gdf, dmax)
         if ij in no_io_indices_1:
             const_input_1[ij, ij] = 1
             const_output_1[ij, ij] = 1
-        for kl in range(0, n0+n1):
+        for kl in range(0, n0 + n1):
             if input_1[ij, kl] == 0 and output_1[ij, kl] == 1:
                 const_input_1[ij, kl] = 1
 
@@ -2064,15 +2130,34 @@ def create_mask_enum(model, pois_df_0, pois_df_1, links_gdf, segments_gdf, dmax)
 
     for ij in range(0, n0):
         for kl in range(0, n0 + n1):
-            if input_0[ij, kl] == 1 or output_0[ij, kl] == 1 or const_input_0[ij, kl] == 1 or const_output_0[ij, kl] == 1:
+            if (
+                input_0[ij, kl] == 1
+                or output_0[ij, kl] == 1
+                or const_input_0[ij, kl] == 1
+                or const_output_0[ij, kl] == 1
+            ):
                 mask_0[ij, kl] = 1
 
     for ij in range(0, n1):
         for kl in range(0, n0 + n1):
-            if input_1[ij, kl] == 1 or output_1[ij, kl] == 1 or const_input_1[ij, kl] == 1 or const_output_1[ij, kl] == 1:
+            if (
+                input_1[ij, kl] == 1
+                or output_1[ij, kl] == 1
+                or const_input_1[ij, kl] == 1
+                or const_output_1[ij, kl] == 1
+            ):
                 mask_1[ij, kl] = 1
 
-    return const_input_0, const_input_1, const_output_0, const_output_1, mask_0, mask_1, path_directory
+    return (
+        const_input_0,
+        const_input_1,
+        const_output_0,
+        const_output_1,
+        mask_0,
+        mask_1,
+        path_directory,
+    )
+
 
 # import numpy as np
 #

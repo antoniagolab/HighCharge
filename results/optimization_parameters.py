@@ -4,7 +4,7 @@ Definition of parameters for charging station allocation
 
 import numpy as np
 import pandas as pd
-from utils import clean_segments, filter_segments, split_by_dir, pd2gpd
+from _utils import clean_segments, filter_segments, split_by_dir, pd2gpd
 
 # read pois_df and reindex
 
@@ -109,14 +109,14 @@ cvar = 17750  # (€) total installation costs of charging pole installation
 c_non_covered_demand = 900000000000
 eta = 0.01  # share of electric vehicles of car fleet
 mu = 0.4  # share of cars travelling long-distance
-gamma_h = 0.1   # share of cars travelling during peak hour
+gamma_h = 0.1  # share of cars travelling during peak hour
 energy_demand_0 = dir_0[
     col_energy_demand
 ].to_list()  # (kWh/d) energy demand at each rest area per day
 energy_demand_1 = dir_1[col_energy_demand].to_list()
 directions_0 = dir_0[col_directions].to_list()
 directions_1 = dir_1[col_directions].to_list()
-dmax = 250000 * (2/3) * (1/2)
+dmax = 250000 * (2 / 3) * (1 / 2)
 introduce_existing_infrastructure = True
 no_new_infrastructure = False
 
@@ -133,7 +133,8 @@ energy_demand_matrix_0 = np.append(
     np.diag(energy_demand_0) * eta * mu * gamma_h, np.zeros([n0, n1]), axis=1
 )
 energy_demand_matrix_1 = np.append(
-    np.diag(energy_demand_1) * eta * mu * gamma_h, np.zeros([n1, n0]), axis=1)
+    np.diag(energy_demand_1) * eta * mu * gamma_h, np.zeros([n1, n0]), axis=1
+)
 
 maximum_dist_between_charging_stations = dmax
 
@@ -154,5 +155,9 @@ if introduce_existing_infrastructure:
 
     rest_areas_0, rest_areas_1 = split_by_dir(rest_areas, col_directions, reindex=True)
 
-    existing_infr_0 = pd.merge(rest_areas_0, ex_infr_0, on=[col_highway, 'name', 'direction'])
-    existing_infr_1 = pd.merge(rest_areas_1, ex_infr_1, on=[col_highway, 'name', 'direction'])
+    existing_infr_0 = pd.merge(
+        rest_areas_0, ex_infr_0, on=[col_highway, "name", "direction"]
+    )
+    existing_infr_1 = pd.merge(
+        rest_areas_1, ex_infr_1, on=[col_highway, "name", "direction"]
+    )

@@ -19,7 +19,7 @@ from optimization_parameters import *
 from optimization_additional_functions import *
 from integrating_exxisting_infrastructure import *
 import time
-from visualize_results import *
+from _visualize_results import *
 from termcolor import colored
 from optimization_utils import *
 
@@ -31,7 +31,7 @@ def optimization(
     acc=acc,
     charging_capacity=charging_capacity,
     specific_demand=specific_demand,
-    introduce_existing_infrastructure=introduce_existing_infrastructure
+    introduce_existing_infrastructure=introduce_existing_infrastructure,
 ):
     """
     Constraint and objective function definition + solution of optimization using parameters defined in
@@ -74,7 +74,7 @@ def optimization(
         "; introduce_existing_infrastructure=",
         str(introduce_existing_infrastructure),
         "; no_new_infrastructure=",
-        str(no_new_infrastructure)
+        str(no_new_infrastructure),
     )
     print("------------------------------------------")
 
@@ -113,7 +113,6 @@ def optimization(
     model.test_var_1 = Var(model.IDX_0, model.IDX_3)
 
     energy = charging_capacity  # (kWh) charging energy per day by one charging pole
-
 
     # ------------------------------------------------- constraints -------------------------------------------------
     print("------------------------------------------")
@@ -427,10 +426,7 @@ def optimization(
                             == existing_infr_0.at[infr_0, "cs_below_50kwh"]
                         )
                 elif no_new_infrastructure:
-                    model.c12.add(
-                        model.pYi_dir_0[model.IDX_0[ind_0]]
-                        == 0
-                    )
+                    model.c12.add(model.pYi_dir_0[model.IDX_0[ind_0]] == 0)
 
         elif len(extract_dir_1) > 0:
 
@@ -466,10 +462,7 @@ def optimization(
                             == existing_infr_1.at[infr_1, "cs_below_50kwh"]
                         )
                 elif no_new_infrastructure:
-                    model.c12.add(
-                        model.pYi_dir_1[model.IDX_1[ind_1]]
-                        == 0
-                    )
+                    model.c12.add(model.pYi_dir_1[model.IDX_1[ind_1]] == 0)
 
     print("... took ", str(time.time() - t4), " sec")
 
@@ -487,13 +480,13 @@ def optimization(
         expr=(
             (
                 (
-                        (sum(model.pXi[n] for n in model.IDX_2) - installed_stations) * cx
-                        + (
+                    (sum(model.pXi[n] for n in model.IDX_2) - installed_stations) * cx
+                    + (
                         sum(model.pYi_dir_0[n] for n in model.IDX_0)
                         + sum(model.pYi_dir_1[n] for n in model.IDX_1)
                         - installed_poles
                     )
-                        * cy
+                    * cy
                 )
                 + sum(model.test_var_0[m, n] for n in model.IDX_3 for m in model.IDX_0)
                 * c_non_covered_demand
@@ -593,8 +586,8 @@ def optimization(
             + str(not_charged_2)
             + ", "
             + str(
-                (not_charged_energy + not_charged_2) / (sum(sum(energy_demand_matrix_0))
-                + sum(sum(energy_demand_matrix_1)))
+                (not_charged_energy + not_charged_2)
+                / (sum(sum(energy_demand_matrix_0)) + sum(sum(energy_demand_matrix_1)))
             )
             + "%)",
             "red",

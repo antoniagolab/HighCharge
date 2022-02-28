@@ -1,4 +1,4 @@
-# HighCharge - a fast-charging allocation model for high-level road networks
+# Highcharge - a fast-charging allocation model for high-level road networks
 
 ## Overview
 
@@ -12,6 +12,7 @@ The three core scripts of this work are:
 
 - _data_pre-pre-processing_Austrian_highwaynetwork.py_: The calculation procedures conducted in this script are referenced in Section **Demand calculation**.
 - _demand&#95;calculation.py_: Using this script, charging demand for all nodes in the highway network is obtained. This charging demand is for a day and given by a car fleet with 100% of electric vehicles. 
+- _parameter_calculation.py_: Evaluation of input parameters for scenario calculations. 
 - _validation.py_: Recreation of currently required fast-charging infrastructure. 
 - _analysis.py_: This script encompasses all calculations for the analysis presented during in the Results section of the manuscript.
 
@@ -32,7 +33,7 @@ Based on (a) road network geometry and (b) service area geometries, the followin
 - **_Sequence of node visits_**: In order to account for traffic flow movement, a sequence of node visits is obtained, for each group of nodes grouped by the segment they lie on and the driving direction they are accessible from. This is pre-calculated in order to later reduce overall calculation time of the optimization. 
 
 
-This information is obtained by running *data_pre-pre-processing_Austrian_highwaynetwork.py*; the sequence of node visits is calculated within _demand&#95;calculation.py_. In reference to the graph-based representation of this model, the following is important to note here: Vertices in the graph represent intersections, ending points of the road network and service areas (also referred to as nodes), while edges represent road connections between these vertices. 
+This information is obtained by running *data_pre-pre-processing_Austrian_highwaynetwork.py*. In reference to the graph-based representation of this model, the following is important to note here: Vertices in the graph represent intersections, ending points of the road network and service areas (also referred to as nodes), while edges represent road connections between these vertices. 
 
 
 # References 

@@ -1,0 +1,2 @@
+,init_scenario,scenario_name,nb_cs,nb_poles,costs,non_covered_energy,perc_not_charged,datetime_of_calculation
+0,Gradual Development,1=660,54.0,551.0,65857000.0,7923.493268189396,0.055257375090570604,2022-02-09 03:36:30.759841
