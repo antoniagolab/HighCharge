@@ -10,10 +10,10 @@ We refer to the manuscript for explanations on the validation process, demand ca
 
 The three core scripts of this work are:
 
-..* _data_pre-pre-processing_Austrian_highwaynetwork.py_: The calculation procedures conducted in this script are referenced in Section **Demand calculation**.
-..* _demand&#95;calculation.py_: Using this script, charging demand for all nodes in the highway network is obtained. This charging demand is for a day and given by a car fleet with 100% of electric vehicles. 
-..* _validation.py_: Recreation of currently required fast-charging infrastructure. 
-..* _analysis.py_: This script encompasses all calculations for the analysis presented during in the Results section of the manuscript.
+- _data_pre-pre-processing_Austrian_highwaynetwork.py_: The calculation procedures conducted in this script are referenced in Section **Demand calculation**.
+- _demand&#95;calculation.py_: Using this script, charging demand for all nodes in the highway network is obtained. This charging demand is for a day and given by a car fleet with 100% of electric vehicles. 
+- _validation.py_: Recreation of currently required fast-charging infrastructure. 
+- _analysis.py_: This script encompasses all calculations for the analysis presented during in the Results section of the manuscript.
 
 
 ## Complementary information - details on pre-processing
