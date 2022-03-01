@@ -104,7 +104,7 @@ for ij in range(0, l-2):
         existing_infr_1,
         0,
         scenario_name,
-        path_res="scenarios/"
+        path_res="scenarios/results/"
     )
     output_file = output_file.append(
         {
@@ -335,7 +335,7 @@ for r in range(range_min, range_max + step_size, step_size):
     )
 
 output_file.to_csv(
-    "sensitivity_analyses/driving_range&sensitivity_anal_TF.csv"
+    "sensitivity_analyses/driving_range_sensitivity_anal_TF.csv"
 )
 
 

@@ -32,10 +32,10 @@ val = pd.read_csv(
     "validation_results/20220208-202154_validation 1_optimization_result_charging_stations.csv"
 )
 scenario = pd.read_csv(
-    "scenarios/results v7/20220209-144610_Directed Transition_optimization_result_charging_stations.csv"
+    "scenarios/results/20220209-144610_Directed Transition_optimization_result_charging_stations.csv"
 )
 
-path_SA_driving_range = "sensitivity_analyses/TC range/"
+path_SA_driving_range = "sensitivity_analyses/driving_range/"
 
 list_of_paths_SA_driving_range = [
     "20220215-085558_TF200_22_optimization_result_charging_stations.csv",
@@ -68,6 +68,7 @@ list_of_paths_SA_share_BEV = [
     "20220215-214848_ev share - epsilon SC100_3_optimization_result_charging_stations.csv"
 
 ]
+
 _filename = 'sensitivity_analyses\cost_reduction_potentials_1202.csv'
 scenario_file = pd.read_csv("scenarios/optimization_results_1002.csv")
 # ---------------------------------------------------------------------------------------------------------------------
@@ -552,12 +553,10 @@ ax.set_title('Cost-reduction potentials in the GD scenario 2030\n', fontsize=15,
 # plt.show()
 plt.savefig('figures/cost_red.pdf', bbox_inches="tight")
 
-
-
-
 # ---------------------------------------------------------------------------------------------------------------------
 # SENSITIVITY ANALYSIS I : DRIVING RANGE
 # ---------------------------------------------------------------------------------------------------------------------
+
 results = []
 
 range_max = 1400
