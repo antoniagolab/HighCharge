@@ -1,5 +1,12 @@
 # Highcharge - a fast-charging allocation model for high-level road networks
 
+Copyright (c) 2021 Antonia Golab
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+
+
 ## Overview
 
 The scripts in this depository were developed in course of the work described in Golab et al., 2022 <sup>[1](#myfootnote1)</sup>.
