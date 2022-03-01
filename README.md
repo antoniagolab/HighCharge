@@ -43,7 +43,7 @@ Based on (a) road network geometry and (b) service area geometries, the followin
 This information is obtained by running *data_pre-pre-processing_Austrian_highwaynetwork.py*. In reference to the graph-based representation of this model, the following is important to note here: Vertices in the graph represent intersections, ending points of the road network and service areas (also referred to as nodes), while edges represent road connections between these vertices. 
 
 
-# References 
+## References 
 
 
 <a name="myfootnote1">1</a>: Golab, A.; Zwickl-Bernhard, S.; Auer, H., 2022. *Minimum-cost fast-charging infrastructure planning for electric vehicles along the Austrian high-level road network*, submitted to *Energies*, Manuscript No. energies-1632966 , under review
