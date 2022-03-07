@@ -604,7 +604,7 @@ def optimization(
     opt = SolverFactory("gurobi")
     # opt.options["MIPGapAbs"] = cx
 
-    # opt.options["MIPGapAbs"] = cx + cy
+    opt.options["MIPGapAbs"] = cx + cy
 
     opt.options["Heuristics"] = 1
     # opt.options["MIPGap"] = 0.0017
