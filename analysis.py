@@ -10,6 +10,73 @@ from _optimization import optimization
 from _parameter_calculations import *
 from _file_import_optimization import *
 import datetime
+from _utils import *
+
+# ---------------------------------------------------------------------------------------------------------------------
+# generating sequence of node visits
+# ---------------------------------------------------------------------------------------------------------------------
+
+dist_max = segments_gdf.length.sum() / 3
+
+# direction = 0
+
+path_dictionaries = {}
+
+seg_ids = segments_gdf.ID.to_list()
+for id in seg_ids:
+    direction = 0
+    name = str(id) + "_" + str(direction) + "_0"
+    segm_tree = {name: Node((id, direction))}
+    unfiltered_path = get_children_from_seg(
+        id,
+        name,
+        direction,
+        segments_gdf,
+        links_gdf,
+        pois_df,
+        segm_tree,
+        0,
+        dist_max,
+        stop_then=False,
+    )
+
+    path = filter_path(unfiltered_path, segments_gdf, name)
+    path_dictionaries[str(id) + "_" + str(direction)] = path
+    print(id, direction, "done")
+
+a_file = open("data/path_data.pkl", "wb")
+pickle.dump(path_dictionaries, a_file)
+a_file.close()
+
+# a big dictionary with a dict for each seg_id and direction
+
+path_dictionaries = {}
+
+seg_ids = segments_gdf.ID.to_list()
+for id in seg_ids:
+    direction = 1
+    name = str(id) + "_" + str(direction) + "_0"
+    segm_tree = {name: Node((id, direction))}
+    unfiltered_path = get_children_from_seg(
+        id,
+        name,
+        direction,
+        segments_gdf,
+        links_gdf,
+        pois_df,
+        segm_tree,
+        0,
+        dist_max,
+        stop_then=False,
+    )
+
+    path = filter_path(unfiltered_path, segments_gdf, name)
+    path_dictionaries[str(id) + "_" + str(direction)] = path
+    print(id, direction, "done")
+
+a_file = open("data/path_data_2.pkl", "wb")
+pickle.dump(path_dictionaries, a_file)
+a_file.close()
 
 # ---------------------------------------------------------------------------------------------------------------------
 # SCENARIO calculation
@@ -34,7 +101,7 @@ output_file = pd.DataFrame()
 existing_infr["installed_infrastructure"] = existing_infr["350kW"]
 existing_infr_0, existing_infr_1 = split_by_dir(existing_infr, "dir", reindex=True)
 
-for ij in range(0, l-2):
+for ij in range(0, l):
     scenario_name = names[ij]
     if not etas[ij] >= 0:
         eta = default_eta
@@ -284,14 +351,14 @@ range_min = 200
 
 step_size = 100
 cx = 300000
-cy = 127000
+cy = 40000
 eta = 33
 a = 0.83
 charging_cap = 247.8
 peak_pole = 350
 output_file = pd.DataFrame()
 
-
+# for r in [200]:
 for r in range(range_min, range_max + step_size, step_size):
     scen_name = "MIPFOCUS=0 driving range TF _2" + str(int(r)) + " km - eta 2" + str(eta)
 
@@ -348,6 +415,7 @@ epsilon_min = 10
 
 step_size = 10
 r = 420
+cx = 40000
 cy = 127000
 eta = 33
 charging_cap = 165.8
